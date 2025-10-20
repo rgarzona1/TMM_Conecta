@@ -1,0 +1,47 @@
+{% extends 'general.html' %} 
+{% load static %}
+
+
+{% block content %}
+<main class="tienda-main-content">
+    <h2 style="text-align: center; font-size: 28px; color: var(--color-texto-gris);">Nuestra Tienda</h2>
+    
+    <div style="text-align: center; margin-bottom: 40px; padding: 20px 0; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc;">
+        <input type="search" placeholder="Search Keyword" 
+               style="padding: 10px; width: 400px; max-width: 80%; border: 1px solid #ddd; border-radius: 5px;">
+    </div>
+    
+    <div class="productos-grid" style="grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        {% for producto in productos %}
+        <div class="producto-card promo-card" style="margin-bottom: 20px; text-align: center;">
+            
+            <h3 class="producto-nombre" style="font-size: 18px; color: #f7a9bf; margin-bottom: 10px;">
+                {{ producto.nombre|upper }}
+            </h3>
+            
+            <p style="font-size: 14px; color: #777;">
+                {{ producto.descripcion_corta }}
+            </p>
+            
+            <img src="{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'tienda/default_prod.png' %}{% endif %}" 
+                 alt="{{ producto.nombre }}" 
+                 style="max-width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin: 15px 0;">
+
+            <p class="producto-precio" style="font-size: 22px; font-weight: bold; color: #4CAF50;">
+                ${{ producto.precio|floatformat:"0" }}
+            </p>
+
+            <form action="{% url 'add_to_cart' producto.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-comprar" style="background-color: #eee; padding: 10px 20px; border: none; margin-top: 15px; font-weight: bold;">
+                    AÑADIR AL CARRITO
+                </button>
+            </form>
+        </div>
+        {% empty %}
+        <p style="text-align: center;">Aún no hay promociones destacadas.</p>
+        {% endfor %}
+    </div>
+
+</main>
+{% endblock content %}

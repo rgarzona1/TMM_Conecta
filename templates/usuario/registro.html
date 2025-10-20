@@ -1,0 +1,90 @@
+{% load static %}
+{% load form_template %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - TMM Conecta</title>
+    <link rel="stylesheet" href="{% static 'css/general.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="login-body">
+
+<div class="login-container">
+    <div class="login-image"></div>
+
+    <div class="login-form-area">
+        <div class="login-form">
+            <img src="{% static 'img/logo_tmm.png' %}" alt="Logo TMM" class="login-logo">
+            <h2>Crear cuenta</h2>
+
+            <!-- Mensajes de éxito o error -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Formulario usando FormularioRegistroPersonalizado -->
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="error-box">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Username -->
+                <div class="input-field">
+                    <i class="fa-solid fa-user"></i>
+                    {{ form.username.errors }}
+                    {{ form.username|add_class:"campo-estilo" }}
+                </div>
+
+                <!-- Email -->
+                <div class="input-field">
+                    <i class="fa-solid fa-envelope"></i>
+                    {{ form.email.errors }}
+                    {{ form.email|add_class:"campo-estilo" }}
+                </div>
+
+                <!-- Password1 -->
+                <div class="input-field">
+                    <i class="fa-solid fa-lock"></i>
+                    {{ form.password1.errors }}
+                    {{ form.password1|add_class:"campo-estilo" }}
+                </div>
+
+                <!-- Password2 -->
+                <div class="input-field">
+                    <i class="fa-solid fa-lock"></i>
+                    {{ form.password2.errors }}
+                    {{ form.password2|add_class:"campo-estilo" }}
+                </div>
+
+                <!-- Fecha de nacimiento -->
+                <label for="id_fecha_cumpleanos" class="field-label">Fecha de nacimiento</label>
+                <div class="input-field">
+                    {{ form.fecha_cumpleanos.errors }}
+                    {{ form.fecha_cumpleanos|add_class:"campo-estilo" }}
+                </div>
+
+                <button type="submit" class="btn-primary">Registrarse</button>
+            </form>
+
+            <p class="register-link">¿Ya tienes cuenta?
+                <a href="{% url 'login' %}">Inicia sesión</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

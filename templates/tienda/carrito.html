@@ -1,0 +1,79 @@
+{% extends 'general.html' %}
+{% load static %}
+{% block content %}
+<main class="tienda-main-content carrito-page">
+    <h2 class="carrito-title">TU CARRITO DE COMPRAS</h2>
+
+    <section class="carrito-layout">
+        
+        <!-- AREA DE PRODUCTOS -->
+        <div class="carrito-items-area">
+            {% for item in carrito.items.all %}
+            <div class="cart-item-card">
+                <img src="{% if item.producto.imagen %}{{ item.producto.imagen.url }}{% else %}{% static 'tienda/default_prod.png' %}{% endif %}" 
+                     alt="{{ item.producto.nombre }}" class="cart-product-img">
+                
+                <div class="cart-product-info">
+                    <span class="cart-product-name">{{ item.producto.nombre }}</span>
+                    <span class="cart-product-price">Precio: ${{ item.producto.precio }}</span>
+                    
+                    <div class="quantity-control">
+                        <a href="{% url 'update_cart' item.id 'remove' %}" class="btn-qty">-</a>
+                        <span>{{ item.cantidad }}</span>
+                        <a href="{% url 'update_cart' item.id 'add' %}" class="btn-qty">+</a>
+                    </div>
+                    
+                    <span class="cart-product-total">Total: ${{ item.get_total }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <p>Tu carrito está vacío.</p>
+            {% endfor %}
+        </div>
+
+        <!-- AREA DE RESUMEN Y PAGO -->
+        <div class="carrito-summary-area">
+            
+            <!-- TARJETA DE DIRECCIÓN CORREGIDA -->
+            <div class="address-box">
+                <div class="direccion-texto">
+                    <p>Dirección de entrega:</p>
+                    <p>{{ direccion.calle }}, {{ direccion.numero }}</p>
+                    <p>{{ direccion.ciudad }} {{ direccion.zip }}</p>
+                </div>
+                <button class="btn-modificar">Modificar</button>
+            </div>
+            
+            <div class="discount-box">
+                <input type="text" placeholder="Ingresa código de descuento">
+                <button class="btn-aplicar">Aplicar</button>
+            </div>
+
+            <div class="total-container">
+                
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span class="subtotal-amount">${{ subtotal }}</span>
+                </div>
+                
+                <div class="total-row">
+                    <span>Descuento:</span>
+                    <span class="discount-amount discount">-${{ descuento }}</span>
+                </div>
+                
+                <div class="total-row final">
+                    <span>Total a pagar:</span>
+                    <span class="total-amount amount">${{ total_final }}</span>
+                </div>
+            </div>
+            
+            <div class="payment-box">
+                <button class="btn-mercado-pago">
+                    <i class="fa-solid fa-credit-card"></i> Paga con mercado pago
+                </button>
+                <button class="btn-pagar">IR A PAGAR</button>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock content %}

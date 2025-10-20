@@ -1,0 +1,40 @@
+{% extends 'general.html' %}
+{% load static %}
+
+{% block title %}Conectemos | TMM Conecta{% endblock %}
+
+{% block content %}
+<section class="seccion-conectar">
+
+    <!-- Banner con título -->
+    <div class="banner-conectar">
+        <img src="{% static 'img/hoja.png' %}" alt="Decoración hoja" class="hoja-deco">
+        <h1>CONECTEMOS</h1>
+    </div>
+
+    <!-- Introducción -->
+    <div class="intro-conectar">
+        <h3>¿Dudas?</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="form-container">
+        {% if messages %}
+            <div class="alertas">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="formulario-contacto">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-enviar">Enviar</button>
+        </form>
+    </div>
+
+</section>
+{% endblock %}

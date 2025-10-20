@@ -1,0 +1,110 @@
+{% extends "general.html" %}
+{% load static %}
+
+{% block title %}Perfil - TMM Conecta{% endblock %}
+
+{% block content %}
+<section class="perfil-section">
+    <div class="perfil-container">
+        <!-- Sidebar -->
+        <aside class="perfil-sidebar">
+            <div class="perfil-avatar-area">
+                <div class="perfil-avatar">
+                    {% if usuario.avatar and usuario.avatar.name and usuario.avatar.name != 'avatars/default_avatar.png' %}
+                        <img src="{{ usuario.avatar.url }}" alt="Avatar">
+                    {% else %}
+                        <img src="{% static 'img/avatar_default.png' %}" alt="Avatar por defecto">
+                    {% endif %}
+                </div>
+                <h2>{{ usuario.username }}</h2>
+            </div>
+
+            <div class="perfil-info">
+                <p class="info-title">Información</p>
+                <div class="info-item">
+                    <span>Correo:</span>
+                    <span>{{ usuario.email }}</span>
+                </div>
+                <div class="info-item">
+                    <span>Fecha de cumpleaños:</span>
+                    <span>{% if usuario.fecha_cumpleanos %}{{ usuario.fecha_cumpleanos|date:"d/m/Y" }}{% else %}No ingresada{% endif %}</span>
+                </div>
+                <div class="info-item">
+                    <span>Ciudad:</span>
+                    <span>Valparaíso</span>
+                </div>
+            </div>
+
+            <div class="perfil-buttons">
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout">Cerrar sesión</button>
+                </form>
+                <a href="{% url 'editar_perfil' %}" class="btn-edit">Editar perfil</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="perfil-main">
+            <section class="perfil-promos">
+                <h3>Promociones para ti</h3>
+                <div class="promo-grid">
+                    <div class="promo-card">
+                        <p>10% de descuento en tu próximo taller de <strong>resina epóxica</strong></p>
+                        <img src="{% static 'img\promo1.jpg' %}" alt="Promo resina">
+                        <div class="promo-code">
+                            <p>Usa el código:</p>
+                            <span class="codigo">TMMDESCUENTO</span>
+                        </div>
+                    </div>
+                    <div class="promo-card">
+                        <p>15% de descuento en tu compra de insumos <strong>para velas</strong></p>
+                        <img src="{% static 'img/promo2.jpg' %}" alt="Promo velas">
+                        <div class="promo-code">
+                            <p>Usa el código:</p>
+                            <span class="codigo">VELAS2025</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="perfil-talleres">
+                <h3>Historial de talleres</h3>
+                <table class="tabla-talleres">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Fecha</th>
+                            <th>Lugar</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for taller in historial_talleres %}
+                        <tr>
+                            <td>{{ taller.nombre_taller }}</td>
+                            <td>{{ taller.fecha|date:"d/m/Y" }}</td>
+                            <td>{{ taller.lugar }}</td>
+                            <td>
+                                {% if taller.estado == 'ASISTIDO' %}
+                                    <span class="estado-tag estado-asistido">Finalizado</span>
+                                {% elif taller.estado == 'POR_REALIZAR' %}
+                                    <span class="estado-tag estado-por-realizar">Por realizar</span>
+                                {% elif taller.estado == 'AUSENTE' %}
+                                    <span class="estado-tag estado-ausente">Ausente</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="no-talleres">Aún no tienes talleres registrados.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

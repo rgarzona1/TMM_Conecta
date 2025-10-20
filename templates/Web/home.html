@@ -1,0 +1,93 @@
+{% extends 'general.html' %}
+{% load static %}
+
+{% block title %}TMM · Inicio{% endblock %}
+
+{% block content %}
+<main id="inicio">
+    <!-- ======= HERO ======= -->
+    <section class="hero">
+        <img class="hero__bg" src="{% static 'img/resin1.jpg' %}" alt="">
+        <div class="wrap hero__inner">
+            <div class="hero__text">
+                <h1 class="display">TMM Bienestar y Conexión</h1>
+                <div class="hero__bullets">
+                    <p>En TMM bienestar y belleza creemos que el bienestar se construye desde la creatividad, la conexión y el cuidado personal...</p>
+                </div>
+                <a href="#talleres" class="btn-vamos">Vamos!</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======= NOSOTROS ======= -->
+    <section id="nosotros" class="about">
+        <div class="wrap about__grid">
+            <div class="about__img">
+                <img src="{% static 'img/resin2.jpg' %}" alt="Helado">
+            </div>
+            <div class="about__text">
+                <h2 class="title">¿Quiénes somos?</h2>
+                <p>Somos una organización dedicada a promover el bienestar personal y laboral a través de experiencias prácticas de autocuidado, creatividad y conexión emocional. Nos enfocamos en crear espacios donde las personas puedan desconectarse del estrés cotidiano y reconectarse con su bienestar interior, combinando técnicas manuales con dinámicas que fomentan la relajación y el trabajo en equipo.</p>
+                <h3 class="eyebrow">Nuestra misión</h3>
+                <div class="about__bullets">
+                    <p>Nuestra misión es impulsar el equilibrio y la salud emocional mediante talleres y actividades significativas que fortalezcan el bienestar integral de cada participante. Buscamos ser un referente en experiencias que integren la creatividad, la calma y la conexión humana, adaptándonos a las necesidades de personas y organizaciones que valoran la calidad de vida.</p>
+                    <p>Ofrecemos una amplia variedad de talleres de autocuidado y desarrollo personal, tanto para particulares como para equipos de trabajo. Cada experiencia es diseñada para generar un ambiente cálido, participativo y transformador.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======= TALLERES ======= -->
+    <section id="talleres" class="section">
+        <div class="wrap">
+            <h2 class="section__title">TALLERES</h2>
+            {% if talleres %}
+            <div class="cards">
+                {% for t in talleres|slice:":3" %}
+                <article class="card niche">
+                    <div class="niche__top">
+                        {% if t.imagen %}
+                            <img src="{{ t.imagen.url }}" alt="{{ t.titulo }}">
+                        {% else %}
+                            <img src="{% static 'img/placeholder-taller.jpg' %}" alt="{{ t.titulo|default:'Taller' }}">
+                        {% endif %}
+                    </div>
+                    <div class="card__body">
+                        <h3 class="card__title">{{ t.titulo }}</h3>
+                        {% if t.fecha %}<p class="muted">Fecha: {{ t.fecha }}</p>{% endif %}
+                        {% if t.valor %}<p class="muted">Precio: ${{ t.valor|floatformat:0 }}</p>{% endif %}
+                        <p class="card__text">{{ t.descripcion|truncatechars:130 }}</p>
+                        <div class="card__cta">
+                            <a class="btn-vamos" href="#">Mas información</a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="muted wrap">Aún no hay talleres activos. Cárgalos en el admin.</p>
+            {% endif %}
+            <div class="center">
+                <a class="btn-vamos" href="#">Ver Todo Talleres</a>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- ======= CTA / CONTACTO ======= -->
+    <section id="contacto" class="cta">
+        <div class="wrap cta__grid">
+            <div class="cta__left">
+                <h2 class="title">¿Listo para iniciar tu viaje hacia el bienestar?</h2>
+                <p>Estamos aquí para acompañarte en tu camino hacia una vida más equilibrada y plena. Ya sea para ti o tu organización, descubre cómo podemos crear juntos experiencias significativas.</p>
+                <a href="contacto" class="cta__btn">Contactanos Aquí!</a>
+            </div>
+            <div class="cta__right">
+                <img src="{% static 'img/contacto.png' %}" alt="imagen de contacto" class="cta__img">
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+

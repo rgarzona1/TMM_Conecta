@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TMM Conecta{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/general.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+</head>
+<body>
+
+    <!--  HEADER Y NAV -->
+    <header class="main-header">
+        <nav class="navbar">
+            <ul class="nav-left">
+                <li><a href="/ ">INICIO</a></li>
+                <li><a href="../#nosotros">¿QUIÉNES SOMOS?</a></li>
+            </ul>
+
+            <div class="nav-logo">
+                <a href="">
+                    <img src="{% static 'img/logo_tmm.png' %}" alt="TMM Logo">
+                </a>
+            </div>
+
+            <ul class="nav-right">
+                <li><a href="../#talleres">TALLERES</a></li>
+                <li><a href="../tienda">TIENDA</a></li>
+                <li><a href="../#contacto">CONTACTO</a></li>
+                <li>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'perfil' %}" title="Ver perfil">
+                            <i class="fa-solid fa-user"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" title="Iniciar sesión">
+                            <i class="fa-solid fa-user"></i>
+                        </a>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- CONTENIDO-->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <div class="footer-top">
+            <img src="{% static 'img/logo_tmm.png' %}" alt="TMM Logo Footer" class="footer-logo">
+            <div class="social-links">
+                <a href="#" aria-label="Instagram">
+                    <img src="{% static 'img/Logo-Instagram--Streamline-Carbon.png' %}" alt="Instagram">
+                </a>
+                <a href="#" aria-label="Facebook">
+                    <img src="{% static 'img/Logo-Facebook--Streamline-Carbon (1).png' %}" alt="Facebook">
+                </a>
+                <a href="#" aria-label="LinkedIn">
+                    <img src="{% static 'img/Logo-Linkedin--Streamline-Carbon.png' %}" alt="LinkedIn">
+                </a>
+            </div>
+        </div>
+
+        <nav class="footer-nav">
+            <ul>
+                <li><a href="">Inicio</a></li>
+                <li><a href="">Quiénes somos</a></li>
+                <li><a href="">Talleres</a></li>
+                <li><a href="{% url 'contacto' %}">Contacto</a></li>
+            </ul>
+        </nav>
+
+        <p class="footer-text">
+            © 2025 TMM Conecta — Bienestar y Conexión | contacto@tmmconecta.cl
+        </p>
+    </footer>
+
+</body>
+</html>

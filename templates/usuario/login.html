@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión - TMM Conecta</title>
+    <link rel="stylesheet" href="{% static 'css/general.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="login-body">
+
+    <div class="login-container">
+        <div class="login-image"></div>
+
+        <div class="login-form-area">
+            <div class="login-form">
+                <img src="{% static 'img/logo_tmm.png' %}" alt="Logo TMM" class="login-logo">
+                <h2>¡Bienvenida/o!</h2>
+                <p>Ingrese su correo o inicie sesión con Google.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-field">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="text" name="username" placeholder="Correo electrónico o Usuario" required>
+                    </div>
+
+                    <div class="input-field">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" name="password" placeholder="Contraseña" required>
+                    </div>
+
+                    <div class="login-options">
+                        <label><input type="checkbox" name="remember_me"> Recordarme</label>
+                        <a href="#" class="forgot-pass">¿Olvidaste tu contraseña?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Iniciar sesión</button>
+
+                    {% if form.errors %}
+                        <p class="error-text">Correo o contraseña incorrectos.</p>
+                    {% endif %}
+                </form>
+
+                <p class="register-link">¿Eres nuevo? 
+                    <a href="{% url 'registro' %}">Crea una cuenta</a>
+                </p>
+
+                <div class="divider">o</div>
+                <div class="google-login">
+                    <span class="google-icon">G+</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
