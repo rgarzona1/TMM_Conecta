@@ -1,0 +1,54 @@
+{% extends "general.html" %}
+{% load static %}
+
+{% block title %}{{ taller.nombre }} | TMM Detalle{% endblock %}
+
+{% block content %}
+<section class="detail-section">
+    
+    <div class="detail-header">
+        <h1>{{ taller.nombre }}</h1>
+        <p class="lead">{{ taller.descripcion_completa|linebreaksbr }}</p>
+    </div>
+
+    <div class="detail-grid">
+        
+        <div class="detail-image">
+            {% if taller.imagen %}
+                <img src="{{ taller.imagen.url }}" alt="Imagen de {{ taller.nombre }}">
+            {% else %}
+                <img src="{% static 'img/placeholder_taller.jpg' %}" alt="Taller sin imagen"> 
+            {% endif %}
+            
+            <p class="mt-3 p-2 text-center" style="background-color: var(--color-secundario-verde); border-radius: 8px;">
+                <p class="mb-0" style="color: var(--color-texto-gris);">
+                    Impartido por: <strong style="color: var(--color-principal-rosa);">{{ taller.profesor }}</strong>
+                </p>
+        </div>
+
+        <div class="detail-info">
+            
+            <h2>Detalles Clave del Evento</h2>
+            
+            <ul class="info-list">
+                <li><strong>Precio:</strong> ${{ taller.precio|floatformat:0 }} CLP</li>
+                <li><strong>Fecha:</strong> {{ taller.fecha_proxima|date:"d M Y" }}</li>
+                <li><strong>Hora:</strong> {{ taller.hora_inicio }} hrs.</li>
+                <li><strong>Lugar:</strong> {{ taller.lugar }} ({{ taller.tipo_taller }})</li>
+                <li><strong>Cupos Disponibles:</strong> {{ taller.capacidad }}</li>
+            </ul>
+            
+            <form action="{% url 'add_to_cart' producto_id=taller.id %}" method="post" class="mt-4">
+                {% csrf_token %}
+                <button type="submit" class="cta-button-detail">
+                    Inscríbete Ahora
+                </button>
+            </form>
+            
+            <p class="mt-3 text-muted" style="font-size: 0.9em; color: var(--color-texto-gris);">
+                Se requiere iniciar sesión para añadir al carrito.
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock content %}

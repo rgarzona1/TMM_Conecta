@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
-from .models import Producto, Carrito, CarritoItem
+from .models import Producto, Carrito, CarritoItem, TallerEvento
 
 # Helper para obtener/crear el carrito del usuario
 def get_user_cart(usuario):
@@ -91,3 +91,13 @@ def update_cart(request, item_id, action):
             item.delete() 
             
     return redirect('carrito')
+
+def catalogo_talleres_vista(request):
+    """Listado de todos los talleres/eventos próximos"""
+    talleres = TallerEvento.objects.all().order_by('fecha_proxima')
+    return render(request, 'tienda/catalogo_talleres.html', {'talleres': talleres})
+
+def detalle_taller_vista(request, taller_id):
+    """Vista con todos los detalles de un taller específico"""
+    taller = get_object_or_404(TallerEvento, pk=taller_id)
+    return render(request, 'tienda/detalle_taller.html', {'taller': taller})

@@ -1,5 +1,6 @@
 from django.db import models
 from usuarios.models import UsuarioPersonalizado # Importamos tu modelo
+from Web.models import Taller  # Importa el modelo base que usas en home
 
 class Producto(models.Model):
     CATEGORIA_CHOICES = [
@@ -44,3 +45,33 @@ class CarritoItem(models.Model):
         
     def __str__(self):
         return f"{self.cantidad} x {self.producto.nombre}"
+    
+#TALLERES ESPECIFICOS PROXIMOS PARA RESERVAS
+
+class TallerEvento(models.Model):
+    taller_base = models.ForeignKey(
+        Taller,
+        on_delete=models.CASCADE,
+        related_name="eventos",
+        verbose_name="Tipo de Taller"
+    )
+
+    descripcion_completa = models.TextField(verbose_name="Descripción, objetivos y materiales")
+    precio = models.DecimalField(max_digits=10, decimal_places=0)
+    imagen = models.ImageField(upload_to='talleres/', null=True, blank=True)
+    
+    fecha_proxima = models.DateField(verbose_name="Fecha del Evento")
+    hora_inicio = models.TimeField(verbose_name="Hora de Inicio")
+    lugar = models.CharField(max_length=255, verbose_name="Ubicación")
+    profesor = models.CharField(max_length=100, default="Carolina López Pérez")
+    capacidad = models.IntegerField(default=8, verbose_name="Capacidad Máxima") 
+
+    TIPO_CHOICES = [('PRESENCIAL', 'Presencial'), ('ONLINE', 'Online')]
+    tipo_taller = models.CharField(max_length=20, choices=TIPO_CHOICES, default='PRESENCIAL')
+
+    def __str__(self):
+        return f"{self.taller_base.titulo} ({self.fecha_proxima})"
+
+    class Meta:
+        verbose_name = "Taller Programado"
+        verbose_name_plural = "Talleres Programados"

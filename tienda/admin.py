@@ -1,6 +1,7 @@
 # tienda/admin.py
 from django.contrib import admin
 from .models import Producto, Carrito, CarritoItem
+from .models import TallerEvento
 
 # Opcional: Para mejorar la visualización en el admin
 class ProductoAdmin(admin.ModelAdmin):
@@ -20,6 +21,13 @@ class CarritoAdmin(admin.ModelAdmin):
     def mostrar_total(self, obj):
         return f"${obj.get_total_bruto():,.0f}"
     mostrar_total.short_description = "Total Carrito"
+
+
+@admin.register(TallerEvento)
+class TallerEventoAdmin(admin.ModelAdmin):
+    list_display = ('taller_base', 'fecha_proxima', 'precio', 'capacidad', 'lugar', 'tipo_taller')
+    list_filter = ('tipo_taller', 'fecha_proxima')
+    search_fields = ('taller_base__nombre', 'profesor', 'lugar')
 # Registra los modelos
 admin.site.register(Producto, ProductoAdmin)
 admin.site.register(Carrito, CarritoAdmin)

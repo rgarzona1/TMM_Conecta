@@ -1,0 +1,57 @@
+{% extends "general.html" %}
+{% load static %}
+
+{% block title %}Talleres y Eventos | TMM{% endblock %}
+
+
+{% block content %}
+<section class="catalogo-container"> 
+    
+    <h1>Próximos Talleres Presenciales</h1>
+    
+    <p class="text-center" style="color: var(--color-texto-secundario); font-size: 1.1em; margin-bottom: 30px;">
+        Genera momentos de conexión y autocuidado a través de la creatividad.
+    </p>
+
+    <div class="catalogo-grid"> 
+        {% for taller in talleres %}
+        
+        <div class="taller-card" data-delay="{{ forloop.counter0|add:'0.1' }}s"> 
+            
+            <a href="{% url 'detalle_taller' taller_id=taller.id %}">
+                {% if taller.imagen %}
+                    <img src="{{ taller.imagen.url }}" alt="{{ taller.nombre }}">
+                {% else %}
+                    <img src="{% static 'img/placeholder_taller.jpg' %}" alt="Taller">
+                {% endif %}
+            </a>
+
+            <div class="taller-nombre">
+                {{ taller.nombre }}
+            </div>
+            
+            <div class="taller-info">
+                
+                <p>{{ taller.descripcion_completa|truncatewords:20 }}</p>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    
+                    <span style="font-size: 1.5rem; font-weight: bold; color: var(--color-resaltado);">
+                        ${{ taller.precio|floatformat:0 }} CLP
+                    </span>
+                    
+                    <a href="{% url 'detalle_taller' taller_id=taller.id %}" class="btn-ver-detalles">
+                        Ver Detalles
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        {% empty %}
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background-color: var(--color-gris-suave); border-radius: 10px;">
+                ¡Aún no tenemos talleres programados! Vuelve pronto.
+            </div>
+        {% endfor %}
+    </div> 
+</section>
+{% endblock content %}
