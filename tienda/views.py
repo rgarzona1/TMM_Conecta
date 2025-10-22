@@ -1,3 +1,5 @@
+from pyexpat.errors import messages
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
@@ -65,16 +67,39 @@ def carrito_vista(request):
 
 # Vistas de acción del carrito (prototipo funcional)
 @login_required
-def add_to_cart(request, producto_id):
-    producto = get_object_or_404(Producto, id=producto_id)
-    cart = get_user_cart(request.user)
-    
-    item, created = CarritoItem.objects.get_or_create(carrito=cart, producto=producto, defaults={'cantidad': 1})
-    if not created:
-        item.cantidad += 1
+def add_to_cart(request, producto_id=None, taller_id=None):
+    carrito, created = Carrito.objects.get_or_create(usuario=request.user)
+
+    if producto_id:
+        producto = get_object_or_404(Producto, pk=producto_id)
+        item, created = CarritoItem.objects.get_or_create(
+            carrito=carrito,
+            producto=producto,
+            defaults={'cantidad': 1}
+        )
+        if not created:
+            item.cantidad += 1
         item.save()
-        
+        messages.success(request, f"{producto.nombre} agregado al carrito.")
+
+    elif taller_id:
+        taller_evento = get_object_or_404(TallerEvento, pk=taller_id)
+        item, created = CarritoItem.objects.get_or_create(
+            carrito=carrito,
+            taller_evento=taller_evento,
+            defaults={'cantidad': 1}
+        )
+        if not created:
+            messages.info(request, f"Ya estás inscrito en {taller_evento.taller_base.titulo}.")
+        else:
+            item.save()
+            messages.success(request, f"Taller {taller_evento.taller_base.titulo} agregado al carrito.")
+
+    else:
+        messages.error(request, "No se pudo agregar al carrito.")
+
     return redirect('carrito')
+
 
 @login_required
 def update_cart(request, item_id, action):

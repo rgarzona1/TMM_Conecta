@@ -31,7 +31,7 @@
                 ${{ producto.precio|floatformat:"0" }}
             </p>
 
-            <form action="{% url 'add_to_cart' producto.id %}" method="post" style="display: inline;">
+            <form action="{% url 'add_to_cart_producto' producto.id %}" method="post" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" class="btn-comprar" style="background-color: #eee; padding: 10px 20px; border: none; margin-top: 15px; font-weight: bold;">
                     AÑADIR AL CARRITO

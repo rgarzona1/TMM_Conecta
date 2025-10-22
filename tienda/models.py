@@ -36,15 +36,25 @@ class Carrito(models.Model):
 
 class CarritoItem(models.Model):
     carrito = models.ForeignKey(Carrito, related_name='items', on_delete=models.CASCADE)
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
+    taller_evento = models.ForeignKey('TallerEvento', on_delete=models.CASCADE, null=True, blank=True)
+
     cantidad = models.IntegerField(default=1)
     
     def get_total(self):
         # Calcula el precio total del ítem (precio unitario * cantidad)
-        return self.producto.precio * self.cantidad
+        if self.producto:
+            return self.producto.precio * self.cantidad
+        elif self.taller_evento:
+            return self.taller_evento.precio * self.cantidad
+        return 0
         
     def __str__(self):
-        return f"{self.cantidad} x {self.producto.nombre}"
+        if self.producto:
+            return f"{self.cantidad} x {self.producto.nombre}"
+        elif self.taller_evento:
+            return f"{self.cantidad} x Taller: {self.taller_evento.taller_base.titulo}"
+        return "Ítem sin referencia"
     
 #TALLERES ESPECIFICOS PROXIMOS PARA RESERVAS
 

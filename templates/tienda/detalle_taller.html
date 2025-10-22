@@ -38,7 +38,7 @@
                 <li><strong>Cupos Disponibles:</strong> {{ taller.capacidad }}</li>
             </ul>
             
-            <form action="{% url 'add_to_cart' producto_id=taller.id %}" method="post" class="mt-4">
+            <form action="{% url 'add_to_cart_taller' taller_id=taller.id %}" method="post" class="mt-4">
                 {% csrf_token %}
                 <button type="submit" class="cta-button-detail">
                     Inscríbete Ahora

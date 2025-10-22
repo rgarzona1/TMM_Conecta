@@ -1448,3 +1448,36 @@ html { scroll-behavior: smooth; }
     padding: 0.5rem 1rem;
   }
 }
+
+.message-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.alert {
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  color: #fff;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+.alert-success {
+  background-color: #95b8d1; /* tono suave de la paleta */
+}
+
+.alert-error {
+  background-color: #eac4d5;
+}
+
+.alert-info {
+  background-color: #b8e0d2;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
