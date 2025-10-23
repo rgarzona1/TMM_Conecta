@@ -1,4 +1,3 @@
-from pyexpat.errors import messages
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -105,15 +104,22 @@ def add_to_cart(request, producto_id=None, taller_id=None):
 def update_cart(request, item_id, action):
     item = get_object_or_404(CarritoItem, id=item_id, carrito__usuario=request.user)
     
+    if item.taller_evento:
+        messages.info(request, "No se puede modificar la cantidad de un taller.")
+        return redirect('carrito')
+    
     if action == 'add':
         item.cantidad += 1
         item.save()
+        messages.success(request, "Cantidad actualizada.")
     elif action == 'remove':
         if item.cantidad > 1:
             item.cantidad -= 1
             item.save()
+            messages.success(request, "Cantidad actualizada.")
         else:
-            item.delete() 
+            item.delete()
+            messages.success(request, "Producto eliminado del carrito.")
             
     return redirect('carrito')
 

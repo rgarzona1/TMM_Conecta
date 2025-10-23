@@ -29,6 +29,13 @@
                 <li><a href="../#talleres">TALLERES</a></li>
                 <li><a href="../tienda">TIENDA</a></li>
                 <li><a href="../#contacto">CONTACTO</a></li>
+                {% if user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'carrito' %}" title="Ver carrito">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </a>
+                    </li>
+                {% endif %}
                 <li>
                     {% if user.is_authenticated %}
                         <a href="{% url 'perfil' %}" title="Ver perfil">
@@ -91,4 +98,16 @@
     </footer>
 
 </body>
+
+<script>
+  // Ocultar mensajes automáticamente después de unos segundos
+  setTimeout(() => {
+      document.querySelectorAll('.alert').forEach(alert => {
+          alert.style.transition = "opacity 0.5s ease";
+          alert.style.opacity = "0";
+          setTimeout(() => alert.remove(), 500);
+      });
+  }, 4000); // 4 segundos de visibilidad
+</script>
+
 </html>

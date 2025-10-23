@@ -19,11 +19,13 @@
         </div>
     </section>
 
+   
+
     <!-- ======= NOSOTROS ======= -->
     <section id="nosotros" class="about">
         <div class="wrap about__grid">
             <div class="about__img">
-                <img src="{% static 'img/resin2.jpg' %}" alt="Helado">
+                <img src="{% static 'img/ChatGPT Image 22 oct 2025, 11_58_58 p.m..png' %}" alt="Imagen nosotros">
             </div>
             <div class="about__text">
                 <h2 class="title">¿Quiénes somos?</h2>
@@ -33,6 +35,19 @@
                     <p>Nuestra misión es impulsar el equilibrio y la salud emocional mediante talleres y actividades significativas que fortalezcan el bienestar integral de cada participante. Buscamos ser un referente en experiencias que integren la creatividad, la calma y la conexión humana, adaptándonos a las necesidades de personas y organizaciones que valoran la calidad de vida.</p>
                     <p>Ofrecemos una amplia variedad de talleres de autocuidado y desarrollo personal, tanto para particulares como para equipos de trabajo. Cada experiencia es diseñada para generar un ambiente cálido, participativo y transformador.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+     <!-- ======= FRASE INSPIRADORA / SLIDER ======= -->
+    <section id="inspiracion" class="inspiration">
+        <div class="wrap inspiration__inner">
+            <div class="inspiration__slider" aria-live="polite">
+                <div class="slide">"Eres tu propio mejor proyecto"</div>
+                <div class="slide">"Conecta contigo: crea, respira y renueva"</div>
+                <div class="slide">"La creatividad es una práctica de cuidado"</div>
+                <div class="slide">"No tienes que poder con todo, tambien puedes detenerte y respirar"</div>
+                <div class="slide">"Pequeños actos de autocuidado generan grandes cambios"</div>
             </div>
         </div>
     </section>
@@ -58,7 +73,7 @@
                         {% if t.valor %}<p class="muted">Precio: ${{ t.valor|floatformat:0 }}</p>{% endif %}
                         <p class="card__text">{{ t.descripcion|truncatechars:130 }}</p>
                         <div class="card__cta">
-                            <a class="btn-vamos" href="#">Mas información</a>
+                            <a class="btn-vamos" href="tienda/talleres">Mas información</a>
                         </div>
                     </div>
                 </article>

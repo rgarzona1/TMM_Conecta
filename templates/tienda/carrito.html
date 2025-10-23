@@ -10,21 +10,38 @@
         <div class="carrito-items-area">
             {% for item in carrito.items.all %}
             <div class="cart-item-card">
-                <img src="{% if item.producto.imagen %}{{ item.producto.imagen.url }}{% else %}{% static 'tienda/default_prod.png' %}{% endif %}" 
-                     alt="{{ item.producto.nombre }}" class="cart-product-img">
-                
-                <div class="cart-product-info">
-                    <span class="cart-product-name">{{ item.producto.nombre }}</span>
-                    <span class="cart-product-price">Precio: ${{ item.producto.precio }}</span>
+                {% if item.producto %}
+                    <img src="{% if item.producto.imagen %}{{ item.producto.imagen.url }}{% else %}{% static 'tienda/default_prod.png' %}{% endif %}" 
+                         alt="{{ item.producto.nombre }}" class="cart-product-img">
                     
-                    <div class="quantity-control">
-                        <a href="{% url 'update_cart' item.id 'remove' %}" class="btn-qty">-</a>
-                        <span>{{ item.cantidad }}</span>
-                        <a href="{% url 'update_cart' item.id 'add' %}" class="btn-qty">+</a>
+                    <div class="cart-product-info">
+                        <span class="cart-product-name">{{ item.producto.nombre }}</span>
+                        <span class="cart-product-price">Precio: ${{ item.producto.precio }}</span>
+                        
+                        <div class="quantity-control">
+                            <a href="{% url 'update_cart' item.id 'remove' %}" class="btn-qty" title="Reducir cantidad">−</a>
+                            <span>{{ item.cantidad }}</span>
+                            <a href="{% url 'update_cart' item.id 'add' %}" class="btn-qty" title="Aumentar cantidad">+</a>
+                        </div>
+                        
+                        <span class="cart-product-total">Total: ${{ item.get_total }}</span>
                     </div>
+                {% elif item.taller_evento %}
+                    <img src="{% if item.taller_evento.taller_base.imagen %}{{ item.taller_evento.taller_base.imagen.url }}{% else %}{% static 'img/placeholder-taller.jpg' %}{% endif %}" 
+                         alt="{{ item.taller_evento.taller_base.titulo }}" class="cart-product-img">
                     
-                    <span class="cart-product-total">Total: ${{ item.get_total }}</span>
-                </div>
+                    <div class="cart-product-info">
+                        <span class="cart-product-name">{{ item.taller_evento.taller_base.titulo }}</span>
+                        <span class="cart-product-price">Precio: ${{ item.taller_evento.precio }}</span>
+                        <span class="cart-product-date">Fecha: {{ item.taller_evento.fecha_proxima }}</span>
+                        
+                        <div class="quantity-control">
+                            <span>Cantidad: {{ item.cantidad }}</span>
+                        </div>
+                        
+                        <span class="cart-product-total">Total: ${{ item.get_total }}</span>
+                    </div>
+                {% endif %}
             </div>
             {% empty %}
             <p>Tu carrito está vacío.</p>
