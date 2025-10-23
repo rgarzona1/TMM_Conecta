@@ -27,8 +27,8 @@
 
             <ul class="nav-right">
                 <li><a href="../#talleres">TALLERES</a></li>
-                <li><a href="../tienda">TIENDA</a></li>
-                <li><a href="../#contacto">CONTACTO</a></li>
+                <li><a href="{% url 'tienda_home' %}">TIENDA</a></li>
+                <li><a href="{% url 'contacto' %}">CONTACTO</a></li>
                 {% if user.is_authenticated %}
                     <li>
                         <a href="{% url 'carrito' %}" title="Ver carrito">
