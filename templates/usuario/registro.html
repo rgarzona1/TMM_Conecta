@@ -43,30 +43,49 @@
                 <!-- Username -->
                 <div class="input-field">
                     <i class="fa-solid fa-user"></i>
-                    {{ form.username.errors }}
                     {{ form.username|add_class:"campo-estilo" }}
                 </div>
+                {% if form.username.errors %}
+                    <p class="error-text">{{ form.username.errors.0 }}</p>
+                {% endif %}
 
                 <!-- Email -->
                 <div class="input-field">
                     <i class="fa-solid fa-envelope"></i>
-                    {{ form.email.errors }}
                     {{ form.email|add_class:"campo-estilo" }}
+                </div>
+                {% if form.email.errors %}
+                    <p class="error-text">{{ form.email.errors.0 }}</p>
+                {% endif %}
+
+                <!-- Instrucciones de contraseña -->
+                <div class="password-instructions">
+                    <p>La contraseña debe contener:</p>
+                    <ul>
+                        <li>Al menos 8 caracteres</li>
+                        <li>Al menos una letra mayúscula</li>
+                        <li>Al menos una letra minúscula</li>
+                        <li>Al menos un número</li>
+                    </ul>
                 </div>
 
                 <!-- Password1 -->
                 <div class="input-field">
                     <i class="fa-solid fa-lock"></i>
-                    {{ form.password1.errors }}
                     {{ form.password1|add_class:"campo-estilo" }}
                 </div>
+                {% if form.password1.errors %}
+                    <p class="error-text">La contraseña no cumple con los requisitos mínimos de seguridad.</p>
+                {% endif %}
 
                 <!-- Password2 -->
                 <div class="input-field">
                     <i class="fa-solid fa-lock"></i>
-                    {{ form.password2.errors }}
                     {{ form.password2|add_class:"campo-estilo" }}
                 </div>
+                {% if form.password2.errors %}
+                    <p class="error-text">{{ form.password2.errors.0 }}</p>
+                {% endif %}
 
                 <!-- Fecha de nacimiento -->
                 <label for="id_fecha_cumpleanos" class="field-label">Fecha de nacimiento</label>

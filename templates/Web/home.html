@@ -39,6 +39,31 @@
         </div>
     </section>
 
+    <!-- ======= FUNDADORA ======= -->
+    <section class="fundadora">
+        <div class="wrap fundadora__grid">
+            <div class="fundadora__text">
+                <h2 class="title">Nuestra Fundadora</h2>
+                <h3 class="eyebrow">La historia detrás de TMM</h3>
+                <div class="fundadora__content">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <blockquote class="fundadora__quote">
+                        "La verdadera conexión comienza cuando nos permitimos ser auténticos y vulnerables."
+                    </blockquote>
+                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                </div>
+            </div>
+            <div class="fundadora__img">
+                <img src="{% static 'img/resin1.jpg' %}" alt="Fundadora TMM">
+                <div class="fundadora__caption">
+                    <h4>Nombre de la Fundadora</h4>
+                    <p>Fundadora y Directora de TMM</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
      <!-- ======= FRASE INSPIRADORA / SLIDER ======= -->
     <section id="inspiracion" class="inspiration">
         <div class="wrap inspiration__inner">
@@ -88,7 +113,55 @@
         </div>
     </section>
 
-    
+    <!-- ======= RESEÑAS ======= -->
+    <section id="resenas" class="testimonials">
+        <div class="wrap">
+            <h2 class="section__title">Experiencias TMM</h2>
+            <div class="testimonials__grid">
+                {% if resenas %}
+                    {% for resena in resenas %}
+                        <div class="testimonial-card">
+                            <div class="testimonial-card__header">
+                                {% if resena.usuario.avatar %}
+                                    <img src="{{ resena.usuario.avatar.url }}" alt="Avatar de {{ resena.usuario.username }}" class="testimonial-avatar">
+                                {% else %}
+                                    <div class="testimonial-avatar-placeholder">
+                                        {{ resena.usuario.username|make_list|first|upper }}
+                                    </div>
+                                {% endif %}
+                                <div class="testimonial-info">
+                                    <h4>{{ resena.usuario.username }}</h4>
+                                    <p class="taller-name">{{ resena.taller.titulo }}</p>
+                                </div>
+                            </div>
+                            <div class="testimonial-rating">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= resena.calificacion %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <blockquote class="testimonial-text">
+                                "{{ resena.comentario }}"
+                            </blockquote>
+                            <p class="testimonial-date">{{ resena.fecha|date:"F Y" }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="no-reviews">Sé el primero en compartir tu experiencia TMM</p>
+                {% endif %}
+            </div>
+            {% if user.is_authenticated %}
+                <div class="review-cta">
+                    <h3>¿Has participado en alguno de nuestros talleres?</h3>
+                    <p>Comparte tu experiencia y ayuda a otros a encontrar su camino hacia el bienestar</p>
+                    <a href="#" class="btn-vamos">Dejar mi reseña</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
 
     <!-- ======= CTA / CONTACTO ======= -->
     <section id="contacto" class="cta">

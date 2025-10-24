@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import MensajeContactoForm
-from .models import Taller, Producto
+from .models import Taller, Producto, Resena
 
 
 def conectar_view(request):
@@ -21,8 +21,11 @@ def conectar_view(request):
 def home_view(request):
     talleres = Taller.objects.filter(activo=True).order_by('-fecha')
     productos = Producto.objects.filter(activo=True).order_by('-nombre')
+    # Obtener las últimas 6 reseñas aprobadas
+    resenas = Resena.objects.filter(aprobada=True).select_related('usuario', 'taller')[:6]
     context = {
         'talleres': talleres,
-        'productos': productos
+        'productos': productos,
+        'resenas': resenas
     }
     return render(request, 'web/home.html', context)

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #F1DEE2, #D9CCE0);
+        }
+        .content {
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #F5C8A7;
+            color: #333;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>¡Hola {{ usuario.username }}!</h1>
+        </div>
+        <div class="content">
+            <p>Esperamos que hayas disfrutado mucho de tu experiencia en el taller "{{ taller.titulo }}".</p>
+            
+            <p>Nos encantaría conocer tu opinión y que compartas tu experiencia con nuestra comunidad. Tu retroalimentación es muy valiosa para nosotros y ayuda a otras personas a tomar la decisión de unirse a nuestros talleres.</p>
+
+            <p style="text-align: center;">
+                <a href="{{ review_url }}" class="button">Dejar mi reseña</a>
+            </p>
+
+            <p>Si tienes alguna pregunta o sugerencia adicional, no dudes en contactarnos.</p>
+
+            <p>¡Gracias por ser parte de la comunidad TMM!</p>
+        </div>
+    </div>
+</body>
+</html>

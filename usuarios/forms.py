@@ -9,12 +9,47 @@ UserModel = get_user_model()
 # 1. FORMULARIO DE REGISTRO (Base)
 # =======================================================
 class FormularioRegistroPersonalizado(UserCreationForm):
+    username = forms.CharField(
+        error_messages={
+            'unique': 'Este nombre de usuario ya está en uso.',
+            'required': 'Por favor, ingrese un nombre de usuario.',
+        },
+        widget=forms.TextInput(attrs={'placeholder': 'Nombre de usuario'})
+    )
+    
+    email = forms.EmailField(
+        error_messages={
+            'invalid': 'Por favor, ingrese un correo electrónico válido.',
+            'required': 'Por favor, ingrese un correo electrónico.',
+        },
+        widget=forms.EmailInput(attrs={'placeholder': 'Correo electrónico'})
+    )
+    
+    password1 = forms.CharField(
+        error_messages={
+            'required': 'Por favor, ingrese una contraseña.',
+        },
+        widget=forms.PasswordInput(attrs={'placeholder': 'Contraseña'})
+    )
+    
+    password2 = forms.CharField(
+        error_messages={
+            'required': 'Por favor, confirme su contraseña.',
+        },
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirmar contraseña'})
+    )
+
     fecha_cumpleanos = forms.DateField(
         required=False,
-        # Usamos type='text' y aceptamos múltiples formatos para manejar la entrada de fecha
         widget=forms.DateInput(attrs={'type': 'text', 'placeholder': 'DD - MM - AAAA'}),
         input_formats=['%d-%m-%Y', '%Y-%m-%d', '%d/%m/%Y', '%Y/%m/%d'], 
     )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.error_messages['password_mismatch'] = 'Las contraseñas no coinciden.'
+        self.fields['password1'].help_text = None
+        self.fields['password2'].help_text = None
 
     class Meta(UserCreationForm.Meta):
         model = UserModel

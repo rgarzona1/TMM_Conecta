@@ -18,6 +18,22 @@ class MensajeContacto(models.Model):
     def __str__(self):
         return f"{self.nombre_completo} - {self.asunto}"
 
+class Resena(models.Model):
+    usuario = models.ForeignKey('usuarios.UsuarioPersonalizado', on_delete=models.CASCADE)
+    taller = models.ForeignKey('tienda.TallerEvento', on_delete=models.CASCADE)
+    calificacion = models.IntegerField(choices=[(i, i) for i in range(1, 6)])  # 1-5 estrellas
+    comentario = models.TextField()
+    fecha = models.DateTimeField(auto_now_add=True)
+    aprobada = models.BooleanField(default=False)  # Para moderar las reseñas antes de mostrarlas
+
+    class Meta:
+        ordering = ['-fecha']
+        verbose_name = 'Reseña'
+        verbose_name_plural = 'Reseñas'
+
+    def __str__(self):
+        return f"Reseña de {self.usuario.username} para {self.taller.titulo}"
+
 class Producto(models.Model):
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField(blank=True, null=True)

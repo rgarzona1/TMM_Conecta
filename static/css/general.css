@@ -4,7 +4,7 @@
     --color-lavanda: #D9CCE0;
     --color-rosa: #F1DEE2;
     --color-crema: #F8E6CE;
-    --color-verde-oscuro: #4A5D3B;
+    --color-verde-oscuro: #7ef899;
     --color-texto: #333;
 }
 
@@ -12,13 +12,13 @@ body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
     color: var(--color-texto);
-    background-color: #fff;
+    background-color: #faf7e4;
 }
 
 /*  NAVBAR  */
 .main-header {
     width: 100%;
-    background-color: white;
+    background-color: rgb(243, 205, 228);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     position: sticky;
     top: 0;
@@ -50,7 +50,7 @@ body {
 }
 
 .navbar a:hover {
-    color: var(--color-verde-oscuro);
+    color: fuchsia;
 }
 
 .nav-logo img {
@@ -64,7 +64,7 @@ body {
 }
 
 .nav-right a:hover i {
-    color: var(--pink); /* o el color que uses para resaltar */
+    color: var(--pink); 
 }
 
 
@@ -75,7 +75,7 @@ main {
 
 /*  FOOTER  */
 .main-footer {
-    background-color: white;
+    background-color: rgb(243, 205, 228);
     text-align: center;
     padding: 2rem 1rem;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
@@ -181,6 +181,223 @@ main {
     position: relative;
 }
 
+/* SECCIÓN FUNDADORA */
+.fundadora {
+    padding: 5rem 0;
+    background-color: #fff;
+}
+
+.fundadora__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.fundadora__text {
+    padding-right: 2rem;
+}
+
+.fundadora__content {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--color-texto);
+}
+
+.fundadora__content p {
+    margin-bottom: 1.5rem;
+}
+
+.fundadora__quote {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--color-texto);
+    border-left: 4px solid var(--color-durazno);
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    line-height: 1.4;
+    font-style: italic;
+}
+
+.fundadora__img {
+    position: relative;
+}
+
+.fundadora__img img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.fundadora__caption {
+    position: absolute;
+    bottom: 2rem;
+    left: -2rem;
+    background: linear-gradient(135deg, var(--color-rosa), var(--color-lavanda));
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.fundadora__caption h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--color-texto);
+    margin-bottom: 0.3rem;
+}
+
+.fundadora__caption p {
+    font-size: 0.9rem;
+    color: var(--color-texto);
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .fundadora__grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .fundadora__text {
+        padding-right: 0;
+    }
+
+    .fundadora__caption {
+        position: relative;
+        left: 0;
+        bottom: 0;
+        margin-top: -2rem;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    .fundadora__quote {
+        font-size: 1.4rem;
+    }
+}
+
+/* SECCIÓN RESEÑAS */
+.testimonials {
+    padding: 5rem 0;
+    background-color: #fff;
+}
+
+.testimonials__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.testimonial-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+    border: 1px solid var(--color-lavanda);
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+}
+
+.testimonial-card__header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.testimonial-avatar,
+.testimonial-avatar-placeholder {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 1rem;
+    object-fit: cover;
+}
+
+.testimonial-avatar-placeholder {
+    background: linear-gradient(135deg, var(--color-rosa), var(--color-lavanda));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-texto);
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.testimonial-info h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--color-texto);
+}
+
+.taller-name {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0.2rem 0 0 0;
+}
+
+.testimonial-rating {
+    margin-bottom: 1rem;
+}
+
+.testimonial-rating i {
+    color: var(--color-durazno);
+    margin-right: 0.2rem;
+}
+
+.testimonial-text {
+    font-style: italic;
+    color: var(--color-texto);
+    margin: 1rem 0;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.testimonial-date {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 1rem;
+    text-align: right;
+}
+
+.review-cta {
+    text-align: center;
+    padding: 3rem 0 1rem;
+}
+
+.review-cta h3 {
+    color: var(--color-texto);
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+.review-cta p {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+.no-reviews {
+    text-align: center;
+    grid-column: 1 / -1;
+    color: #666;
+    font-size: 1.1rem;
+    padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .testimonials__grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .testimonial-card {
+        margin: 0 1rem;
+    }
+}
+
 /* SLIDER FRASES */
 .inspiration {
   padding: 3.5rem 0;
@@ -260,12 +477,12 @@ main {
 
 .intro-conectar h3 {
     font-weight: 500;
-    color: #666;
+    color: var(--color-texto);
     margin-bottom: 0.5rem;
 }
 
 .intro-conectar p {
-    color: #555;
+    color: var(--color-texto);
     font-size: 0.95rem;
     line-height: 1.6;
 }
@@ -273,18 +490,21 @@ main {
 /* Contenedor formulario */
 .form-container {
     max-width: 700px;
-    background: linear-gradient(135deg, var(--color-rosa), var(--color-lavanda));
+    background-color: #fabdf591;
     margin: 2rem auto;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
     text-align: left;
+    border: 1px solid var(--color-lavanda);
 }
 
 /* Etiquetas y campos */
 .formulario-contacto label {
-    font-weight: 600;
-    color: #222;
+    font-weight: 500;
+    color: var(--color-texto);
+    margin-bottom: 0.5rem;
+    display: block;
 }
 
 .form-input,
@@ -292,19 +512,22 @@ main {
 .form-textarea {
     width: 100%;
     border: none;
-    border-radius: 6px;
-    background-color: var(--color-menta);
+    border-radius: var(--radius);
+    background-color: rgba(243, 197, 219, 0.9);
     padding: 0.8rem;
     margin-bottom: 1rem;
     font-size: 1rem;
     transition: all 0.3s ease;
+    color: var(--color-texto);
 }
 
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-    outline: 2px solid var(--color-verde-oscuro);
-    background-color: #e8f0e4;
+    outline: none;
+    border-color: var(--color-durazno);
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* Checkbox */
@@ -316,8 +539,8 @@ main {
 /* Botón */
 .btn-enviar {
     display: block;
-    background-color: var(--color-verde-oscuro);
-    color: white;
+    background-color: rgb(255, 229, 85);
+    color: rgb(19, 17, 17);
     border: none;
     padding: 0.8rem 2rem;
     border-radius: 8px;
@@ -544,6 +767,12 @@ main {
     width: 100%;
     background: transparent;
     font-size: 1rem;
+    color: var(--color-texto);
+}
+
+.input-field input::placeholder {
+    color: #999;
+    opacity: 1;
 }
 
 .field-label {
@@ -629,8 +858,51 @@ main {
 
 .error-text {
     color: #d32f2f;
-    text-align: center;
+    font-size: 0.85rem;
+    margin: -8px 0 12px 0;
+    padding-left: 14px;
+}
+
+.password-instructions {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
     font-size: 0.9rem;
+}
+
+.password-instructions p {
+    color: var(--color-texto);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.password-instructions ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.password-instructions li {
+    color: #666;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+    padding-left: 20px;
+    position: relative;
+}
+
+.password-instructions li::before {
+    content: "•";
+    position: absolute;
+    left: 8px;
+    color: var(--color-durazno);
+}
+
+.error-container {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: rgba(220, 53, 69, 0.1);
 }
 
 /* ==============================================
@@ -989,11 +1261,11 @@ main {
 .about__text .title {
   font-size: 2.3rem;
   margin-bottom: 0.5rem;
-  color: #809bce;
+  color: var(--color-durazno);
 }
 
 .about__text .eyebrow {
-  color: #95b8d1;
+  color: var(--color-rosa);
   font-weight: 500;
   margin-bottom: 1rem;
 }
@@ -1010,7 +1282,7 @@ main {
   text-align: center;
   font-size: 2.2rem;
   font-weight: 600;
-  color: #809bce;
+  color: var(--color-durazno);
   margin-bottom: 3rem;
   letter-spacing: 1px;
 }
@@ -1038,7 +1310,7 @@ main {
 .card:hover {
   transform: translateY(-6px);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
-  background-color: #eaf0f8;
+  background-color: var(--color-rosa);
 }
 
 /* Imagen superior */
@@ -1120,9 +1392,9 @@ main {
    CTA
 =========================== */
 .cta {
-  background: linear-gradient(135deg, #95b8d1, #809bce);
+  background: linear-gradient(135deg, var(--color-rosa), var(--color-lavanda));
   padding: 6rem 0;
-  color: #fff;
+  color: var(--color-texto);
 }
 
 .cta__grid {
@@ -1134,7 +1406,7 @@ main {
 
 .cta__btn {
   background-color: #fff;
-  color: #809bce;
+  color: var(--color-texto);
   padding: 1rem 2.5rem;
   border-radius: 50px;
   font-size: 1.2rem;
@@ -1146,7 +1418,7 @@ main {
 }
 
 .cta__btn:hover {
-  background-color: #eac4d5;
+  background-color: var(--color-durazno);
   color: #333;
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(0,0,0,0.2);
