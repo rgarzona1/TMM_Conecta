@@ -1,0 +1,54 @@
+{% extends 'general.html' %}
+{% load static %}
+
+{% block title %}Finalizar compra - TMM Conecta{% endblock %}
+
+{% block content %}
+<section class="checkout-section">
+    <div class="wrap">
+        <h2>Resumen de tu compra</h2>
+        
+        {% if carrito.items.all %}
+        <table class="checkout-table">
+            <thead>
+                <tr>
+                    <th>Producto / Taller</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in carrito.items.all %}
+                <tr>
+                    <td>
+                        {% if item.producto %}
+                            {{ item.producto.nombre }}
+                        {% elif item.taller_evento %}
+                            {{ item.taller_evento.taller_base.titulo }}
+                        {% endif %}
+                    </td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>${{ item.get_total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="checkout-total">
+            <h3>Total a pagar: ${{ carrito.get_total_bruto }}</h3>
+        </div>
+
+        <div class="checkout-actions">
+            <form action="{% url 'mp_crear_preferencia' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn-pagar">
+                    Pagar con Mercado Pago 💳
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <p>Tu carrito está vacío.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

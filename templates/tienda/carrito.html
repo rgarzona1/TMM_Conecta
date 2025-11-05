@@ -85,12 +85,45 @@
             </div>
             
             <div class="payment-box">
-                <button class="btn-mercado-pago">
-                    <i class="fa-solid fa-credit-card"></i> Paga con mercado pago
-                </button>
-                <button class="btn-pagar">IR A PAGAR</button>
+                {% if carrito.items.all %}
+                <form id="checkout-form" method="post" action="{% url 'mp_crear_preferencia' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-pagar">IR A PAGAR</button>
+                </form>
+                {% else %}
+                    <p>Tu carrito está vacío.</p>
+                {% endif %}
             </div>
+            
         </div>
     </section>
 </main>
+<script>
+document.getElementById("checkout-form")?.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    try {
+        const response = await fetch("{% url 'mp_crear_preferencia' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        });
+
+        const data = await response.json();
+        console.log("💬 Respuesta del backend:", data);
+
+        if (data.init_point) {
+            // Redirige automáticamente al checkout de Mercado Pago
+            window.location.href = data.init_point;
+        } else {
+            alert("No se pudo generar la preferencia de pago.");
+        }
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+        alert("Error al comunicarse con el servidor.");
+    }
+});
+</script>
+
 {% endblock content %}

@@ -1,8 +1,24 @@
+from email.mime import base
+import traceback
+import django
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
+from django.views.decorators.http import require_POST
+from django.urls import reverse
+from flask import json
 from .models import Producto, Carrito, CarritoItem, TallerEvento
+
+#IMPORTACIONES PARA MERCADOPAGO
+import mercadopago
+from django.conf import settings
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from decimal import Decimal
+from .models import Orden, OrdenItem
+from .utils import obtener_items_de_carrito
+from django.utils import timezone
 
 # Helper para obtener/crear el carrito del usuario
 def get_user_cart(usuario):
@@ -18,7 +34,6 @@ def tienda_home_vista(request):
         'productos': promociones_simuladas,
         'categorias': Producto.CATEGORIA_CHOICES, # Usamos esto para el menú
     }
-    # 🚨 CORRECCIÓN: Añadimos el prefijo 'tienda/' 🚨
     return render(request, 'tienda/tienda_home.html', context)
 
 
@@ -33,7 +48,7 @@ def categoria_vista(request, categoria_slug):
         'productos': productos,
         'nombre_categoria': categoria_slug.capitalize(), # Para el título
     }
-    # 🚨 CORRECCIÓN: Añadimos el prefijo 'tienda/' 🚨
+
     return render(request, 'tienda/tienda_categoria.html', context)
 
 
@@ -60,7 +75,6 @@ def carrito_vista(request):
             'zip': "8320000"
         }
     }
-    # 🚨 CORRECCIÓN: Añadimos el prefijo 'tienda/' 🚨
     return render(request, 'tienda/carrito.html', context)
 
 
@@ -132,3 +146,178 @@ def detalle_taller_vista(request, taller_id):
     """Vista con todos los detalles de un taller específico"""
     taller = get_object_or_404(TallerEvento, pk=taller_id)
     return render(request, 'tienda/detalle_taller.html', {'taller': taller})
+
+#VISTAS MERCADO PAGO
+#CLIENTE
+def _mp_client():
+    return mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+
+@login_required
+def checkout_vista(request):
+    """Pantalla de confirmación antes del pago"""
+    carrito = get_user_cart(request.user)
+    if not carrito.items.exists():
+        messages.warning(request, "Tu carrito está vacío.")
+        return redirect('carrito')
+
+    subtotal = carrito.get_total_bruto()
+    total_final = subtotal  # Podrías aplicar descuentos luego aquí
+
+    return render(request, 'tienda/checkout.html', {
+        'carrito': carrito,
+        'subtotal': subtotal,
+        'total_final': total_final,
+    })
+
+def crear_preferencia(request):
+    try:
+        if not request.user.is_authenticated:
+            return redirect('login') #redirige a login si la sesion no esta iniciada
+        
+        #construir items desde carrito existente
+        
+        items, total = obtener_items_de_carrito(request.user)
+        
+        if not items:
+            return JsonResponse({'error': 'El carrito está vacío.'}, status=400)
+        
+        #crear orden en estado pendiente
+        
+        orden = Orden.objects.create(
+            usuario=request.user,
+            total =total,
+            estado = 'PENDIENTE'
+        )
+        for item in items: 
+            print("🧾 ITEM:", item)
+            OrdenItem.objects.create(
+                orden=orden,
+                tipo=item['tipo'],
+                referencia_id=item['referencia_id'],
+                titulo=item['title'],
+                cantidad=item['quantity'],
+                precio_unitario=Decimal(str(item['unit_price']))
+                
+            )
+            
+            #URLs y webhook
+            
+            base = "https://penny-tingliest-corelatively.ngrok-free.dev"  # tu URL Ngrok temporal
+            back_urls = {
+                'success': f"{base}/tienda/checkout/retorno/success/",
+                'pending': f"{base}/tienda/checkout/retorno/pending/",
+                'failure': f"{base}/tienda/checkout/retorno/failure/",
+            }
+            notification_url = f"{base}/tienda/webhooks/mercadopago/"
+            
+            #crear preferencia en MP
+            
+            preference_data={
+                "items": [
+                    {
+                        "title": item['title'],
+                        "quantity": item['quantity'],
+                        "unit_price": float(item['unit_price']),
+                    } for item in items
+                ], 
+                "payer": {
+                    "email": request.user.email or "test_user@test.com",
+                    "name": request.user.first_name or "Test",
+                    "surname": request.user.last_name or "User",
+                },
+                "back_urls": back_urls,
+                "notification_url": notification_url,
+                "auto_return": "approved",
+                "external_reference": str(orden.id),
+            }
+            
+            sdk= _mp_client()
+            pref= sdk.preference().create(preference_data)
+            print("💬 Respuesta MP:", pref)  # 👈 Te muestra la respuesta completa
+
+            
+            if pref['status'] != 201:
+                return JsonResponse({'error': 'Error al crear la preferencia de pago.'}, status=500)
+            
+            pref_id = pref['response']['id']
+            init_point = pref['response']['init_point']
+            orden.mp_preference_id=pref_id
+            orden.save()
+
+            return JsonResponse({ "preference_id": pref_id, "init_point": init_point })
+    except Exception as e:
+        print("❌ ERROR en crear_preferencia:", str(e))
+        traceback.print_exc()  # 👈 Esto imprime TODO el error con línea exacta
+        return JsonResponse({'error': str(e)}, status=500)
+
+   
+@login_required
+def retorno_success(request):
+    
+    messages.success(request, "¡Pago realizado con éxito! 🎉 Gracias por tu compra.")
+    return render(request, 'tienda/pago_exitoso.html')
+
+
+@login_required
+def retorno_pending(request):
+   
+    messages.warning(request, "Tu pago está pendiente. Te notificaremos cuando se confirme.")
+    return render(request, 'tienda/pago_pendiente.html')
+
+
+@login_required
+def retorno_failure(request):
+    messages.error(request, "El pago no pudo completarse o fue cancelado.")
+    return render(request, 'tienda/pago_fallido.html')
+
+@csrf_exempt
+@require_POST
+def webhook_mercadopago(request):
+    """
+    Mercado Pago envía notificaciones aquí.
+    Debes leer el 'type' o 'topic' y el 'data.id' (payment id),
+    luego consultar el pago con SDK y actualizar tu orden.
+    """
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        return HttpResponse(status=400)
+
+    # Formatos usuales: {"type":"payment","data":{"id":"123456"}}
+    tipo = payload.get('type') or payload.get('topic')
+    payment_id = None
+
+    data = payload.get('data') or {}
+    if isinstance(data, dict):
+        payment_id = data.get('id')
+
+    if tipo == 'payment' and payment_id:
+        sdk = _mp_client()
+        payment_info = sdk.payment().get(payment_id)
+        if payment_info["status"] == 200:
+            p = payment_info["response"]
+            status = p.get("status")  # approved, pending, rejected...
+            external_reference = p.get("external_reference")  # nuestra orden.id
+
+            from .models import Orden
+            try:
+                orden = Orden.objects.get(id=external_reference)
+            except Orden.DoesNotExist:
+                return HttpResponse(status=404)
+
+            if status == "approved":
+                orden.estado = "aprobado"
+                orden.mp_payment_id = str(payment_id)
+                orden.pagado_en = timezone.now()
+                orden.save()
+
+                # Aquí puedes: descontar stock, “reservar cupos” en TallerEvento,
+                # generar comprobante, limpiar carrito, enviar email, etc.
+
+            elif status == "rejected":
+                orden.estado = "rechazado"
+                orden.mp_payment_id = str(payment_id)
+                orden.save()
+
+    return HttpResponse(status=200)
+

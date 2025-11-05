@@ -1,6 +1,7 @@
 from django.db import models
 from usuarios.models import UsuarioPersonalizado # Importamos tu modelo
 from Web.models import Taller  # Importa el modelo base que usas en home
+from django.conf import settings
 
 class Producto(models.Model):
     CATEGORIA_CHOICES = [
@@ -85,3 +86,23 @@ class TallerEvento(models.Model):
     class Meta:
         verbose_name = "Taller Programado"
         verbose_name_plural = "Talleres Programados"
+
+
+#ORDENES DE COMPRA
+class Orden(models.Model):
+    usuario= models.ForeignKey(UsuarioPersonalizado, on_delete=models.PROTECT)
+    total= models.DecimalField(max_digits=12, decimal_places=2)
+    estado= models.CharField(max_length=20, default='PENDIENTE')
+    mp_preference_id=models.CharField(max_length=100,blank=True, null=True)
+    mp_payment_id=models.CharField(max_length=100,blank=True, null=True)
+    pagado_en = models.DateTimeField(blank=True, null=True)
+    creado_en= models.DateTimeField(auto_now_add=True)
+    
+    
+class OrdenItem(models.Model):
+    orden= models.ForeignKey(Orden, related_name='items', on_delete=models.CASCADE)
+    tipo= models.CharField(max_length=20, default='PRODUCTO') # 'PRODUCTO' o 'TALLER'
+    referencia_id= models.PositiveBigIntegerField()
+    titulo= models.CharField(max_length=200)
+    cantidad = models.PositiveIntegerField(default=1)
+    precio_unitario= models.DecimalField(max_digits=12, decimal_places=2)
