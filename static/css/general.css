@@ -574,7 +574,8 @@ main {
 /* Estilos del Carrito */
 .quantity-control {
     display: flex;
-    align-items: center;
+    align-items: right;
+    justify-content: flex-end;
     gap: 1rem;
     margin: 1rem 0;
 }
@@ -585,8 +586,8 @@ main {
     justify-content: center;
     width: 30px;
     height: 30px;
-    background-color: var(--color-menta);
-    color: var(--color-verde-oscuro);
+    background-color: #d0f9bf;
+    color: black;
     border: none;
     border-radius: 50%;
     font-size: 1.2rem;
@@ -595,8 +596,8 @@ main {
 }
 
 .quantity-control .btn-qty:hover {
-    background-color: var(--color-verde-oscuro);
-    color: white;
+    background-color: rgb(249, 252, 204);
+    color: rgb(8, 8, 8);
     transform: scale(1.1);
 }
 
@@ -1310,7 +1311,7 @@ main {
 .card:hover {
   transform: translateY(-6px);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
-  background-color: var(--color-rosa);
+  background-color: mintcream   ;
 }
 
 /* Imagen superior */
@@ -1336,7 +1337,7 @@ main {
 .card__title {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #809bce;
+  color: #ce80b0;
   margin-bottom: 0.5rem;
   text-transform: capitalize;
 }
@@ -1357,8 +1358,8 @@ main {
 /* Botones */
 .btn-vamos {
   display: inline-block;
-  background-color: #95b8d1;
-  color: #fff;
+  background-color:  #d0f9bf;
+  color: #353535;
   padding: 0.6rem 1.4rem;
   border-radius: 25px;
   font-size: 0.95rem;
@@ -1371,7 +1372,7 @@ main {
 }
 
 .btn-vamos:hover {
-  background-color: #809bce;
+  background-color: #f2ffa6;
   transform: translateY(-2px);
   box-shadow: 0 5px 12px rgba(0,0,0,0.15);
 }
@@ -1384,7 +1385,7 @@ main {
 }
 
 .center .btn-vamos:hover {
-  background-color: #95b8d1;
+  background-color: #acfac6;
   color: #fff;
 }
 
@@ -1733,7 +1734,7 @@ html { scroll-behavior: smooth; }
 
 .btn-ver-detalles:hover,
 .cta-button-detail:hover {
-  background-color: #ff4d4d;
+  background-color: #fd88c8;
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
@@ -1742,6 +1743,14 @@ html { scroll-behavior: smooth; }
 .detail-section {
   background-color: #fff;
   padding: 5rem 0;
+}
+
+.detail-title {
+  text-align: center;
+  font-size: 2.3rem;
+  font-weight: 600;
+  color: var(--color-1);
+  margin-bottom: 1rem;
 }
 
 .detail-header {

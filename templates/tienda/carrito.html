@@ -37,7 +37,9 @@
                         
                         <div class="quantity-control">
                             <span>Cantidad: {{ item.cantidad }}</span>
+                            <a href="{%url 'update_cart' item.id 'delete' %}" id= btn-eliminar class="btn-eliminar">Eliminar</a>
                         </div>
+                        
                         
                         <span class="cart-product-total">Total: ${{ item.get_total }}</span>
                     </div>
@@ -111,7 +113,6 @@ document.getElementById("checkout-form")?.addEventListener("submit", async funct
         });
 
         const data = await response.json();
-        console.log("💬 Respuesta del backend:", data);
 
         if (data.init_point) {
             // Redirige automáticamente al checkout de Mercado Pago
@@ -124,6 +125,9 @@ document.getElementById("checkout-form")?.addEventListener("submit", async funct
         alert("Error al comunicarse con el servidor.");
     }
 });
+
+
+
 </script>
 
 {% endblock content %}

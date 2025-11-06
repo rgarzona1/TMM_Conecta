@@ -134,6 +134,9 @@ def update_cart(request, item_id, action):
         else:
             item.delete()
             messages.success(request, "Producto eliminado del carrito.")
+    elif action == 'delete':
+        item.delete()
+        messages.success(request, "Producto eliminado del carrito.")
             
     return redirect('carrito')
 

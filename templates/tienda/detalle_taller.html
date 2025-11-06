@@ -5,11 +5,8 @@
 
 {% block content %}
 <section class="detail-section">
-    
-    <div class="detail-header">
-        <h1>{{ taller.nombre }}</h1>
-        <p class="lead">{{ taller.descripcion_completa|linebreaksbr }}</p>
-    </div>
+
+    <h1 class="detail-title">{{ taller.taller_base.titulo }}</h1>
 
     <div class="detail-grid">
         
@@ -49,6 +46,10 @@
                 Se requiere iniciar sesión para añadir al carrito.
             </p>
         </div>
+    </div>
+        <div class="detail-header">
+        <h1>{{ taller.nombre }}</h1>
+        <p class="lead">{{ taller.descripcion_completa|linebreaksbr }}</p>
     </div>
 </section>
 {% endblock content %}
