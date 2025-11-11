@@ -5,6 +5,7 @@ from django.contrib import messages
 from .forms import FormularioRegistroPersonalizado, UsuarioEdicionForm
 from .models import UsuarioPersonalizado, TallerAsistido
 from django.contrib.auth import logout
+from tienda.views import es_duena
 
 # ==========================
 # REGISTRO DE USUARIO
@@ -42,6 +43,10 @@ def registro_vista(request):
 @login_required
 def perfil_vista(request):
     usuario = request.user
+
+    if es_duena(usuario):
+        return redirect('panel_duena_inicio')
+    
     mostrar_notificacion_exito = False
 
     if not usuario.notificacion_bienvenida_vista:
@@ -65,6 +70,7 @@ def perfil_vista(request):
 def editar_perfil(request):
     user = request.user
 
+    
     if request.method == 'POST':
         form = UsuarioEdicionForm(request.POST, request.FILES, instance=user)
         if form.is_valid():

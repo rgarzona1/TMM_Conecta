@@ -1,0 +1,89 @@
+{% extends 'general.html' %}
+{% block title %}Panel de Ventas{% endblock %}
+
+{% block content %}
+<section class="panel-ventas">
+  <h2>📊 Panel de Ventas</h2>
+
+  <div class="ventas-resumen" style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:20px;">
+    <div class="card-resumen">
+      <h3>Total de Ventas Aprobadas</h3>
+      <p>${{ total_ventas|floatformat:0 }}</p>
+    </div>
+    <div class="card-resumen">
+      <h3>Órdenes Aprobadas</h3>
+      <p>{{ total_aprobadas }}</p>
+    </div>
+    <div class="card-resumen">
+      <h3>Órdenes Pendientes</h3>
+      <p>{{ total_pendientes }}</p>
+    </div>
+  </div>
+
+  <div style="background:#fff6fa; border-radius:12px; padding:15px; margin-bottom:30px;">
+    <h3 style="text-align:center;">Evolución de Ventas por Mes</h3>
+    <canvas id="graficoVentas" height="120"></canvas>
+  </div>
+
+  <h3>📋 Listado de Órdenes</h3>
+  <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+    <thead>
+      <tr style="background-color:#ffd6e0;">
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Fecha de Pago</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for orden in ordenes %}
+      <tr style="border-bottom:1px solid #ddd;">
+        <td>
+         <a href="{% url 'panel_ventas_detalle' orden.id %}" style="text-decoration:none; color:#ff5c8a;">
+            #{{ orden.id }}
+        </a>
+        </td>
+
+        <td>{{ orden.usuario.username }}</td>
+        <td>${{ orden.total|floatformat:0 }}</td>
+        <td>
+          {% if orden.estado|lower == 'aprobado' %}
+            <span style="color:green;">✅ Aprobado</span>
+          {% elif orden.estado|lower == 'pendiente' %}
+            <span style="color:orange;">🕓 Pendiente</span>
+          {% else %}
+            <span style="color:red;">❌ {{ orden.estado }}</span>
+          {% endif %}
+        </td>
+        <td>{{ orden.pagado_en|date:"d M Y H:i" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" style="text-align:center;">No hay órdenes registradas.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const labels_meses = JSON.parse('{{ labels_meses|escapejs }}');
+const data_meses = JSON.parse('{{ data_meses|escapejs }}');
+
+new Chart(document.getElementById('graficoVentas'), {
+  type: 'line',
+  data: {
+    labels: labels_meses,
+    datasets: [{
+      label: 'Ventas aprobadas ($)',
+      data: data_meses,
+      borderColor: '#ff99c8',
+      fill: true,
+      tension: 0.3,
+      backgroundColor: 'rgba(255, 153, 200, 0.2)'
+    }]
+  },
+  options: { plugins: { legend: { position: 'bottom' } } }
+});
+</script>
+{% endblock %}

@@ -9,6 +9,9 @@ from django.views.decorators.http import require_POST
 from django.urls import reverse
 from flask import json
 from .models import Producto, Carrito, CarritoItem, TallerEvento
+from django.db.models import Count
+from django.contrib.auth.decorators import login_required, user_passes_test
+from Web.models import Taller
 
 #IMPORTACIONES PARA MERCADOPAGO
 import mercadopago
@@ -324,3 +327,249 @@ def webhook_mercadopago(request):
 
     return HttpResponse(status=200)
 
+# Verifica que el usuario sea la dueña (cambia el correo por el real)
+def es_duena(user):
+    return user.is_authenticated and user.email == "duena@tmmconecta.cl"
+
+
+# Vista principal del panel
+@login_required
+# Vista principal del panel
+@login_required
+@user_passes_test(es_duena)
+def panel_duena_inicio(request):
+    from django.db.models import Count
+    from django.db.models.functions import TruncMonth
+
+    # 🔧 1️⃣ Si la URL contiene ?demo=1, se activa modo demo
+    modo_demo = request.GET.get("demo") == "1"
+
+    if modo_demo:
+        # 🔧 2️⃣ Datos de prueba simulados
+        labels_categorias = ["Resina", "Vinilo", "Soja", "Aromaterapia", "Kit"]
+        data_categorias = [12, 9, 15, 7, 10]
+
+        labels_tipo = ["Presencial", "Online"]
+        data_tipo = [8, 5]
+
+        labels_meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo"]
+        data_meses = [3, 4, 2, 6, 5]
+
+        total_productos = sum(data_categorias)
+        total_talleres = sum(data_meses)
+
+    else:
+        # 🔹 Datos reales desde la BD
+        total_productos = Producto.objects.count()
+        total_talleres = TallerEvento.objects.count()
+
+        categoria_stats = (
+            Producto.objects
+            .values('categoria')
+            .annotate(total=Count('id'))
+            .order_by('categoria')
+        )
+        labels_categorias = [item['categoria'] or 'Sin categoría' for item in categoria_stats]
+        data_categorias = [item['total'] for item in categoria_stats]
+
+        tipo_stats = (
+            TallerEvento.objects
+            .values('tipo_taller')
+            .annotate(total=Count('id'))
+            .order_by('tipo_taller')
+        )
+        labels_tipo = [item['tipo_taller'] for item in tipo_stats]
+        data_tipo = [item['total'] for item in tipo_stats]
+
+        talleres_por_mes = (
+            TallerEvento.objects
+            .annotate(mes=TruncMonth('fecha_proxima'))
+            .values('mes')
+            .annotate(total=Count('id'))
+            .order_by('mes')
+        )
+        labels_meses = [t['mes'].strftime("%b %Y") for t in talleres_por_mes]
+        data_meses = [t['total'] for t in talleres_por_mes]
+
+    context = {
+        "total_productos": total_productos,
+        "total_talleres": total_talleres,
+        "labels_categorias": json.dumps(labels_categorias),
+        "data_categorias": json.dumps(data_categorias),
+        "labels_tipo": json.dumps(labels_tipo),
+        "data_tipo": json.dumps(data_tipo),
+        "labels_meses": json.dumps(labels_meses),
+        "data_meses": json.dumps(data_meses),
+        "modo_demo": modo_demo,  # 🔧 Lo mandamos al template
+    }
+
+    return render(request, "tienda/panel_inicio.html", context)
+
+
+# ==================================================
+# PANEL - CRUD UNIFICADO DE TALLERES
+# ==================================================
+@login_required
+@user_passes_test(es_duena)
+def panel_talleres(request):
+    """Vista única para listar, crear, editar y eliminar TallerEvento"""
+    from Web.models import Taller  # Import dentro para evitar conflictos circulares
+
+    talleres = TallerEvento.objects.all().order_by('-fecha_proxima')
+    talleres_base = Taller.objects.all()
+
+    if request.method == 'POST':
+        accion = request.POST.get('accion')
+        id_taller = request.POST.get('id')
+
+        # Datos del formulario
+        taller_base_id = request.POST.get('taller_base')
+        nuevo_taller_base = request.POST.get('nuevo_taller_base', '').strip()
+        descripcion_completa = request.POST.get('descripcion_completa')
+        precio = request.POST.get('precio')
+        fecha_proxima = request.POST.get('fecha_proxima')
+        hora_inicio = request.POST.get('hora_inicio')
+        lugar = request.POST.get('lugar')
+        profesor = request.POST.get('profesor')
+        capacidad = request.POST.get('capacidad')
+        tipo_taller = request.POST.get('tipo_taller')
+
+        # Validación del taller base (crear uno nuevo si no existe)
+        if nuevo_taller_base:
+            taller_base = Taller.objects.create(titulo=nuevo_taller_base)
+        elif taller_base_id:
+            taller_base = get_object_or_404(Taller, id=taller_base_id)
+        else:
+            messages.error(request, "⚠️ Debes seleccionar o ingresar un Taller Base.")
+            return redirect('panel_talleres')
+
+        # CREAR TALLER
+        if accion == 'crear':
+            TallerEvento.objects.create(
+                taller_base=taller_base,
+                descripcion_completa=descripcion_completa,
+                precio=precio,
+                fecha_proxima=fecha_proxima,
+                hora_inicio=hora_inicio,
+                lugar=lugar,
+                profesor=profesor,
+                capacidad=capacidad,
+                tipo_taller=tipo_taller
+            )
+            messages.success(request, "✅ Taller creado con éxito.")
+
+        # EDITAR TALLER
+        elif accion == 'editar' and id_taller:
+            taller = get_object_or_404(TallerEvento, id=id_taller)
+            taller.taller_base = taller_base
+            taller.descripcion_completa = descripcion_completa
+            taller.precio = precio
+            taller.fecha_proxima = fecha_proxima
+            taller.hora_inicio = hora_inicio
+            taller.lugar = lugar
+            taller.profesor = profesor
+            taller.capacidad = capacidad
+            taller.tipo_taller = tipo_taller
+            taller.save()
+            messages.success(request, "📝 Taller actualizado correctamente.")
+
+        return redirect('panel_talleres')
+
+    # ELIMINAR TALLER
+    if request.method == 'GET' and 'eliminar' in request.GET:
+        id_taller = request.GET.get('eliminar')
+        taller = get_object_or_404(TallerEvento, id=id_taller)
+        taller.delete()
+        messages.success(request, "🗑️ Taller eliminado correctamente.")
+        return redirect('panel_talleres')
+
+    return render(request, 'tienda/panel_talleres.html', {
+        'talleres': talleres,
+        'talleres_base': talleres_base
+    })
+
+@login_required
+@user_passes_test(es_duena)
+def panel_ventas(request):
+    """Panel administrativo para ver las órdenes y estadísticas de ventas"""
+    from django.db.models.functions import TruncMonth
+
+    # Todas las órdenes
+    ordenes = Orden.objects.all().order_by('-creado_en')
+
+    # Resumen de totales
+    total_ventas = Orden.objects.filter(estado__iexact='aprobado').aggregate(Sum('total'))['total__sum'] or 0
+    total_pendientes = Orden.objects.filter(estado__iexact='pendiente').count()
+    total_aprobadas = Orden.objects.filter(estado__iexact='aprobado').count()
+
+    # Ventas por mes (para gráfico)
+    ventas_por_mes = (
+        Orden.objects.filter(estado__iexact='aprobado')
+        .annotate(mes=TruncMonth('pagado_en'))
+        .values('mes')
+        .annotate(total=Sum('total'))
+        .order_by('mes')
+    )
+
+    labels_meses = [v['mes'].strftime("%b %Y") for v in ventas_por_mes if v['mes']]
+    data_meses = [float(v['total']) for v in ventas_por_mes if v['total']]
+
+    context = {
+        'ordenes': ordenes,
+        'total_ventas': total_ventas,
+        'total_pendientes': total_pendientes,
+        'total_aprobadas': total_aprobadas,
+        'labels_meses': json.dumps(labels_meses),
+        'data_meses': json.dumps(data_meses),
+    }
+
+    return render(request, 'tienda/panel_ventas.html', context)
+
+@login_required
+@user_passes_test(es_duena)
+def panel_ventas_detalle(request, orden_id):
+    """Detalle de una orden específica"""
+    orden = get_object_or_404(Orden, id=orden_id)
+    items = orden.items.all()
+
+    context = {
+        'orden': orden,
+        'items': items,
+    }
+    return render(request, 'tienda/panel_ventas_detalle.html', context)
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+@login_required
+@user_passes_test(es_duena)
+def panel_usuarios(request):
+    """Panel para administrar y revisar usuarios registrados"""
+    from usuarios.models import TallerAsistido  # Si existe este modelo
+
+    usuarios = User.objects.all().order_by('-date_joined')
+
+    usuarios_info = []
+    for u in usuarios:
+        total_ordenes = Orden.objects.filter(usuario=u).count()
+        talleres_asistidos = (
+            TallerAsistido.objects.filter(usuario=u).count()
+            if hasattr(u, 'tallerasistido_set') or 'TallerAsistido' in globals()
+            else 0
+        )
+        usuarios_info.append({
+            'id': u.id,
+            'username': u.username,
+            'email': u.email,
+            'fecha_registro': u.date_joined,
+            'ultimo_login': u.last_login,
+            'total_ordenes': total_ordenes,
+            'talleres_asistidos': talleres_asistidos,
+            'es_duena': es_duena(u),
+        })
+
+    context = {
+        'usuarios_info': usuarios_info,
+    }
+
+    return render(request, 'tienda/panel_usuarios.html', context)

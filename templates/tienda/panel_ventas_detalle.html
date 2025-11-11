@@ -1,0 +1,54 @@
+{% extends 'general.html' %}
+{% block title %}Detalle de Venta #{{ orden.id }}{% endblock %}
+
+{% block content %}
+<section class="detalle-venta">
+  <h2>🧾 Detalle de la Orden #{{ orden.id }}</h2>
+  
+  <div class="resumen-orden" style="margin-bottom: 20px;">
+    <p><strong>Usuario:</strong> {{ orden.usuario.username }}</p>
+    <p><strong>Correo:</strong> {{ orden.usuario.email }}</p>
+    <p><strong>Estado:</strong> 
+      {% if orden.estado|lower == 'aprobado' %}
+        <span style="color:green;">✅ Aprobado</span>
+      {% elif orden.estado|lower == 'pendiente' %}
+        <span style="color:orange;">🕓 Pendiente</span>
+      {% else %}
+        <span style="color:red;">❌ {{ orden.estado }}</span>
+      {% endif %}
+    </p>
+    <p><strong>Total:</strong> ${{ orden.total|floatformat:0 }}</p>
+    <p><strong>Fecha de pago:</strong> {{ orden.pagado_en|date:"d M Y H:i" }}</p>
+  </div>
+
+  <h3>🛍️ Ítems de la orden</h3>
+  <table style="width:100%; border-collapse:collapse;">
+    <thead>
+      <tr style="background-color:#ffd6e0;">
+        <th>Tipo</th>
+        <th>Título</th>
+        <th>Cantidad</th>
+        <th>Precio Unitario</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr style="border-bottom:1px solid #ddd;">
+        <td>{{ item.tipo }}</td>
+        <td>{{ item.titulo }}</td>
+        <td>{{ item.cantidad }}</td>
+        <td>${{ item.precio_unitario|floatformat:0 }}</td>
+        <td>${{ item.precio_unitario|mul:item.cantidad|floatformat:0 }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" style="text-align:center;">Sin productos registrados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="margin-top:30px;">
+    <a href="{% url 'panel_ventas' %}" class="btn-panel">⬅ Volver al panel de ventas</a>
+  </div>
+</section>
+{% endblock %}

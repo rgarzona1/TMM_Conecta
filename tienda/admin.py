@@ -1,9 +1,7 @@
-# tienda/admin.py
 from django.contrib import admin
 from .models import Producto, Carrito, CarritoItem
 from .models import TallerEvento
 
-# Opcional: Para mejorar la visualización en el admin
 class ProductoAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'categoria', 'precio')
     list_filter = ('categoria',)

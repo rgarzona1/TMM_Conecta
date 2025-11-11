@@ -915,6 +915,7 @@ main {
     padding: 40px 0;
     display: flex;
     justify-content: center;
+    width: 100%;
 }
 
 .perfil-container {
@@ -1935,3 +1936,303 @@ html { scroll-behavior: smooth; }
     80% { opacity: 1; }
     100% { opacity: 0; transform: translateY(-10px); display: none; }
 }
+
+/* =========================== */
+/* PANEL ADM */
+/* =========================== */
+
+.panel-wrapper {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #f8f3f5;
+  padding: 3rem 1rem; 
+  width: 100%; 
+  box-sizing: border-box;
+}
+
+.panel-duena-container {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    width: 90%; 
+    max-width: 1400px;
+    margin: 0 auto; 
+    padding: 40px 0; 
+    padding-left: 0 !important;
+}
+
+.panel-left {
+  flex: 0 0 260px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.panel-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  object-fit: cover;
+}
+
+.panel-user {
+  color: var(--color-texto);
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.panel-email {
+  color: #777;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.btn-salir {
+  display: inline-block;
+  background-color: var(--color-lavanda);
+  color: #333;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
+}
+
+.btn-salir:hover {
+  background-color: #f3a67e;
+  color: #fff;
+}
+
+.panel-right {
+  flex: 1;
+  min-width: 320px;
+  max-width: 900px; 
+}
+
+.panel-titulo {
+  font-size: 1.6rem;
+  color: var(--color-texto);
+  margin-bottom: 0.5rem;
+}
+
+.panel-subtitulo {
+  color: #777;
+  margin-bottom: 2rem;
+}
+
+.panel-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1.8rem;
+}
+
+.panel-card {
+  flex: 1 1 280px;
+  max-width: 300px;
+  background-color: #fff;
+  border-radius: 14px;
+  padding: 1.8rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.panel-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-menta);
+}
+
+.panel-card h3 {
+  color: var(--color-texto);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.panel-card p {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.btn-panel {
+  display: inline-block;
+  background-color: var(--color-durazno);
+  color: #fff;
+  padding: 0.6rem 1.5rem;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.btn-panel:hover {
+  background-color: #f3a67e;
+}
+
+.tabla-panel {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+}
+
+.tabla-panel th, .tabla-panel td {
+  border-bottom: 1px solid #ddd;
+  padding: 0.8rem;
+  text-align: left;
+}
+
+.tabla-panel th {
+  background-color: var(--color-menta);
+  color: #333;
+}
+
+.tabla-panel tr:hover {
+  background-color: #f8f8f8;
+}
+
+form label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+form input, form textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 0.3rem;
+}
+
+form button {
+  margin-top: 1.2rem;
+}
+
+/* === Estilo para panel_talleres === */
+.panel-right {
+  max-width: 850px;
+  margin: 0 auto;
+  background-color: #fffefb;
+  padding: 2.5rem 3rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.panel-right h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.panel-right p {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+/* FORMULARIO */
+.panel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  background-color: #fffaf7;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.panel-form label {
+  font-weight: 600;
+  color: #333;
+}
+
+.panel-form input,
+.panel-form textarea,
+.panel-form select {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.panel-form input:focus,
+.panel-form textarea:focus,
+.panel-form select:focus {
+  border-color: var(--color-durazno);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(245, 200, 167, 0.3);
+}
+
+/* Botón principal */
+.btn-panel {
+  align-self: flex-start;
+  padding: 0.8rem 1.8rem;
+  background-color: var(--color-durazno);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-panel:hover {
+  background-color: #f3a67e;
+}
+
+/* TABLA */
+.tabla-panel {
+  width: 100%;
+  margin-top: 2.5rem;
+  border-collapse: collapse;
+  background-color: #fffefb;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+.tabla-panel th,
+.tabla-panel td {
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 1px solid #f1e6e3;
+}
+
+.tabla-panel th {
+  background-color: var(--color-menta);
+  color: #333;
+}
+
+.tabla-panel tr:hover {
+  background-color: #fdf5f0;
+}
+
+/* Centrado general */
+.panel-right hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .panel-right {
+    padding: 1.5rem;
+  }
+  .panel-form {
+    padding: 1.2rem;
+  }
+}
+

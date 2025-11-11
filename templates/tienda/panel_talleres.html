@@ -1,0 +1,124 @@
+{% extends 'general.html' %}
+{% block title %}Gestión de Talleres{% endblock %}
+
+{% block content %}
+<section class="panel-right">
+  <h2>Gestión de Talleres</h2>
+  <p>Desde aquí puedes crear, editar o eliminar talleres programados.</p>
+
+  <form method="POST" class="panel-form">
+    {% csrf_token %}
+    <input type="hidden" name="id" id="taller_id">
+    <input type="hidden" name="accion" id="accion" value="crear">
+
+    <label for="taller_base">Taller Base:</label>
+    <select name="taller_base" id="taller_base">
+        <option value="">-- Seleccionar --</option>
+        {% for base in talleres_base %}
+            <option value="{{ base.id }}">{{ base.titulo }}</option>
+        {% endfor %}
+    </select>
+
+    <p>¿No existe el taller?</p>
+    <input type="text" name="nuevo_taller_base" placeholder="Escribe un nuevo nombre de taller">
+
+    <label for="descripcion_completa">Descripción completa:</label>
+    <textarea name="descripcion_completa" id="descripcion_completa" required></textarea>
+
+    <label for="precio">Precio:</label>
+    <input type="number" name="precio" id="precio" min="0" required>
+
+    <label for="fecha_proxima">Fecha Próxima:</label>
+    <input type="date" name="fecha_proxima" id="fecha_proxima" required>
+
+    <label for="hora_inicio">Hora de Inicio:</label>
+    <input type="time" name="hora_inicio" id="hora_inicio" required>
+
+    <label for="lugar">Lugar:</label>
+    <input type="text" name="lugar" id="lugar" required>
+
+    <label for="profesor">Profesor:</label>
+    <input type="text" name="profesor" id="profesor" required>
+
+    <label for="capacidad">Capacidad:</label>
+    <input type="number" name="capacidad" id="capacidad" min="1" required>
+
+    <label for="tipo_taller">Tipo:</label>
+    <select name="tipo_taller" id="tipo_taller">
+      <option value="PRESENCIAL">Presencial</option>
+      <option value="ONLINE">Online</option>
+    </select>
+
+    <button type="submit" class="btn-panel" id="btn-guardar">➕ Crear Taller</button>
+  </form>
+
+  <hr>
+
+  <table class="tabla-panel">
+    <thead>
+      <tr>
+        <th>Taller Base</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Lugar</th>
+        <th>Profesor</th>
+        <th>Capacidad</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for taller in talleres %}
+      <tr>
+        <td>{{ taller.taller_base.titulo }}</td>
+        <td>{{ taller.fecha_proxima }}</td>
+        <td>{{ taller.hora_inicio }}</td>
+        <td>{{ taller.lugar }}</td>
+        <td>{{ taller.profesor }}</td>
+        <td>{{ taller.capacidad }}</td>
+        <td>
+          <button
+            type="button"
+            class="btn-panel"
+            onclick="editarTaller(this)"
+            data-id="{{ taller.id }}"
+            data-base="{{ taller.taller_base.id }}"
+            data-descripcion="{{ taller.descripcion_completa|escapejs }}"
+            data-precio="{{ taller.precio }}"
+            data-fecha="{{ taller.fecha_proxima|date:'Y-m-d' }}"
+            data-hora="{{ taller.hora_inicio|time:'H:i' }}"
+            data-lugar="{{ taller.lugar|escapejs }}"
+            data-profesor="{{ taller.profesor|escapejs }}"
+            data-capacidad="{{ taller.capacidad }}"
+            data-tipo="{{ taller.tipo_taller }}">
+            ✏️ Editar
+          </button>
+
+          <a href="?eliminar={{ taller.id }}" class="btn-salir" onclick="return confirm('¿Eliminar este taller?');">
+            🗑️ Eliminar
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No hay talleres programados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<script>
+function editarTaller(btn) {
+  document.getElementById('taller_id').value = btn.dataset.id;
+  document.getElementById('taller_base').value = btn.dataset.base;
+  document.getElementById('descripcion_completa').value = btn.dataset.descripcion;
+  document.getElementById('precio').value = btn.dataset.precio;
+  document.getElementById('fecha_proxima').value = btn.dataset.fecha;
+  document.getElementById('hora_inicio').value = btn.dataset.hora;
+  document.getElementById('lugar').value = btn.dataset.lugar;
+  document.getElementById('profesor').value = btn.dataset.profesor;
+  document.getElementById('capacidad').value = btn.dataset.capacidad;
+  document.getElementById('tipo_taller').value = btn.dataset.tipo;
+  document.getElementById('accion').value = 'editar';
+  document.getElementById('btn-guardar').innerText = '💾 Guardar Cambios';
+}
+</script>
+{% endblock %}

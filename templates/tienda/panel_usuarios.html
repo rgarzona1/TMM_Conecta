@@ -1,0 +1,57 @@
+{% extends 'general.html' %}
+{% block title %}Panel de Usuarios{% endblock %}
+
+{% block content %}
+<section class="panel-usuarios">
+  <h2>👥 Panel de Usuarios Registrados</h2>
+
+  <p style="margin-bottom:15px;">Aquí puedes ver todos los usuarios registrados en la plataforma, junto con sus compras y talleres.</p>
+
+  <table style="width:100%; border-collapse:collapse;">
+    <thead>
+      <tr style="background-color:#ffd6e0;">
+        <th>ID</th>
+        <th>Usuario</th>
+        <th>Correo</th>
+        <th>Tipo</th>
+        <th>Fecha Registro</th>
+        <th>Último Login</th>
+        <th>Órdenes</th>
+        <th>Talleres</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in usuarios_info %}
+      <tr style="border-bottom:1px solid #ddd;">
+        <td>{{ u.id }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td>
+          {% if u.es_duena %}
+            <span style="color:#e91e63;">Dueña</span>
+          {% else %}
+            <span style="color:#2196f3;">Usuario</span>
+          {% endif %}
+        </td>
+        <td>{{ u.fecha_registro|date:"d M Y" }}</td>
+        <td>
+          {% if u.ultimo_login %}
+            {{ u.ultimo_login|date:"d M Y H:i" }}
+          {% else %}
+            — 
+          {% endif %}
+        </td>
+        <td>{{ u.total_ordenes }}</td>
+        <td>{{ u.talleres_asistidos }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" style="text-align:center;">No hay usuarios registrados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="margin-top:20px;">
+    <a href="{% url 'panel_duena_inicio' %}" class="btn-panel">⬅ Volver al Panel Principal</a>
+  </div>
+</section>
+{% endblock %}
