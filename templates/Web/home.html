@@ -19,7 +19,32 @@
         </div>
     </section>
 
-   
+   <!-- ======= EXPERIENCIA TMM ======= -->
+    <section id="experiencia" class="experience-section">
+    <div class="wrap">
+        <h2 class="carousel-title">Vive la Experiencia TMM</h2>
+
+        <div class="carousel-container">
+        <div class="carousel">
+            <div class="carousel-item active">
+            <img src="{% static 'img/carousel/carusel1.jpg' %}" alt="Experiencia TMM">
+            </div>
+            <div class="carousel-item">
+            <img src="{% static 'img/carousel/carusel2.jpg' %}" alt="Experiencia TMM">
+            </div>
+            <div class="carousel-item">
+            <img src="{% static 'img/carousel/carusel3.jpg' %}" alt="Experiencia TMM">
+            </div>
+            <div class="carousel-item">
+            <img src="{% static 'img/carousel/carusel4.jpg' %}" alt="Experiencia TMM">
+            </div>
+        </div>
+        <button class="carousel-btn prev">&#10094;</button>
+        <button class="carousel-btn next">&#10095;</button>
+        </div>
+    </div>
+    </section>
+
 
     <!-- ======= NOSOTROS ======= -->
     <section id="nosotros" class="about">
@@ -94,8 +119,6 @@
                     </div>
                     <div class="card__body">
                         <h3 class="card__title">{{ t.titulo }}</h3>
-                        {% if t.fecha %}<p class="muted">Fecha: {{ t.fecha }}</p>{% endif %}
-                        {% if t.valor %}<p class="muted">Precio: ${{ t.valor|floatformat:0 }}</p>{% endif %}
                         <p class="card__text">{{ t.descripcion|truncatechars:130 }}</p>
                         <div class="card__cta">
                             <a class="btn-vamos" href="tienda/talleres">Mas información</a>
@@ -176,6 +199,29 @@
             </div>
         </div>
     </section>
+
+    <script>
+        const carousel = document.querySelector(".carousel");
+        const items = document.querySelectorAll(".carousel-item");
+        let index = 0;
+
+        document.querySelector(".next").addEventListener("click", () => {
+        index = (index + 1) % items.length;
+        carousel.style.transform = `translateX(${-index * 100}%)`;
+        });
+
+        document.querySelector(".prev").addEventListener("click", () => {
+        index = (index - 1 + items.length) % items.length;
+        carousel.style.transform = `translateX(${-index * 100}%)`;
+        });
+
+        // Rotación automática cada 5s
+        setInterval(() => {
+        index = (index + 1) % items.length;
+        carousel.style.transform = `translateX(${-index * 100}%)`;
+        }, 5000);
+    </script>
+
 </main>
 {% endblock %}
 
