@@ -1905,6 +1905,57 @@ html { scroll-behavior: smooth; }
   background-color: #ff4d4d;
 }
 
+/* === GALERÍA DE TALLER === */
+.taller-galeria {
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.taller-galeria h2 {
+  color: var(--color-1);
+  margin-bottom: 1rem;
+}
+
+.galeria-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.galeria-item {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.galeria-item img {
+  width: 100%;
+  height: 220px;
+  object-fit: contain;
+  transition: transform 0.3s;
+}
+
+.galeria-item:hover img {
+  transform: scale(1.05);
+}
+
+.galeria-item p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+.descripcion_talleres_detalle{
+  margin-top: 20px;
+  padding-left: 10%;
+  color: var(--color-texto);
+  text-align: left;
+}
+
+
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .catalogo-container h1 {

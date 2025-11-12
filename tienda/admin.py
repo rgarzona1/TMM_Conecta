@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Producto, Carrito, CarritoItem
+from .models import Producto, Carrito, CarritoItem, ImagenTaller
 from .models import TallerEvento
 
 class ProductoAdmin(admin.ModelAdmin):
@@ -29,4 +29,5 @@ class TallerEventoAdmin(admin.ModelAdmin):
 # Registra los modelos
 admin.site.register(Producto, ProductoAdmin)
 admin.site.register(Carrito, CarritoAdmin)
-# Nota: CarritoItem se añade a través de CarritoInline, no necesita registro directo
+
+admin.site.register(ImagenTaller)

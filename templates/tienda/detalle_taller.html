@@ -49,7 +49,26 @@
     </div>
         <div class="detail-header">
         <h1>{{ taller.nombre }}</h1>
-        <p class="lead">{{ taller.descripcion_completa|linebreaksbr }}</p>
+        <div class="descripcion_talleres_detalle">
+            <h2>Descripción del Taller</h2>
+            <p class="descripcion-talleres">{{ taller.descripcion_completa|linebreaksbr }}</p>
+        </div>
     </div>
+    {% if taller.galeria.all %}
+    <section class="taller-galeria">
+        <h2>Galería del Taller</h2>
+        <div class="galeria-grid">
+            {% for img in taller.galeria.all %}
+            <div class="galeria-item">
+                <img src="{{ img.imagen.url }}" alt="{{ img.descripcion }}">
+                {% if img.descripcion %}
+                <p>{{ img.descripcion }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
 </section>
+
 {% endblock content %}

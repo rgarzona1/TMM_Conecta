@@ -87,6 +87,18 @@ class TallerEvento(models.Model):
         verbose_name = "Taller Programado"
         verbose_name_plural = "Talleres Programados"
 
+class ImagenTaller(models.Model):
+    taller = models.ForeignKey(
+        TallerEvento,
+        on_delete=models.CASCADE,
+        related_name='galeria'
+    )
+    imagen = models.ImageField(upload_to='talleres/galeria/')
+    descripcion = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f"Imagen de {self.taller.taller_base.titulo}"
+
 
 #ORDENES DE COMPRA
 class Orden(models.Model):

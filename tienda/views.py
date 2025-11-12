@@ -1,3 +1,4 @@
+from datetime import date
 from email.mime import base
 import traceback
 import django
@@ -144,9 +145,18 @@ def update_cart(request, item_id, action):
     return redirect('carrito')
 
 def catalogo_talleres_vista(request):
-    """Listado de todos los talleres/eventos próximos"""
-    talleres = TallerEvento.objects.all().order_by('fecha_proxima')
-    return render(request, 'tienda/catalogo_talleres.html', {'talleres': talleres})
+    """Listado de talleres futuros (filtrando por fecha_proxima >= hoy)"""
+    hoy = date.today()  # fecha actual sin hora
+
+    # Filtramos talleres cuya fecha sea hoy o futura
+    talleres = (
+        TallerEvento.objects
+        .filter(fecha_proxima__gte=hoy)
+        .order_by('fecha_proxima')
+    )
+
+    context = {'talleres': talleres}
+    return render(request, 'tienda/catalogo_talleres.html', context)
 
 def detalle_taller_vista(request, taller_id):
     """Vista con todos los detalles de un taller específico"""
