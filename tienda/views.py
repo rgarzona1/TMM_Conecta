@@ -431,6 +431,8 @@ def panel_talleres(request):
     if request.method == 'POST':
         accion = request.POST.get('accion')
         id_taller = request.POST.get('id')
+        imagen = request.FILES.get('imagen')
+
 
         # Datos del formulario
         taller_base_id = request.POST.get('taller_base')
@@ -464,7 +466,8 @@ def panel_talleres(request):
                 lugar=lugar,
                 profesor=profesor,
                 capacidad=capacidad,
-                tipo_taller=tipo_taller
+                tipo_taller=tipo_taller,
+                imagen=imagen
             )
             messages.success(request, "✅ Taller creado con éxito.")
 
@@ -480,6 +483,8 @@ def panel_talleres(request):
             taller.profesor = profesor
             taller.capacidad = capacidad
             taller.tipo_taller = tipo_taller
+            if imagen:  
+                taller.imagen = imagen
             taller.save()
             messages.success(request, "📝 Taller actualizado correctamente.")
 

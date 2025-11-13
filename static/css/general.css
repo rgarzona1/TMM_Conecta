@@ -2355,3 +2355,336 @@ form button {
   }
 }
 
+/* =========================== */
+/* PANEL DE VENTAS */
+/* =========================== */
+
+.panel-ventas {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.ventas-resumen {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.card-resumen {
+  background-color: #fffafc;
+  border-radius: 14px;
+  min-width: 200px;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
+
+.card-resumen:hover {
+  transform: translateY(-4px);
+}
+
+.card-resumen h3 {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 0.3rem;
+}
+
+.card-resumen p {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--color-texto);
+}
+
+/* Contenedor general del gráfico */
+.grafico-container {
+  background-color: #fff6fa;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin: 2rem auto;
+  height: 300px;            
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Ajuste del canvas para no crecer de más */
+.grafico-container canvas {
+  max-height: 220px;
+}
+
+/* TABLA de órdenes */
+.tabla-ventas {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fffefb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  margin-top: 1.5rem;
+}
+
+.tabla-ventas th {
+  background-color: var(--color-lavanda);
+  padding: 0.9rem;
+  text-align: center;
+  color: #333;
+}
+
+.tabla-ventas td {
+  padding: 0.8rem;
+  text-align: center;
+  border-bottom: 1px solid #f1e6e6;
+}
+
+.tabla-ventas tr:hover {
+  background-color: #fff3f8;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .grafico-container {
+    height: 240px;
+  }
+  .grafico-container canvas {
+    max-height: 180px;
+  }
+  .card-resumen {
+    min-width: 160px;
+  }
+}
+
+/* ======================= */
+/* PANEL DE USUARIOS */
+/* ======================= */
+
+.panel-usuarios {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #fff8fc;
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-top: 2rem;
+}
+
+.panel-usuarios h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.panel-desc {
+  text-align: center;
+  color: #666;
+  margin-bottom: 1.8rem;
+}
+
+/* Tabla */
+.usuarios-tabla-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+.usuarios-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.usuarios-tabla th {
+  background: #ffddea;
+  padding: 0.9rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.usuarios-tabla td {
+  padding: 0.8rem;
+  text-align: center;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f1e6e6;
+}
+
+.usuarios-tabla tr:hover {
+  background: #fff3f8;
+}
+
+/* Rol visual */
+.rol-duena {
+  color: #e91e63;
+  font-weight: bold;
+}
+
+.rol-usuario {
+  color: #2196f3;
+  font-weight: bold;
+}
+
+.tabla-vacia {
+  text-align: center;
+  padding: 1.5rem;
+  color: #777;
+  background: #fff4fa;
+}
+
+/* Botón inferior */
+.btn-volver-panel {
+  display: inline-block;
+  margin-top: 1.5rem;
+  background-color: var(--color-durazno);
+  padding: 0.7rem 1.6rem;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s;
+}
+
+.btn-volver-panel:hover {
+  background-color: #f3a67e;
+}
+
+
+/* ===================================== */
+/* PANEL DE TALLERES */
+/* ===================================== */
+
+.panel-talleres {
+  max-width: 1100px;
+  margin: 0 auto;
+  margin-top: 2rem;
+  padding: 2rem 2.5rem;
+  background: #fff8fc;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.panel-talleres h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: .5rem;
+}
+
+.panel-desc {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+/* Miniatura de imágenes */
+.img-miniatura {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.sin-img {
+  color: #aaa;
+  font-size: 0.8rem;
+}
+
+/* Botones */
+.btn-editar {
+  background: #a0c4ff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.btn-eliminar {
+  background: #ffadad;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  margin-left: 5px;
+}
+
+/* Tabla */
+.tabla-wrapper {
+  overflow-x: auto;
+}
+
+.tabla-panel th {
+  background-color: #ffddea;
+}
+
+.tabla-vacia {
+  text-align: center;
+  padding: 1.5rem;
+  color: #777;
+}
+
+/* ========================= */
+/* FORMULARIO ORDENADO      */
+/* ========================= */
+
+.form-talleres {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem 3rem;
+}
+
+.form-block {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.form-block label {
+  font-weight: 600;
+  font-size: .9rem;
+}
+
+.form-block input,
+.form-block select {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: .6rem;
+}
+
+.label-descripcion {
+  display: block;
+  font-weight: 600;
+  margin-top: 1.5rem;
+}
+
+.desc-area {
+  width: 100%;
+  height: 130px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-top: .4rem;
+}
+
+.btn-right {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
