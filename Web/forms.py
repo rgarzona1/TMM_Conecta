@@ -1,5 +1,7 @@
 from django import forms
-from .models import MensajeContacto
+from .models import MensajeContacto, Resena
+        
+
 
 class MensajeContactoForm(forms.ModelForm):
     class Meta:
@@ -33,4 +35,20 @@ class MensajeContactoForm(forms.ModelForm):
             'mensaje': 'Mensaje:',
             'suscripcion': 'Quiero recibir actualizaciones sobre nuevos talleres y actividades de TMM - Bienestar y Conexión',
         }
-        
+
+
+class ResenaForm(forms.ModelForm):
+    class Meta:
+        model = Resena
+        fields = ['comentario', 'calificacion']
+        widgets = {
+            'comentario': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Cuéntanos tu experiencia...',
+                'rows': 3
+            }),
+            'calificacion': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1, 'max': 5
+            }),
+        }

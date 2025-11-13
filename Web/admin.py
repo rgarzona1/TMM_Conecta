@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import MensajeContacto, Producto, Taller
+from .models import MensajeContacto, Producto, Resena, Taller
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
@@ -23,3 +23,11 @@ class MensajeContactoAdmin(admin.ModelAdmin):
     list_filter = ('asunto', 'suscripcion', 'fecha_envio')
     search_fields = ('nombre_completo', 'correo_electronico', 'mensaje')
     readonly_fields = ('fecha_envio',)
+    
+
+@admin.register(Resena)
+class ResenaAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'calificacion', 'aprobada', 'fecha_creacion')
+    list_filter = ('aprobada', 'calificacion', 'fecha_creacion')
+    search_fields = ('usuario__username', 'comentario')
+    list_editable = ('aprobada',)

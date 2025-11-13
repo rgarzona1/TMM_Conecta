@@ -1,0 +1,22 @@
+{% extends 'general.html' %}
+{% block title %}Dejar Reseña{% endblock %}
+
+{% block content %}
+<section class="reseña-nueva-section">
+    <div class="wrap reseña-form-container">
+
+        <h2>Comparte tu experiencia en TMM</h2>
+        <p>Tu opinión ayuda a más personas a unirse a nuestros talleres y actividades.</p>
+
+        <form method="post" class="reseña-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="btn-vamos">Enviar Reseña</button>
+        </form>
+
+        <a href="{% url 'home' %}" class="btn-volver">← Volver al inicio</a>
+
+    </div>
+</section>
+{% endblock %}

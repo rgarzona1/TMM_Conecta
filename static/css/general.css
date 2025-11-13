@@ -2355,3 +2355,27 @@ form button {
   }
 }
 
+.reseña-form-container {
+    background: #fff5f9;
+    padding: 2.5rem;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.reseña-form textarea,
+.reseña-form input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.btn-volver {
+    display: inline-block;
+    margin-top: 1.2rem;
+    text-decoration: none;
+    color: #f48ba9;
+    font-weight: bold;
+}

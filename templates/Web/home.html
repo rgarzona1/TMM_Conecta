@@ -176,13 +176,18 @@
                     <p class="no-reviews">Sé el primero en compartir tu experiencia TMM</p>
                 {% endif %}
             </div>
-            {% if user.is_authenticated %}
+           
                 <div class="review-cta">
                     <h3>¿Has participado en alguno de nuestros talleres?</h3>
                     <p>Comparte tu experiencia y ayuda a otros a encontrar su camino hacia el bienestar</p>
-                    <a href="#" class="btn-vamos">Dejar mi reseña</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'crear_resena' %}" class="btn-vamos">Dejar mi reseña</a>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn-vamos">Inicia sesión para dejar una reseña</a>
+                    {% endif %}
                 </div>
-            {% endif %}
+                
+
         </div>
     </section>
 

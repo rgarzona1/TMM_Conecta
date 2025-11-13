@@ -1,5 +1,7 @@
 from django.db import models
 
+from usuarios.models import UsuarioPersonalizado
+
 class MensajeContacto(models.Model):
     OPCIONES_ASUNTO = [
         ('cotizacion', 'Cotización de taller para empresa'),
@@ -18,7 +20,7 @@ class MensajeContacto(models.Model):
     def __str__(self):
         return f"{self.nombre_completo} - {self.asunto}"
 
-class Resena(models.Model):
+class Resena_email(models.Model):
     usuario = models.ForeignKey('usuarios.UsuarioPersonalizado', on_delete=models.CASCADE)
     taller = models.ForeignKey('tienda.TallerEvento', on_delete=models.CASCADE)
     calificacion = models.IntegerField(choices=[(i, i) for i in range(1, 6)])  # 1-5 estrellas
@@ -67,4 +69,18 @@ class Taller(models.Model):
     def __str__(self):
         return self.titulo
     
+    
+class Resena(models.Model):
+        usuario = models.ForeignKey(UsuarioPersonalizado, on_delete=models.CASCADE)
+        comentario = models.TextField(max_length=500)
+        calificacion = models.PositiveIntegerField(default=5)
+        fecha_creacion = models.DateTimeField(auto_now_add=True)
+        aprobada = models.BooleanField(default=False)  # ✅ Moderación
+        
+        class Meta:
+            ordering = ['-fecha_creacion']
+
+        def __str__(self):
+            return f"{self.usuario.username}"
+
 

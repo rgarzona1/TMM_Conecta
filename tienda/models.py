@@ -118,3 +118,4 @@ class OrdenItem(models.Model):
     titulo= models.CharField(max_length=200)
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario= models.DecimalField(max_digits=12, decimal_places=2)
+
