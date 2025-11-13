@@ -2067,7 +2067,8 @@ html { scroll-behavior: smooth; }
   align-items: flex-start;
   background-color: #f8f3f5;
   padding: 3rem 1rem; 
-  width: 100%; 
+  max-width: 100% !important; 
+  overflow-x: auto !important;
   box-sizing: border-box;
 }
 
@@ -2076,7 +2077,7 @@ html { scroll-behavior: smooth; }
     gap: 40px;
     align-items: flex-start;
     width: 90%; 
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto; 
     padding: 40px 0; 
     padding-left: 0 !important;
@@ -2131,7 +2132,8 @@ html { scroll-behavior: smooth; }
 .panel-right {
   flex: 1;
   min-width: 320px;
-  max-width: 900px; 
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .panel-titulo {
@@ -2355,7 +2357,6 @@ form button {
   }
 }
 
-<<<<<<< HEAD
 .reseña-form-container {
     background: #fff5f9;
     padding: 2.5rem;
@@ -2379,7 +2380,8 @@ form button {
     text-decoration: none;
     color: #f48ba9;
     font-weight: bold;
-=======
+}
+
 /* =========================== */
 /* PANEL DE VENTAS */
 /* =========================== */
@@ -2712,5 +2714,16 @@ form button {
   display: flex;
   justify-content: flex-end;
   margin-top: 1.5rem;
->>>>>>> b22f946d64563e10a9c910835b54dba73f9b45da
+}
+
+.graficos-grid {
+  display: grid;
+  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  align-items: start;
+  justify-items: center;
+}
+
+.panel-graficos > div{
+  max-width: 100%;
 }

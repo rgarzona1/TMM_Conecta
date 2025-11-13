@@ -16,7 +16,7 @@
         <nav class="navbar">
             <ul class="nav-left">
                 <li><a href="/ ">INICIO</a></li>
-                <li><a href="../#nosotros">¿QUIÉNES SOMOS?</a></li>
+                <li><a href="/#nosotros">¿QUIÉNES SOMOS?</a></li>
             </ul>
 
             <div class="nav-logo">
@@ -26,7 +26,7 @@
             </div>
 
             <ul class="nav-right">
-                <li><a href="../#talleres">TALLERES</a></li>
+                <li><a href="{% url 'catalogo_talleres' %}">TALLERES</a></li>
                 <li><a href="{% url 'tienda_home' %}">TIENDA</a></li>
                 <li><a href="{% url 'contacto' %}">CONTACTO</a></li>
                 {% if user.is_authenticated %}
