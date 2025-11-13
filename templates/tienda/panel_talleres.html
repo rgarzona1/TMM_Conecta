@@ -3,57 +3,78 @@
 
 {% block content %}
 <section class="panel-right">
-  <h2>Gestión de Talleres</h2>
+  <h2><i class="fa fa-paint-brush"></i> Gestión de Talleres</h2>
   <p>Desde aquí puedes crear, editar o eliminar talleres programados.</p>
 
-  <form method="POST" class="panel-form">
+  <!-- FORMULARIO ORDENADO -->
+  <form method="POST" enctype="multipart/form-data" class="form-talleres">
     {% csrf_token %}
     <input type="hidden" name="id" id="taller_id">
     <input type="hidden" name="accion" id="accion" value="crear">
 
-    <label for="taller_base">Taller Existente:</label>
-    <select name="taller_base" id="taller_base">
-        <option value="">-- Seleccionar --</option>
-        {% for base in talleres_base %}
-            <option value="{{ base.id }}">{{ base.titulo }}</option>
-        {% endfor %}
-    </select>
+    <div class="form-grid-2">
 
-    <p>¿No existe el taller? Crea uno nuevo: </p>
-    <input type="text" name="nuevo_taller_base" placeholder="Escribe un nuevo nombre de taller">
+      <div class="form-block">
+        <label for="taller_base">Taller Existente:</label>
+        <select name="taller_base" id="taller_base">
+          <option value="">-- Seleccionar --</option>
+          {% for base in talleres_base %}
+          <option value="{{ base.id }}">{{ base.titulo }}</option>
+          {% endfor %}
+        </select>
 
-    <label for="descripcion_completa">Descripción completa:</label>
-    <textarea name="descripcion_completa" id="descripcion_completa" required></textarea>
+        <label>Crea uno nuevo (si no existe):</label>
+        <input type="text" name="nuevo_taller_base" placeholder="Nuevo nombre de taller">
+      </div>
 
-    <label for="precio">Precio:</label>
-    <input type="number" name="precio" id="precio" min="0" required>
+      <div class="form-block">
+        <label for="imagen">Imagen del Taller:</label>
+        <input type="file" name="imagen" accept="image/*">
 
-    <label for="fecha_proxima">Fecha Próxima:</label>
-    <input type="date" name="fecha_proxima" id="fecha_proxima" required>
+        <label for="precio">Precio:</label>
+        <input type="number" min="0" name="precio" id="precio">
+      </div>
 
-    <label for="hora_inicio">Hora de Inicio:</label>
-    <input type="time" name="hora_inicio" id="hora_inicio" required>
+      <div class="form-block">
+        <label for="fecha_proxima">Fecha Próxima:</label>
+        <input type="date" name="fecha_proxima" id="fecha_proxima">
 
-    <label for="lugar">Lugar:</label>
-    <input type="text" name="lugar" id="lugar" required>
+        <label for="hora_inicio">Hora de Inicio:</label>
+        <input type="time" name="hora_inicio" id="hora_inicio">
+      </div>
 
-    <label for="profesor">Profesor:</label>
-    <input type="text" name="profesor" id="profesor" required>
+      <div class="form-block">
+        <label for="lugar">Lugar del Evento:</label>
+        <input type="text" name="lugar" id="lugar">
 
-    <label for="capacidad">Capacidad:</label>
-    <input type="number" name="capacidad" id="capacidad" min="1" required>
+        <label for="profesor">Profesor:</label>
+        <input type="text" name="profesor" id="profesor">
+      </div>
 
-    <label for="tipo_taller">Tipo:</label>
-    <select name="tipo_taller" id="tipo_taller">
-      <option value="PRESENCIAL">Presencial</option>
-      <option value="ONLINE">Online</option>
-    </select>
+      <div class="form-block">
+        <label for="capacidad">Capacidad:</label>
+        <input type="number" name="capacidad" id="capacidad" min="1">
 
-    <button type="submit" class="btn-panel" id="btn-guardar">➕ Crear Taller</button>
+        <label for="tipo_taller">Tipo:</label>
+        <select name="tipo_taller" id="tipo_taller">
+          <option value="PRESENCIAL">Presencial</option>
+          <option value="ONLINE">Online</option>
+        </select>
+      </div>
+
+    </div>
+
+    <label for="descripcion_completa" class="label-descripcion">Descripción completa:</label>
+    <textarea name="descripcion_completa" id="descripcion_completa" class="desc-area"></textarea>
+
+    <div class="btn-right">
+      <button type="submit" class="btn-panel" id="btn-guardar">➕ Crear Taller</button>
+    </div>
   </form>
 
   <hr>
 
+  <!-- TABLA DE TALLERES -->
   <table class="tabla-panel">
     <thead>
       <tr>
