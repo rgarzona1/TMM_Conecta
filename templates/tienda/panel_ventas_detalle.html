@@ -3,7 +3,7 @@
 
 {% block content %}
 <section class="detalle-venta">
-  <h2>🧾 Detalle de la Orden #{{ orden.id }}</h2>
+  <h2>Detalle de la Orden #{{ orden.id }}</h2>
   
   <div class="resumen-orden" style="margin-bottom: 20px;">
     <p><strong>Usuario:</strong> {{ orden.usuario.username }}</p>
@@ -21,7 +21,7 @@
     <p><strong>Fecha de pago:</strong> {{ orden.pagado_en|date:"d M Y H:i" }}</p>
   </div>
 
-  <h3>🛍️ Ítems de la orden</h3>
+  <h3>Ítems de la orden</h3>
   <table style="width:100%; border-collapse:collapse;">
     <thead>
       <tr style="background-color:#ffd6e0;">
@@ -39,7 +39,7 @@
         <td>{{ item.titulo }}</td>
         <td>{{ item.cantidad }}</td>
         <td>${{ item.precio_unitario|floatformat:0 }}</td>
-        <td>${{ item.precio_unitario|mul:item.cantidad|floatformat:0 }}</td>
+        <td>${{ item.precio_unitario|item.cantidad|floatformat:0 }}</td>
       </tr>
       {% empty %}
       <tr><td colspan="5" style="text-align:center;">Sin productos registrados.</td></tr>

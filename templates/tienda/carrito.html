@@ -91,7 +91,9 @@
                 <form id="checkout-form" method="post" action="{% url 'mp_crear_preferencia' %}">
                     {% csrf_token %}
                     <button type="submit" class="btn-pagar">IR A PAGAR</button>
+                    <button class="btn-pagar" id="btn-simular-compra">Simular Compra</button>
                 </form>
+
                 {% else %}
                     <p>Tu carrito está vacío.</p>
                 {% endif %}
@@ -101,6 +103,27 @@
     </section>
 </main>
 <script>
+
+//===SCRIPT PARA SIMULAR COMPRA===
+document.getElementById("btn-simular-compra")?.addEventListener("click", function() {
+    fetch("{% url 'simular_compra' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        if (data.redirect) {
+            window.location.href = data.redirect;
+        }
+    })
+    .catch(err => alert("Error al simular la compra."));
+});
+
+//===SCRIPT PARA MERCADO PAGO CHECKOUT===
+/*
 document.getElementById("checkout-form")?.addEventListener("submit", async function(e) {
     e.preventDefault();
 
@@ -125,7 +148,7 @@ document.getElementById("checkout-form")?.addEventListener("submit", async funct
         alert("Error al comunicarse con el servidor.");
     }
 });
-
+*/
 
 
 </script>

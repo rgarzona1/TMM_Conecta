@@ -24,6 +24,10 @@ urlpatterns = [
     path('webhooks/mercadopago/', views.webhook_mercadopago, name='mp_webhook'),
     path('checkout/', views.checkout_vista, name='checkout'),
 
+    #Simular compra
+    path('checkout/simular/', views.simular_compra, name='simular_compra'),
+
+
     #Panel 
     path('panel/', views.panel_duena_inicio, name='panel_duena_inicio'),
 
