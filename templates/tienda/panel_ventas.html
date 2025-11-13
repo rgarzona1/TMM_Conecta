@@ -3,7 +3,7 @@
 
 {% block content %}
 <section class="panel-ventas">
-  <h2>📊 Panel de Ventas</h2>
+  <h2>Panel de Ventas</h2>
 
   <div class="ventas-resumen" style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:20px;">
     <div class="card-resumen">
@@ -25,7 +25,7 @@
     <canvas id="graficoVentas" height="120"></canvas>
   </div>
 
-  <h3>📋 Listado de Órdenes</h3>
+  <h3>Listado de Órdenes</h3>
   <table style="width:100%; border-collapse:collapse; margin-top:10px;">
     <thead>
       <tr style="background-color:#ffd6e0;">
@@ -51,7 +51,7 @@
           {% if orden.estado|lower == 'aprobado' %}
             <span style="color:green;">✅ Aprobado</span>
           {% elif orden.estado|lower == 'pendiente' %}
-            <span style="color:orange;">🕓 Pendiente</span>
+            <span style="color:orange;">Pendiente</span>
           {% else %}
             <span style="color:red;">❌ {{ orden.estado }}</span>
           {% endif %}

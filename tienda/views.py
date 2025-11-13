@@ -1,6 +1,8 @@
 from datetime import date
 from email.mime import base
 import traceback
+from django.db import transaction
+from django.core.mail import send_mail
 import django
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
@@ -583,3 +585,105 @@ def panel_usuarios(request):
     }
 
     return render(request, 'tienda/panel_usuarios.html', context)
+
+@login_required
+@transaction.atomic
+def simular_compra(request):
+    """Simular una compra local: crear orden, resta cupos, y envía correos."""
+    usuario = request.user
+    carrito = get_object_or_404(Carrito, usuario=usuario)
+
+    if not carrito.items.exists():
+        return JsonResponse({'message': 'Tu carrito está vacío.'}, status=400)
+
+    # Crear orden
+    orden = Orden.objects.create(
+        usuario=usuario,
+        total=carrito.get_total_bruto(),
+        estado='APROBADO',  #  pago exitoso
+        pagado_en=timezone.now()
+    )
+
+    resumen = []
+    for item in carrito.items.all():
+        titulo = ""
+        cantidad = item.cantidad
+        precio = 0
+
+        if item.producto:
+            titulo = item.producto.nombre
+            precio = item.producto.precio
+
+        elif hasattr(item, 'taller_evento') and item.taller_evento:
+            titulo = f"Taller: {item.taller_evento.taller_base.titulo} ({item.taller_evento.fecha_proxima})"
+            precio = item.taller_evento.precio
+
+            # Descontar cupos
+            if item.taller_evento.capacidad > 0:
+                item.taller_evento.capacidad -= 1
+                item.taller_evento.save()
+
+        OrdenItem.objects.create(
+            orden=orden,
+            tipo='TALLER' if hasattr(item, 'taller_evento') and item.taller_evento else 'PRODUCTO',
+            referencia_id=item.id,
+            titulo=titulo,
+            precio_unitario=precio,
+        )
+
+        resumen.append(f"- {titulo} x{cantidad} — ${precio * cantidad}")
+
+    # Limpiar carrito
+    carrito.items.all().delete()
+
+    # ----------- EMAILS -------------
+    total = f"${orden.total:,.0f}"
+    detalles_compra = "\n".join(resumen)
+    numero_orden = f"TMM-{orden.id:04d}"
+
+    # Email al comprador
+    mensaje_usuario = f"""
+¡Gracias por tu compra, {usuario.first_name or usuario.username}! 🧾
+
+Tu número de orden es: {numero_orden}
+Detalles de tu compra:
+{detalles_compra}
+
+Total: {total}
+
+Te has inscrito exitosamente a tus talleres seleccionados 
+Nos vemos pronto en Talleres TMM 💕
+"""
+    send_mail(
+        subject=f"Confirmación de compra - {numero_orden}",
+        message=mensaje_usuario,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[usuario.email],
+        fail_silently=True,
+    )
+
+    # Email a la dueña
+    mensaje_duena = f"""
+ NUEVA COMPRA RECIBIDA 
+
+Orden: {numero_orden}
+Cliente: {usuario.username} ({usuario.email})
+Total: {total}
+
+Detalles:
+{detalles_compra}
+
+Revisa los cupos actualizados en el panel de administración.
+"""
+    send_mail(
+        subject=f"🛒 Nueva compra - {numero_orden}",
+        message=mensaje_duena,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=["rod2480yt@gmail.com"],
+        fail_silently=True,
+    )
+
+    return JsonResponse({
+        'message': f"Compra simulada con éxito 🎉 Orden {numero_orden} generada.",
+        'redirect': reverse('carrito')
+    })
