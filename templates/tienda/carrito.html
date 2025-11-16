@@ -54,14 +54,51 @@
         <div class="carrito-summary-area">
             
             <!-- TARJETA DE DIRECCIÓN CORREGIDA -->
+            {% if not solo_talleres %}
+
             <div class="address-box">
-                <div class="direccion-texto">
-                    <p>Dirección de entrega:</p>
-                    <p>{{ direccion.calle }}, {{ direccion.numero }}</p>
-                    <p>{{ direccion.ciudad }} {{ direccion.zip }}</p>
-                </div>
-                <button class="btn-modificar">Modificar</button>
+
+                <!-- Si NO se está editando la dirección -->
+                {% if not request.GET.editar %}
+                    {% if direccion.calle %}
+                        <div class="direccion-texto">
+                            <p><strong>Dirección de entrega</strong></p>
+                            <p>{{ direccion.calle }}, {{ direccion.numero }}</p>
+                            <p>{{ direccion.ciudad }} {{ direccion.zip }}</p>
+                        </div>
+                    {% else %}
+                        <p>No has ingresado una dirección de entrega.</p>
+                    {% endif %}
+
+                    <a href="?editar=1" class="btn-modificar">Modificar</a>
+
+                {% else %}
+                <!-- FORMULARIO cuando se hace clic en “Modificar” -->
+                <form method="post" action="{% url 'guardar_direccion' %}">
+                    {% csrf_token %}
+
+                    <label>Calle:</label>
+                    <input type="text" name="calle" value="{{ direccion.calle }}">
+
+                    <label>Número / Depto:</label>
+                    <input type="text" name="numero" value="{{ direccion.numero }}">
+
+                    <label>Ciudad:</label>
+                    <input type="text" name="ciudad" value="{{ direccion.ciudad }}">
+
+                    <label>Código Postal:</label>
+                    <input type="text" name="zip" value="{{ direccion.zip }}">
+
+                    <button type="submit" class="btn-pagar">Guardar</button>
+                    <a href="{% url 'carrito' %}" class="btn-modificar">Cancelar</a>
+                </form>
+                {% endif %}
+
             </div>
+
+            {% endif %}
+
+
             
             <div class="discount-box">
                 <input type="text" placeholder="Ingresa código de descuento">

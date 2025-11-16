@@ -16,7 +16,6 @@ class UsuarioPersonalizado(AbstractUser):
     fecha_cumpleanos = models.DateField(null=True, blank=True)
     
     # Campo para la imagen de perfil. 
-    # CRÍTICO: El archivo 'default_avatar.png' debe existir en tu carpeta MEDIA_ROOT/avatars/
     avatar = models.ImageField(
         upload_to='avatars/',
         null=True,
@@ -26,8 +25,15 @@ class UsuarioPersonalizado(AbstractUser):
     
     notificacion_bienvenida_vista = models.BooleanField(default=False)
 
+    # Dirección de entrega
+    direccion_calle = models.CharField(max_length=255, blank=True, null=True)
+    direccion_numero = models.CharField(max_length=50, blank=True, null=True)
+    direccion_ciudad = models.CharField(max_length=100, blank=True, null=True)
+    direccion_zip = models.CharField(max_length=20, blank=True, null=True)
+
     def __str__(self):
         return self.email or self.username
+
 
 
 class TallerAsistido(models.Model):

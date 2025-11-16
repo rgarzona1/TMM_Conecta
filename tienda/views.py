@@ -60,27 +60,36 @@ def categoria_vista(request, categoria_slug):
 
 @login_required
 def carrito_vista(request):
-    """ Muestra el carrito de compras (Mockup: image_a7003c.png) """
-    
     cart = get_user_cart(request.user)
-    
-    # Simulación de costos y descuento
+
+    # Cálculo de totales
     subtotal = cart.get_total_bruto()
-    descuento_aplicado = 0 
+    descuento_aplicado = 0
     total_final = subtotal - descuento_aplicado
-    
+
+    # Detectar si el carrito tiene productos
+    items = cart.items.all()
+    tiene_productos = any(item.producto for item in items)
+    solo_talleres = not tiene_productos   # Si NO hay productos → solo talleres
+
+    # Dirección real del usuario desde BD
+    usuario = request.user
+    direccion = {
+        "calle": usuario.direccion_calle,
+        "numero": usuario.direccion_numero,
+        "ciudad": usuario.direccion_ciudad,
+        "zip": usuario.direccion_zip,
+    }
+
     context = {
         'carrito': cart,
         'subtotal': subtotal,
         'total_final': total_final,
         'descuento': descuento_aplicado,
-        'direccion': {
-            'calle': "Av Libertador Bernardo O'Higgins",
-            'numero': "1234, Depto. 5B",
-            'ciudad': "Santiago",
-            'zip': "8320000"
-        }
+        'solo_talleres': solo_talleres,
+        'direccion': direccion,
     }
+
     return render(request, 'tienda/carrito.html', context)
 
 
@@ -692,3 +701,17 @@ Revisa los cupos actualizados en el panel de administración.
         'message': f"Compra simulada con éxito 🎉 Orden {numero_orden} generada.",
         'redirect': reverse('carrito')
     })
+
+
+@login_required
+def guardar_direccion(request):
+    if request.method == "POST":
+        u = request.user
+        u.direccion_calle = request.POST.get("calle")
+        u.direccion_numero = request.POST.get("numero")
+        u.direccion_ciudad = request.POST.get("ciudad")
+        u.direccion_zip = request.POST.get("zip")
+        u.save()
+        messages.success(request, "Dirección actualizada correctamente.")
+    return redirect("carrito")
+
