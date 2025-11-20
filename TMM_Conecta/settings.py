@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os 
 from dotenv import load_dotenv
+import environ 
+env=environ.Env()
+environ.Env.read_env()
 
 load_dotenv()
 
@@ -165,8 +168,19 @@ CONTEXT_PROCESSORS = [
     'django.contrib.messages.context_processors.messages',
 ]
 
-MERCADOPAGO_ACCESS_TOKEN = os.getenv("MERCADOPAGO_ACCESS_TOKEN")
-MERCADOPAGO_PUBLIC_KEY = os.getenv("MERCADOPAGO_PUBLIC_KEY")
+MERCADOPAGO_ACCESS_TOKEN = env("MERCADOPAGO_ACCESS_TOKEN")
+MERCADOPAGO_PUBLIC_KEY = env("MERCADOPAGO_PUBLIC_KEY")
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = "no-reply@tmmconecta.cl"
+
+#ENVIO DE EMAILS -- NO TOCAR PORQUE YA FUNCIONA PORFAAVOR NO SE ATREVAAAAAN A A TOCARLO.
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST= "smtp.gmail.com"
+EMAIL_PORT= 587
+EMAIL_USE_TLS= True
+EMAIL_USE_SSL= False
+
+EMAIL_HOST_USER="sisniega.garzona@gmail.com"
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL="sisniega.garzona@gmail.com"
+

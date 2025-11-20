@@ -6,6 +6,7 @@ from .forms import FormularioRegistroPersonalizado, UsuarioEdicionForm
 from .models import UsuarioPersonalizado, TallerAsistido
 from django.contrib.auth import logout
 from tienda.views import es_duena
+from usuarios.emails import enviar_correo_bienvenida
 
 # ==========================
 # REGISTRO DE USUARIO
@@ -17,6 +18,7 @@ def registro_vista(request):
             user = form.save(commit=False)
             user.is_active = True  # aseguramos que pueda loguearse
             user.save()
+            enviar_correo_bienvenida(user)
 
             # Autenticar con username y password1 (UserCreationForm)
             username = form.cleaned_data.get('username')
