@@ -2727,3 +2727,18 @@ form button {
 .panel-graficos > div{
   max-width: 100%;
 }
+
+
+/* ===== MENSAJE DE ERROR LOGIN – TEXTO ROJO SIN FONDO ===== */
+.error-text {
+    color: #d32f2f !important;   /* rojo intenso */
+    font-size: 1rem !important;  /* más grande */
+    font-weight: 600;
+    margin-top: 15px !important;
+    margin-bottom: 20px !important;
+    padding: 0;
+    background: none !important; /* sin fondo */
+    text-align: center;
+    display: block;
+}
+
