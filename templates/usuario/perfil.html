@@ -46,27 +46,27 @@
 
         <!-- Main Content -->
         <div class="perfil-main">
-            <section class="perfil-promos">
-                <h3>Promociones para ti</h3>
-                <div class="promo-grid">
+        <section class="perfil-promos">
+            <h3>Tus cupones</h3>
+            <div class="promo-grid">
+                {% for cupon in usuario.cupones.all %}
                     <div class="promo-card">
-                        <p>10% de descuento en tu próximo taller de <strong>resina epóxica</strong></p>
-                        <img src="{% static 'img\promo1.jpg' %}" alt="Promo resina">
+                        <p>{{ cupon.porcentaje_descuento }}% de descuento</p>
                         <div class="promo-code">
                             <p>Usa el código:</p>
-                            <span class="codigo">TMMDESCUENTO</span>
+                            <span class="codigo">{{ cupon.codigo }}</span>
                         </div>
+                        {% if cupon.descripcion %}
+                            <small>{{ cupon.descripcion }}</small>
+                        {% endif %}
+                        <p>Válido hasta: {{ cupon.fecha_expiracion }}</p>
                     </div>
-                    <div class="promo-card">
-                        <p>15% de descuento en tu compra de insumos <strong>para velas</strong></p>
-                        <img src="{% static 'img/promo2.jpg' %}" alt="Promo velas">
-                        <div class="promo-code">
-                            <p>Usa el código:</p>
-                            <span class="codigo">VELAS2025</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                {% empty %}
+                    <p>No tienes cupones disponibles.</p>
+                {% endfor %}
+            </div>
+        </section>
+
 
             <section class="perfil-talleres">
                 <h3>Historial de talleres</h3>

@@ -1,0 +1,145 @@
+{% extends 'general.html' %}
+{% block title %}Panel de Cupones{% endblock %}
+
+{% block content %}
+<section class="panel-right">
+  <h2>Gestión de Cupones</h2>
+  <p>Crea, asigna y administra cupones de descuento.</p>
+
+  <form method="POST" class="form-cupones">
+    {% csrf_token %}
+    <input type="hidden" name="accion" value="crear">
+
+    <div class="form-grid-2">
+      <div class="form-block">
+        <label>Código (sin espacios):</label>
+        <input type="text" name="codigo" required>
+
+        <label>Porcentaje (%):</label>
+        <input type="number" name="porcentaje" min="1" max="100" required>
+      </div>
+
+      <div class="form-block">
+        <label>Descripción:</label>
+        <input type="text" name="descripcion">
+
+        <label>Aplica a:</label>
+        <select name="aplica">
+          <option value="ALL">Todos</option>
+          <option value="PRODUCTO">Productos</option>
+          <option value="TALLER">Talleres</option>
+        </select>
+      </div>
+
+      <div class="form-block">
+        <label>Fecha inicio:</label>
+        <input type="date" name="fecha_inicio">
+
+        <label>Fecha expiración:</label>
+        <input type="date" name="fecha_expiracion">
+      </div>
+
+      <div class="form-block">
+        <label>Uso único por usuario</label>
+        <input type="checkbox" name="uso_unico">
+      </div>
+    </div>
+
+    <div class="btn-right">
+      <button type="submit" class="btn-panel">➕ Crear Cupón</button>
+    </div>
+  </form>
+
+  <hr>
+
+  <h3>Cupones existentes</h3>
+  <table class="tabla-panel">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>%</th>
+        <th>Aplica</th>
+        <th>Vigente</th>
+        <th>Asignados</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cupon in cupones %}
+      <tr>
+        <td>{{ cupon.codigo }}</td>
+        <td>{{ cupon.porcentaje_descuento }}</td>
+        <td>{{ cupon.get_aplica_display }}</td>
+        <td>
+          {% if cupon.esta_vigente %}✅{% else %}❌{% endif %}
+        </td>
+        <td>{{ cupon.usuarios.count }}</td>
+        <td>
+          <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="eliminar">
+            <input type="hidden" name="id" value="{{ cupon.id }}">
+            <button class="btn-salir" onclick="return confirm('Eliminar cupón?');">🗑️ Eliminar</button>
+          </form>
+
+          <!-- botón asignar -->
+            <button 
+                type="button" 
+                class="btn-panel btn-asignar" 
+                data-id="{{ cupon.id }}" 
+                data-codigo="{{ cupon.codigo|escapejs }}">
+                Asignar
+            </button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No hay cupones creados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Modal simple para asignar cupon -->
+  <div id="modal-asignar" style="display:none; position:fixed; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+    <div style="background:white; padding:20px; max-width:600px; margin:40px auto; border-radius:8px;">
+      <h4 id="modal-titulo">Asignar cupón</h4>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="asignar">
+        <input type="hidden" name="id_cupon" id="modal_id_cupon">
+        <label>Seleccionar usuario:</label>
+        <select name="user_id">
+          {% for u in usuarios %}
+            <option value="{{ u.id }}">{{ u.username }} — {{ u.email }}</option>
+          {% endfor %}
+        </select>
+        <div style="margin-top:12px;">
+          <button type="submit" class="btn-panel">Asignar</button>
+          <button type="button" class="btn-salir" onclick="cerrarModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</section>
+
+<script>
+function mostrarAsignar(id, codigo) {
+  document.getElementById('modal-asignar').style.display = 'block';
+  document.getElementById('modal_id_cupon').value = id;
+  document.getElementById('modal-titulo').innerText = 'Asignar cupón ' + codigo;
+}
+function cerrarModal() {
+  document.getElementById('modal-asignar').style.display = 'none';
+}
+
+document.addEventListener("click", function(e) {
+    if (e.target.classList.contains("btn-asignar")) {
+        const id = e.target.dataset.id;
+        const codigo = e.target.dataset.codigo;
+        mostrarAsignar(id, codigo);
+    }
+});
+
+</script>
+
+{% endblock %}
