@@ -15,6 +15,7 @@ from .models import Producto, Carrito, CarritoItem, TallerEvento
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required, user_passes_test
 from Web.models import Taller
+from .models import Producto
 
 #IMPORTACIONES PARA MERCADOPAGO
 import mercadopago
@@ -714,4 +715,74 @@ def guardar_direccion(request):
         u.save()
         messages.success(request, "Dirección actualizada correctamente.")
     return redirect("carrito")
+
+@login_required
+def panel_insumos(request):
+    """Vista para gestionar los insumos/productos"""
+    
+    # CREAR O EDITAR INSUMO
+    if request.method == 'POST':
+        insumo_id = request.POST.get('id')
+        accion = request.POST.get('accion')
+        
+        # Recoger datos del formulario
+        nombre = request.POST.get('nombre')
+        categoria = request.POST.get('categoria')
+        precio = request.POST.get('precio')
+        descripcion_corta = request.POST.get('descripcion_corta')
+        imagen = request.FILES.get('imagen')
+        
+        if accion == 'editar' and insumo_id:
+            # EDITAR insumo existente
+            try:
+                insumo = Producto.objects.get(id=insumo_id)
+                insumo.nombre = nombre
+                insumo.categoria = categoria
+                insumo.precio = precio
+                insumo.descripcion_corta = descripcion_corta
+                
+                if imagen:
+                    insumo.imagen = imagen
+                
+                insumo.save()
+                messages.success(request, f'✅ Insumo "{nombre}" actualizado correctamente.')
+            except Producto.DoesNotExist:
+                messages.error(request, '❌ El insumo no existe.')
+        else:
+            # CREAR nuevo insumo
+            nuevo_insumo = Producto(
+                nombre=nombre,
+                categoria=categoria,
+                precio=precio,
+                descripcion_corta=descripcion_corta
+            )
+            
+            if imagen:
+                nuevo_insumo.imagen = imagen
+            
+            nuevo_insumo.save()
+            messages.success(request, f'✅ Insumo "{nombre}" creado correctamente.')
+        
+        return redirect('panel_insumos')
+    
+    # ELIMINAR INSUMO
+    if request.GET.get('eliminar'):
+        try:
+            insumo_id = request.GET.get('eliminar')
+            insumo = Producto.objects.get(id=insumo_id)
+            nombre = insumo.nombre
+            insumo.delete()
+            messages.success(request, f'🗑️ Insumo "{nombre}" eliminado.')
+        except Producto.DoesNotExist:
+            messages.error(request, '❌ El insumo no existe.')
+        return redirect('panel_insumos')
+    
+    insumos = Producto.objects.all().order_by('categoria', 'nombre')
+    
+    context = {
+        'insumos': insumos,
+        'categorias': Producto.CATEGORIA_CHOICES,
+    }
+    
+    return render(request, 'tienda/panel_insumos.html', context)
 

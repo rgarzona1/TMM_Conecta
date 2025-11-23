@@ -38,7 +38,8 @@ urlpatterns = [
       #ventas
     path('panel/ventas/', views.panel_ventas, name='panel_ventas'),
     path('panel/ventas/<int:orden_id>/', views.panel_ventas_detalle, name='panel_ventas_detalle'),
-
+    path('panel/insumos/', views.panel_insumos, name='panel_insumos'),
+    
     #usuarios
     path('panel/usuarios/', views.panel_usuarios, name='panel_usuarios'),
     path("carrito/guardar-direccion/", guardar_direccion, name="guardar_direccion"),

@@ -1,0 +1,139 @@
+{% extends 'general.html' %}
+{% block title %}Gestión de Insumos{% endblock %}
+
+{% block content %}
+<section class="panel-right">
+  <h2><i class="fa fa-box"></i> Gestión de Insumos</h2>
+  <p>Desde aquí puedes crear, editar o eliminar productos e insumos de la tienda.</p>
+
+  <!-- Mensajes de éxito/error -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'success' %}
+        <div style="padding:10px; margin-bottom:15px; border-radius:8px; background-color:#d4edda; color:#155724; border:1px solid #c3e6cb;">
+          {{ message }}
+        </div>
+      {% else %}
+        <div style="padding:10px; margin-bottom:15px; border-radius:8px; background-color:#f8d7da; color:#721c24; border:1px solid #f5c6cb;">
+          {{ message }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  <!-- FORMULARIO -->
+  <form method="POST" enctype="multipart/form-data" class="form-talleres">
+    {% csrf_token %}
+    <input type="hidden" name="id" id="insumo_id">
+    <input type="hidden" name="accion" id="accion" value="crear">
+
+    <div class="form-grid-2">
+      
+      <div class="form-block">
+        <label for="nombre">Nombre del Insumo: *</label>
+        <input type="text" name="nombre" id="nombre" required>
+
+        <label for="categoria">Categoría: *</label>
+        <select name="categoria" id="categoria" required>
+          {% for value, label in categorias %}
+          <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-block">
+        <label for="precio">Precio: *</label>
+        <input type="number" min="0" name="precio" id="precio" required>
+
+        <label for="imagen">Imagen del Producto:</label>
+        <input type="file" name="imagen" id="imagen" accept="image/*">
+      </div>
+
+    </div>
+
+    <label for="descripcion_corta" class="label-descripcion">Descripción corta:</label>
+    <textarea name="descripcion_corta" id="descripcion_corta" class="desc-area" rows="3" placeholder="Describe brevemente el producto..."></textarea>
+
+    <div class="btn-right">
+      <button type="submit" class="btn-panel" id="btn-guardar">➕ Crear Insumo</button>
+      <button type="button" class="btn-panel" onclick="limpiarFormulario()" style="background:#6c757d;">🔄 Limpiar</button>
+    </div>
+  </form>
+
+  <hr>
+
+  <!-- TABLA DE INSUMOS -->
+  <table class="tabla-panel">
+    <thead>
+      <tr>
+        <th>Imagen</th>
+        <th>Nombre</th>
+        <th>Categoría</th>
+        <th>Precio</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for insumo in insumos %}
+      <tr>
+        <td>
+          {% if insumo.imagen %}
+            <img src="{{ insumo.imagen.url }}" alt="{{ insumo.nombre }}" style="width:60px; height:60px; object-fit:cover; border-radius:8px;">
+          {% else %}
+            <span style="color:#999;">Sin imagen</span>
+          {% endif %}
+        </td>
+        <td><strong>{{ insumo.nombre }}</strong></td>
+        <td>{{ insumo.get_categoria_display }}</td>
+        <td>${{ insumo.precio|floatformat:0 }}</td>
+        <td>{{ insumo.descripcion_corta|truncatewords:10 }}</td>
+        <td>
+          <button
+            type="button"
+            class="btn-panel"
+            onclick="editarInsumo(this)"
+            data-id="{{ insumo.id }}"
+            data-nombre="{{ insumo.nombre|escapejs }}"
+            data-categoria="{{ insumo.categoria }}"
+            data-precio="{{ insumo.precio }}"
+            data-descripcion="{{ insumo.descripcion_corta|escapejs }}">
+            ✏️ Editar
+          </button>
+
+          <a href="?eliminar={{ insumo.id }}" class="btn-salir" onclick="return confirm('¿Seguro que deseas eliminar {{ insumo.nombre }}?');">
+            🗑️ Eliminar
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">No hay insumos registrados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<script>
+function editarInsumo(btn) {
+  document.getElementById('insumo_id').value = btn.dataset.id;
+  document.getElementById('nombre').value = btn.dataset.nombre;
+  document.getElementById('categoria').value = btn.dataset.categoria;
+  document.getElementById('precio').value = btn.dataset.precio;
+  document.getElementById('descripcion_corta').value = btn.dataset.descripcion;
+  document.getElementById('accion').value = 'editar';
+  document.getElementById('btn-guardar').innerText = '💾 Guardar Cambios';
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function limpiarFormulario() {
+  document.getElementById('insumo_id').value = '';
+  document.getElementById('nombre').value = '';
+  document.getElementById('categoria').selectedIndex = 0;
+  document.getElementById('precio').value = '';
+  document.getElementById('descripcion_corta').value = '';
+  document.getElementById('accion').value = 'crear';
+  document.getElementById('btn-guardar').innerText = '➕ Crear Insumo';
+}
+</script>
+{% endblock %}
