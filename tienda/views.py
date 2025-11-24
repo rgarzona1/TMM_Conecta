@@ -10,12 +10,15 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.views.decorators.http import require_POST
 from django.urls import reverse
-from flask import json
-from .models import Producto, Carrito, CarritoItem, TallerEvento
+from flask import json, request
+
+from usuarios.models import UsuarioPersonalizado
+from .models import CuponAsignado, Producto, Carrito, CarritoItem, TallerEvento
 from django.db.models import Count
 from django.contrib.auth.decorators import login_required, user_passes_test
 from Web.models import Taller
-from .models import Producto
+from .models import Producto, Cupon
+from decimal import Decimal 
 
 #IMPORTACIONES PARA MERCADOPAGO
 import mercadopago
@@ -61,11 +64,66 @@ def categoria_vista(request, categoria_slug):
 
 @login_required
 def carrito_vista(request):
-    cart = get_user_cart(request.user)
 
-    # Cálculo de totales
+    cart = get_user_cart(request.user)
     subtotal = cart.get_total_bruto()
     descuento_aplicado = 0
+    cupon_aplicado = None
+
+
+    if request.method == "POST":
+        accion = request.POST.get("accion")
+        #APLICAR CUPÓN
+        if accion == "aplicar":
+            codigo = request.POST.get("codigo", "").strip()
+
+            try:
+                cupon = Cupon.objects.get(codigo=codigo)
+
+              
+                if not cupon.esta_vigente():
+                    messages.error(request, "El cupón no está vigente.")
+                    return redirect("carrito")
+
+                if cupon.usuarios.exists() and request.user not in cupon.usuarios.all():
+                    messages.error(request, "Este cupón no está asignado a tu usuario.")
+                    return redirect("carrito")
+
+                request.session["cupon_codigo"] = cupon.codigo
+                messages.success(request, f"Cupón «{cupon.codigo}» aplicado correctamente.")
+                return redirect("carrito")
+
+            except Cupon.DoesNotExist:
+                messages.error(request, "El cupón ingresado no es válido.")
+                return redirect("carrito")
+
+        #  QUITAR CUPÓN
+        elif accion == "quitar":
+            if "cupon_codigo" in request.session:
+                del request.session["cupon_codigo"]
+            messages.success(request, "Cupón eliminado del carrito.")
+            return redirect("carrito")
+
+    #  CALCULAR DESCUENTO SI HAY CUPÓN EN SESIÓN
+    cupon_codigo = request.session.get("cupon_codigo")
+
+    if cupon_codigo:
+        cupon = Cupon.objects.filter(codigo=cupon_codigo).first()
+
+        # Validar vigencia cada vez que se carga el carrito
+        if cupon and cupon.esta_vigente():
+            cupon_aplicado = cupon
+            descuento_aplicado = (subtotal * (Decimal(cupon.porcentaje_descuento) / Decimal(100)))
+            descuento_aplicado = int(descuento_aplicado)
+        else:
+            # Si expiró o fue borrado → eliminarlo
+            if "cupon_codigo" in request.session:
+                del request.session["cupon_codigo"]
+            cupon_aplicado = None
+            descuento_aplicado = 0
+
+    #  TOTAL FINAL
+
     total_final = subtotal - descuento_aplicado
 
     # Detectar si el carrito tiene productos
@@ -86,12 +144,14 @@ def carrito_vista(request):
         'carrito': cart,
         'subtotal': subtotal,
         'total_final': total_final,
-        'descuento': descuento_aplicado,
+        'descuento': int(descuento_aplicado),
+        'cupon': cupon_aplicado,
         'solo_talleres': solo_talleres,
         'direccion': direccion,
     }
 
     return render(request, 'tienda/carrito.html', context)
+
 
 
 # Vistas de acción del carrito (prototipo funcional)
@@ -209,12 +269,29 @@ def crear_preferencia(request):
         if not items:
             return JsonResponse({'error': 'El carrito está vacío.'}, status=400)
         
+        # después de obtener items y total:
+        cupon_codigo = request.session.get('cupon_codigo')
+        descuento = 0
+        cupon_obj = None
+
+        if cupon_codigo:
+            cupon_obj = Cupon.objects.filter(codigo=cupon_codigo).first()
+            if cupon_obj and cupon_obj.esta_vigente():
+                descuento = total * (cupon_obj.porcentaje_descuento / 100)
+                total = total - descuento
+            else:
+                # limpiar sesion si ya no es valido
+                request.session.pop('cupon_codigo', None)
+
+        
         #crear orden en estado pendiente
         
         orden = Orden.objects.create(
             usuario=request.user,
-            total =total,
-            estado = 'PENDIENTE'
+            total=total,
+            estado='PENDIENTE',
+            mp_preference_id='',
+            cupon_codigo = cupon_obj.codigo if cupon_obj else None
         )
         for item in items: 
             print("🧾 ITEM:", item)
@@ -237,6 +314,8 @@ def crear_preferencia(request):
                 'failure': f"{base}/tienda/checkout/retorno/failure/",
             }
             notification_url = f"{base}/tienda/webhooks/mercadopago/"
+            
+
             
             #crear preferencia en MP
             
@@ -338,9 +417,14 @@ def webhook_mercadopago(request):
                 orden.mp_payment_id = str(payment_id)
                 orden.pagado_en = timezone.now()
                 orden.save()
-
-                # Aquí puedes: descontar stock, “reservar cupos” en TallerEvento,
-                # generar comprobante, limpiar carrito, enviar email, etc.
+                codigo = getattr(orden, 'cupon_codigo', None)
+                if codigo:
+                    cupon = Cupon.objects.filter(codigo=codigo).first()
+                    if cupon:
+                        # si cupon tiene usuarios asignados, marcar asignacion
+                        asignacion = CuponAsignado.objects.filter(cupon=cupon, usuario=orden.usuario, usado=False).first()
+                        if asignacion:
+                            asignacion.marcar_usado()
 
             elif status == "rejected":
                 orden.estado = "rechazado"
@@ -349,7 +433,7 @@ def webhook_mercadopago(request):
 
     return HttpResponse(status=200)
 
-# Verifica que el usuario sea la dueña (cambia el correo por el real)
+# Verifica que el usuario sea la dueña.
 def es_duena(user):
     return user.is_authenticated and user.email == "duena@tmmconecta.cl"
 
@@ -786,3 +870,69 @@ def panel_insumos(request):
     
     return render(request, 'tienda/panel_insumos.html', context)
 
+
+@login_required
+@user_passes_test(es_duena)
+def panel_cupones(request):
+    """CRUD de cupones para la dueña (listar, crear, eliminar, asignar)."""
+    cupones = Cupon.objects.all().order_by('-creado_en')
+    usuarios = UsuarioPersonalizado.objects.all().order_by('-date_joined')
+
+    if request.method == "POST":
+        accion = request.POST.get('accion')
+        if accion == 'crear':
+            codigo = request.POST.get('codigo').strip().upper()
+            descripcion = request.POST.get('descripcion', '').strip()
+            porcentaje = int(request.POST.get('porcentaje') or 0)
+            inicio = request.POST.get('fecha_inicio') or None
+            fin = request.POST.get('fecha_expiracion') or None
+            uso_unico = request.POST.get('uso_unico') == 'on'
+            aplica = request.POST.get('aplica') or 'ALL'
+
+            if not codigo or porcentaje <= 0:
+                messages.error(request, "Código y porcentaje válidos son requeridos.")
+                return redirect('panel_cupones')
+
+            cupon = Cupon.objects.create(
+                codigo=codigo,
+                descripcion=descripcion,
+                porcentaje_descuento=porcentaje,
+                fecha_inicio=inicio,
+                fecha_expiracion=fin,
+                uso_unico=uso_unico,
+                aplica=aplica,
+                activo=True
+            )
+            messages.success(request, f"Cupón {cupon.codigo} creado.")
+            return redirect('panel_cupones')
+
+        elif accion == 'eliminar':
+            id_c = request.POST.get('id')
+            Cupon.objects.filter(id=id_c).delete()
+            messages.success(request, "Cupón eliminado.")
+            return redirect('panel_cupones')
+
+        elif accion == 'asignar':
+            id_c = request.POST.get('id_cupon')
+            user_id = request.POST.get('user_id')
+            cupon = get_object_or_404(Cupon, id=id_c)
+            user = get_object_or_404(UsuarioPersonalizado, id=user_id)
+            cupon.usuarios.add(user)
+            # crear registro en CuponAsignado si no existe
+            CuponAsignado.objects.get_or_create(cupon=cupon, usuario=user)
+            messages.success(request, f"Cupón {cupon.codigo} asignado a {user.username}.")
+            return redirect('panel_cupones')
+
+    return render(request, 'tienda/panel_cupones.html', {
+        'cupones': cupones,
+        'usuarios': usuarios,
+    })
+
+@login_required
+def quitar_cupon(request):
+    """Elimina el cupón activo desde la sesión del usuario."""
+    if "cupon_codigo" in request.session:
+        del request.session["cupon_codigo"]
+
+    messages.success(request, "Cupón eliminado del carrito.")
+    return redirect("carrito")

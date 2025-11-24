@@ -109,6 +109,7 @@ class Orden(models.Model):
     mp_payment_id=models.CharField(max_length=100,blank=True, null=True)
     pagado_en = models.DateTimeField(blank=True, null=True)
     creado_en= models.DateTimeField(auto_now_add=True)
+    cupon_codigo = models.CharField(max_length=50, null=True, blank=True)
     
     
 class OrdenItem(models.Model):
@@ -118,4 +119,74 @@ class OrdenItem(models.Model):
     titulo= models.CharField(max_length=200)
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario= models.DecimalField(max_digits=12, decimal_places=2)
+
+
+from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+class Cupon(models.Model):
+    APLICA_CHOICES = [
+        ('ALL', 'Todos'),
+        ('PRODUCTO', 'Productos'),
+        ('TALLER', 'Talleres'),
+    ]
+
+    codigo = models.CharField(max_length=50, unique=True)
+    descripcion = models.CharField(max_length=255, blank=True, null=True)
+    porcentaje_descuento = models.PositiveIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(100)],
+        default=10
+    )  # 1-100 (%)
+
+    fecha_inicio = models.DateField(null=True, blank=True)
+    fecha_expiracion = models.DateField(null=True, blank=True)
+
+    uso_unico = models.BooleanField(default=False)  # un uso por usuario
+    activo = models.BooleanField(default=True)
+
+    aplica = models.CharField(max_length=20, choices=APLICA_CHOICES, default='ALL')
+
+    usuarios = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='cupones',
+        blank=True,
+        help_text="Si vacío -> cupón público/global. Si tiene usuarios -> cupón asignado."
+    )
+
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-creado_en']
+
+    def __str__(self):
+        return f"{self.codigo} — {self.porcentaje_descuento}%"
+
+    def esta_vigente(self):
+        if not self.activo:
+            return False
+        hoy = timezone.localdate()
+        if self.fecha_inicio and hoy < self.fecha_inicio:
+            return False
+        if self.fecha_expiracion and hoy > self.fecha_expiracion:
+            return False
+        return True
+
+class CuponAsignado(models.Model):
+    cupon = models.ForeignKey(Cupon, on_delete=models.CASCADE, related_name='asignaciones')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='asignaciones_cupon')
+    asignado_en = models.DateTimeField(auto_now_add=True)
+    usado = models.BooleanField(default=False)
+    usado_en = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('cupon', 'usuario')
+
+    def marcar_usado(self):
+        self.usado = True
+        self.usado_en = timezone.now()
+        self.save()
+
+    def __str__(self):
+        return f"{self.cupon.codigo} -> {self.usuario.username}"
 

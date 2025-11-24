@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 from . import views
-from .views import guardar_direccion
+from .views import guardar_direccion, quitar_cupon
 
 urlpatterns = [
     # Rutas principales de la tienda
@@ -43,6 +43,10 @@ urlpatterns = [
     #usuarios
     path('panel/usuarios/', views.panel_usuarios, name='panel_usuarios'),
     path("carrito/guardar-direccion/", guardar_direccion, name="guardar_direccion"),
+    
+    #cupones
+    path('panel/cupones/', views.panel_cupones, name='panel_cupones'),
+    path('carrito/quitar-cupon/', views.quitar_cupon, name='quitar_cupon'),
 
   
 ]

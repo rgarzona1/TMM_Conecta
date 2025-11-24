@@ -100,10 +100,40 @@
 
 
             
-            <div class="discount-box">
-                <input type="text" placeholder="Ingresa código de descuento">
-                <button class="btn-aplicar">Aplicar</button>
-            </div>
+        <div class="discount-box">
+
+            <form method="post" action="{% url 'carrito' %}">
+                {% csrf_token %}
+
+                <!-- INPUT DEL CUPÓN -->
+                <input type="text"
+                    name="codigo"
+                    placeholder="Ingresa código de descuento"
+                    value="{% if cupon %}{{ cupon.codigo }}{% endif %}">
+
+                <!-- BOTÓN APLICAR -->
+                <button type="submit" name="accion" value="aplicar" class="btn-aplicar">
+                    Aplicar
+                </button>
+
+                <!-- SI HAY CUPÓN, MUESTRA BOTÓN QUITAR -->
+                {% if cupon %}
+                <div class="cupon-info">
+                    <small>
+                        Cupón aplicado: <strong>{{ cupon.codigo }}</strong> — {{ cupon.porcentaje_descuento }}%
+                    </small>
+
+                    <button type="submit" name="accion" value="quitar" class="btn-eliminar-cupon">
+                        Quitar
+                    </button>
+                </div>
+                {% endif %}
+
+            </form>
+
+        </div>
+
+
 
             <div class="total-container">
                 
