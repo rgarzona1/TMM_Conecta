@@ -2156,14 +2156,30 @@ html { scroll-behavior: smooth; }
 }
 
 .panel-card {
-  flex: 1 1 280px;
-  max-width: 300px;
+  flex: 1 1 220px;
+  max-width: 240px;
   background-color: #fff;
   border-radius: 14px;
-  padding: 1.8rem;
+  padding: 1.2rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.panel-card img {
+  max-width: 80px;        
+  height: auto;
+  margin-bottom: 0.8rem;
+}
+
+.panel-card h4 {
+  font-size: 1.1rem;      
+  margin-bottom: 0.4rem;
+}
+
+.panel-card p {
+  font-size: 0.85rem;     
+  margin-bottom: 0.8rem;
 }
 
 .panel-card:hover {
