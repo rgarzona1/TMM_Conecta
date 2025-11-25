@@ -2605,7 +2605,7 @@ form button {
 .btn-panel {
   align-self: flex-start;
   padding: 0.8rem 1.8rem;
-  background-color: var(--color-durazno);
+  background-color: #FFB3C1;
   color: #fff;
   font-weight: 600;
   border-radius: 10px;
