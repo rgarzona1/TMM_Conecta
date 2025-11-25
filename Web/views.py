@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .forms import MensajeContactoForm, ResenaForm
 from .models import Taller, Producto, Resena
 from django.contrib.auth.decorators import login_required
-
+from Web.models import MensajeContacto
 
 
 def conectar_view(request):
@@ -65,3 +65,56 @@ def crear_resena_vista(request):
         form = ResenaForm()
 
     return render(request, 'web/resena_formulario.html', {'form': form})
+
+@login_required
+def panel_consultas(request):
+    """Vista para gestionar los mensajes de contacto"""
+    
+    # Filtro por asunto
+    asunto_filtro = request.GET.get('asunto', 'TODOS')
+    
+    if asunto_filtro == 'TODOS':
+        consultas = MensajeContacto.objects.all().order_by('-fecha_envio')
+    else:
+        consultas = MensajeContacto.objects.filter(asunto=asunto_filtro).order_by('-fecha_envio')
+    
+    # Estadísticas
+    total_consultas = MensajeContacto.objects.count()
+    cotizaciones = MensajeContacto.objects.filter(asunto='cotizacion').count()
+    dudas = MensajeContacto.objects.filter(asunto='dudas').count()
+    problemas = MensajeContacto.objects.filter(asunto='problemas').count()
+    otros = MensajeContacto.objects.filter(asunto='otros').count()
+    
+    context = {
+        'consultas': consultas,
+        'asunto_filtro': asunto_filtro,
+        'total_consultas': total_consultas,
+        'cotizaciones': cotizaciones,
+        'dudas': dudas,
+        'problemas': problemas,
+        'otros': otros,
+    }
+    
+    return render(request, 'tienda/panel_mensajes.html', context)
+
+
+@login_required
+def detalle_consulta(request, pk):
+    """Vista para ver el detalle de una consulta"""
+    consulta = get_object_or_404(MensajeContacto, pk=pk)
+    return render(request, 'tienda/detalle_consulta.html', {'consulta': consulta})
+
+
+@login_required
+def eliminar_consulta(request, pk):
+    """Vista para eliminar una consulta"""
+    consulta = get_object_or_404(MensajeContacto, pk=pk)
+    
+    if request.method == 'POST':
+        nombre = consulta.nombre_completo
+        consulta.delete()
+        messages.success(request, f'🗑️ Consulta de "{nombre}" eliminada correctamente.')
+        return redirect('panel_consultas')
+    
+    return render(request, 'Web/confirmar_eliminar_consulta.html', {'consulta': consulta})
+

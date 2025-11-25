@@ -1,10 +1,10 @@
-{% extends 'general.html' %}
-{% block title %}Panel de la Dueña{% endblock %}
+// {% extends 'general.html' %}
+{% block title %}Administración{% endblock %}
 
 {% block content %}
 <section class="perfil-section panel-duena">
     <div class="perfil-container panel-duena-container">
-        
+
         <aside class="perfil-sidebar admin-sidebar">
             <div class="perfil-avatar-area">
                 <div class="perfil-avatar">
@@ -14,14 +14,14 @@
                         <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="Avatar predeterminado">
                     {% endif %}
                 </div>
-                
+
                 <h2>{{ user.first_name|default:user.username }}</h2>
                 <p>{{ user.email }}</p>
-                
-                <span class="perfil-rol">👑 Administradora</span>
-                
+
+                <span class="perfil-rol">Administradora</span>
+
                 <div class="frase-inspiradora" id="frase-inspiradora">
-                    Cargando... 
+                    Cargando...
                 </div>
             </div>
 
@@ -35,10 +35,10 @@
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px;">
                 {% if modo_demo %}
-                    <a href="{% url 'panel_duena_inicio' %}" class="btn-panel">🔌 Desactivar datos de prueba</a>
-                    <p style="color: #777; margin-top: 8px;">🔸 Modo demostración activado</p>
+                    <a href="{% url 'panel_duena_inicio' %}" class="btn-panel">Desactivar datos de prueba</a>
+                    <p style="color: #777; margin-top: 8px;">Modo demostración activado</p>
                 {% else %}
-                    <a href="{% url 'panel_duena_inicio' %}?demo=1" class="btn-panel">⚙️ Activar datos de prueba</a>
+                    <a href="{% url 'panel_duena_inicio' %}?demo=1" class="btn-panel">Activar datos de prueba</a>
                 {% endif %}
             </div>
 
@@ -46,7 +46,7 @@
                 <h3 style="margin-bottom: 30px;">Estadísticas del Negocio</h3>
 
                 <div class="graficos-grid">
-                    
+
                     <div class="grafico-box">
                         <div class="grafico-header">
                             <div class="grafico-metrica" id="total-productos">0</div>
@@ -121,6 +121,13 @@
                         <a href="{% url 'panel_cupones' %}" class="btn-panel">Ir a cupones</a>
                     </div>
 
+                    <div class="promo-card panel-card">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3062/3062634.png" alt="Mensajes">
+                        <h4>Mensajes</h4>
+                        <p>Revisa las consultas del formulario de contacto.</p>
+                        <a href="{% url 'panel_consultas' %}" class="btn-panel">Ver mensajes</a>
+                    </div>
+
                 </div>
             </section>
 
@@ -130,42 +137,32 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // ===============================================
-    // 🌸 FUNCIONALIDAD DE FRASE INSPIRADORA 🌸
-    // ===============================================
     const frasesInspiradorasTMM = [
-      "Crear con tus manos es sanar desde el alma 🌸",
-      "Vuelve a creer en ti misma, eres capaz de todo 💕",
-      "La creatividad es un camino de conexión contigo misma ✨",
-      "Cada proyecto es una oportunidad para reconectarte 🌸",
-      "Pausa, respira y crea. Tu bienestar es lo primero 💕",
-      "Las manos que crean, sanan el corazón ✨",
-      "Eres arte en movimiento 🌸",
-      "Tu creatividad merece brillar 💕",
-      "Reconectando con lo que nos hace felices ✨",
-      "Hoy es un buen día para crear algo hermoso 🌸",
-      "La magia está en tus manos 💕",
-      "Crea, conecta y florece ✨",
+        "Crear con tus manos es sanar desde el alma",
+        "Vuelve a creer en ti misma, eres capaz de todo",
+        "La creatividad es un camino de conexión contigo misma",
+        "Cada proyecto es una oportunidad para reconectarte",
+        "Pausa, respira y crea. Tu bienestar es lo primero",
+        "Las manos que crean, sanan el corazón",
+        "Eres arte en movimiento",
+        "Tu creatividad merece brillar",
+        "Reconectando con lo que nos hace felices",
+        "Hoy es un buen día para crear algo hermoso",
+        "La magia está en tus manos",
+        "Crea, conecta y florece",
     ];
 
     function mostrarFraseAleatoria() {
-      const elementoFrase = document.getElementById('frase-inspiradora');
-      if (elementoFrase) {
-        const fraseRandom = frasesInspiradorasTMM[Math.floor(Math.random() * frasesInspiradorasTMM.length)];
-        elementoFrase.textContent = fraseRandom;
-      }
+        const elementoFrase = document.getElementById('frase-inspiradora');
+        if (elementoFrase) {
+            const fraseRandom = frasesInspiradorasTMM[Math.floor(Math.random() * frasesInspiradorasTMM.length)];
+            elementoFrase.textContent = fraseRandom;
+        }
     }
-    
-    // Ejecutar la función de frase inspiradora al cargar
     mostrarFraseAleatoria();
-    
-    // ===============================================
-    // 📊 CÓDIGO DE GRÁFICOS (CHART.JS) 📊
-    // ===============================================
-    
+
     const colores = ['#ff99c8', '#a0c4ff', '#bdb2ff', '#ffc6ff', '#fdffb6', '#caffbf'];
 
-    // 🔹 Datos desde Django (reales o demo)
     const labels_categorias = JSON.parse('{{ labels_categorias|escapejs }}');
     const data_categorias = JSON.parse('{{ data_categorias|escapejs }}');
     const labels_tipo = JSON.parse('{{ labels_tipo|escapejs }}');
@@ -173,17 +170,15 @@
     const labels_meses = JSON.parse('{{ labels_meses|escapejs }}');
     const data_meses = JSON.parse('{{ data_meses|escapejs }}');
 
-    // Calcular métricas
     const totalProductos = data_categorias.reduce((a, b) => a + b, 0);
     const totalTalleres = data_tipo.reduce((a, b) => a + b, 0);
     const talleresMes = data_meses[data_meses.length - 1] || 0;
 
-    // Mostrar métricas
     document.getElementById('total-productos').textContent = totalProductos;
     document.getElementById('total-talleres').textContent = totalTalleres;
     document.getElementById('talleres-mes').textContent = talleresMes;
 
-    // 🔹 Gráfico 1 - Categorías
+    // Gráfico 1 - Categorías
     new Chart(document.getElementById('graficoCategorias'), {
         type: 'bar',
         data: {
@@ -220,7 +215,7 @@
         }
     });
 
-    // 🔹 Gráfico 2 - Tipo de Taller
+    // Gráfico 2 - Tipo de Taller
     new Chart(document.getElementById('graficoTipo'), {
         type: 'doughnut',
         data: {
@@ -253,7 +248,7 @@
         }
     });
 
-    // 🔹 Gráfico 3 - Talleres por Mes
+    // Gráfico 3 - Talleres por Mes
     new Chart(document.getElementById('graficoMeses'), {
         type: 'line',
         data: {

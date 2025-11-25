@@ -1,0 +1,53 @@
+{% extends 'general.html' %}
+{% block title %}Detalle de Consulta{% endblock %}
+
+{% block content %}
+<section class="panel-right" style="max-width: 800px; margin: 2rem auto;">
+  <h2>📩 Detalle de Consulta</h2>
+
+  <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+    
+    <div style="border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px;">
+      <h3 style="color: #ff69b4; margin-bottom: 15px;">Información de Contacto</h3>
+      <p><strong>Nombre:</strong> {{ consulta.nombre_completo }}</p>
+      <p><strong>Email:</strong> <a href="mailto:{{ consulta.correo_electronico }}" style="color: #0080ff;">{{ consulta.correo_electronico }}</a></p>
+      <p><strong>Fecha:</strong> {{ consulta.fecha_envio|date:"d/m/Y H:i" }}</p>
+      <p><strong>Asunto:</strong> 
+        {% with asunto=consulta.asunto %}
+        <span class="tag-asunto
+          {% if asunto == 'cotizacion' %}tag-cotizacion
+          {% elif asunto == 'dudas' %}tag-dudas
+          {% elif asunto == 'problemas' %}tag-problemas
+          {% else %}tag-otro{% endif %}">
+          {{ consulta.get_asunto_display }}
+        </span>
+        {% endwith %}
+      </p>
+      <p><strong>Suscrito al newsletter:</strong> 
+        {% if consulta.suscripcion %}
+          <span style="color: #28a745; font-weight: 600;">✓ Sí</span>
+        {% else %}
+          <span style="color: #999;">○ No</span>
+        {% endif %}
+      </p>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+      <h3 style="color: #ff69b4; margin-bottom: 15px;">Mensaje</h3>
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid #ff69b4; line-height: 1.7;">
+        {{ consulta.mensaje|linebreaks }}
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
+      <a href="{% url 'panel_consultas' %}" class="btn-panel" style="background: #6c757d;">
+        ← Volver a Consultas
+      </a>
+      <a href="mailto:{{ consulta.correo_electronico }}?subject=Re: {{ consulta.get_asunto_display }}" class="btn-panel">
+        ✉️ Responder por Email
+      </a>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
