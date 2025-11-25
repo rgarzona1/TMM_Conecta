@@ -3,167 +3,297 @@
 
 {% block content %}
 <section class="perfil-section panel-duena">
-  <div class="perfil-container panel-duena-container">
-    
-    <aside class="perfil-sidebar">
-      <div class="perfil-avatar-area">
-        <div class="perfil-avatar">
-          <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="Avatar">
-        </div>
-        <h2>caro</h2>
-        <p>duena@tmmconecta.cl</p>
-      </div>
+    <div class="perfil-container panel-duena-container">
+        
+        <aside class="perfil-sidebar admin-sidebar">
+            <div class="perfil-avatar-area">
+                <div class="perfil-avatar">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="Avatar de {{ user.username }}">
+                    {% else %}
+                        <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="Avatar predeterminado">
+                    {% endif %}
+                </div>
+                
+                <h2>{{ user.first_name|default:user.username }}</h2>
+                <p>{{ user.email }}</p>
+                
+                <span class="perfil-rol">👑 Administradora</span>
+                
+                <div class="frase-inspiradora" id="frase-inspiradora">
+                    Cargando... 
+                </div>
+            </div>
 
-      <div class="perfil-buttons">
-        <a href="{% url 'editar_perfil' %}" class="btn-edit">Editar perfil</a>
-        <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
-      </div>
-    </aside>
+            <div class="perfil-buttons">
+                <a href="{% url 'editar_perfil' %}" class="btn-edit">Editar perfil</a>
+                <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
+            </div>
+        </aside>
 
-    <main class="perfil-main">
+        <main class="perfil-main">
 
-      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px;">
-        {% if modo_demo %}
-          <a href="{% url 'panel_duena_inicio' %}" class="btn-panel">🔌 Desactivar datos de prueba</a>
-          <p style="color: #777; margin-top: 8px;">🔸 Modo demostración activado</p>
-        {% else %}
-          <a href="{% url 'panel_duena_inicio' %}?demo=1" class="btn-panel">⚙️ Activar datos de prueba</a>
-        {% endif %}
-      </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px;">
+                {% if modo_demo %}
+                    <a href="{% url 'panel_duena_inicio' %}" class="btn-panel">🔌 Desactivar datos de prueba</a>
+                    <p style="color: #777; margin-top: 8px;">🔸 Modo demostración activado</p>
+                {% else %}
+                    <a href="{% url 'panel_duena_inicio' %}?demo=1" class="btn-panel">⚙️ Activar datos de prueba</a>
+                {% endif %}
+            </div>
 
-      <div class="panel-graficos" style="width: 100%; margin-top: 10px;">
-        <h3 style="margin-bottom: 20px;">Estadísticas del Negocio</h3>
+            <div class="panel-graficos" style="width: 100%; margin-top: 10px;">
+                <h3 style="margin-bottom: 30px;">Estadísticas del Negocio</h3>
 
-        <div class="graficos-grid">
-          
-          <div style="background-color: #fff6fa; border-radius: 12px; padding: 15px; 
-                      box-shadow: 0 2px 6px rgba(0,0,0,0.05); width: 100%; max-width: 380px;">
-            <h4 style="text-align: center;">Productos por Categoría</h4>
-            <canvas id="graficoCategorias" height="180"></canvas>
-          </div>
+                <div class="graficos-grid">
+                    
+                    <div class="grafico-box">
+                        <div class="grafico-header">
+                            <div class="grafico-metrica" id="total-productos">0</div>
+                            <p class="grafico-titulo">Total de Productos</p>
+                        </div>
+                        <div class="grafico-body">
+                            <canvas id="graficoCategorias"></canvas>
+                        </div>
+                    </div>
 
-          <div style="background-color: #fff6fa; border-radius: 12px; padding: 15px; 
-                      box-shadow: 0 2px 6px rgba(0,0,0,0.05); width: 100%; max-width: 380px;">
-            <h4 style="text-align: center;">Tipo de Taller</h4>
-            <canvas id="graficoTipo" height="180"></canvas>
-          </div>
+                    <div class="grafico-box">
+                        <div class="grafico-header">
+                            <div class="grafico-metrica" id="total-talleres">0</div>
+                            <p class="grafico-titulo">Talleres Programados</p>
+                        </div>
+                        <div class="grafico-body">
+                            <canvas id="graficoTipo"></canvas>
+                        </div>
+                    </div>
 
-          <div style="background-color: #fff6fa; border-radius: 12px; padding: 15px; 
-                      box-shadow: 0 2px 6px rgba(0,0,0,0.05); width: 100%; max-width: 380px;">
-            <h4 style="text-align: center;">Talleres por Mes</h4>
-            <canvas id="graficoMeses" height="180"></canvas>
-          </div>
+                    <div class="grafico-box">
+                        <div class="grafico-header">
+                            <div class="grafico-metrica" id="talleres-mes">0</div>
+                            <p class="grafico-titulo">Este Mes</p>
+                        </div>
+                        <div class="grafico-body">
+                            <canvas id="graficoMeses"></canvas>
+                        </div>
+                    </div>
 
-        </div>
-      </div>
+                </div>
+            </div>
 
-      <section class="perfil-promos">
-        <h3>Panel de Administración</h3>
-        <p>Gestiona tus contenidos y revisa el estado de tu negocio.</p>
+            <section class="perfil-promos">
+                <h3>Panel de Administración</h3>
+                <p>Gestiona tus contenidos y revisa el estado de tu negocio.</p>
 
-        <div class="promo-grid panel-grid">
+                <div class="promo-grid panel-grid">
 
-          <div class="promo-card panel-card">
-            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828673.png" alt="Talleres">
-            <h4>Talleres</h4>
-            <p>Administra los talleres activos o crea nuevos.</p>
-            <a href="{% url 'panel_talleres' %}" class="btn-panel">Ir a talleres</a>
-          </div>
+                    <div class="promo-card panel-card">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828673.png" alt="Talleres">
+                        <h4>Talleres</h4>
+                        <p>Administra los talleres activos o crea nuevos.</p>
+                        <a href="{% url 'panel_talleres' %}" class="btn-panel">Ir a talleres</a>
+                    </div>
 
-          <!-- INSUMOS -->
-          <div class="promo-card panel-card">
-            <img src="https://cdn-icons-png.flaticon.com/512/3050/3050155.png" alt="Insumos">
-            <h4>Insumos</h4>
-            <p>Administra los productos e insumos de la tienda.</p>
-            <a href="{% url 'panel_insumos' %}" class="btn-panel">Ir a insumos</a>
-          </div>
+                    <div class="promo-card panel-card">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3050/3050155.png" alt="Insumos">
+                        <h4>Insumos</h4>
+                        <p>Administra los productos e insumos de la tienda.</p>
+                        <a href="{% url 'panel_insumos' %}" class="btn-panel">Ir a insumos</a>
+                    </div>
 
-          <div class="promo-card panel-card">
-            <img src="https://cdn-icons-png.flaticon.com/512/2331/2331970.png" alt="Ventas">
-            <h4>Ventas</h4>
-            <p>Consulta los pagos realizados y pendientes.</p>
-            <a href="{% url 'panel_ventas' %}" class="btn-panel">Ver ventas</a>
-          </div>
+                    <div class="promo-card panel-card">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2331/2331970.png" alt="Ventas">
+                        <h4>Ventas</h4>
+                        <p>Consulta los pagos realizados y pendientes.</p>
+                        <a href="{% url 'panel_ventas' %}" class="btn-panel">Ver ventas</a>
+                    </div>
 
-          <div class="promo-card panel-card">
-            <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Usuarios">
-            <h4>Usuarios</h4>
-            <p>Consulta y gestiona los usuarios registrados.</p>
-            <a href="{% url 'panel_usuarios' %}" class="btn-panel">Ver usuarios</a>
-          </div>
+                    <div class="promo-card panel-card">
+                        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" alt="Usuarios">
+                        <h4>Usuarios</h4>
+                        <p>Consulta y gestiona los usuarios registrados.</p>
+                        <a href="{% url 'panel_usuarios' %}" class="btn-panel">Ver usuarios</a>
+                    </div>
 
-          <div class="promo-card panel-card">
-            <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="Cupones">
-            <h4>Cupones</h4>
-            <p>Crear y asignar descuentos para clientes.</p>
-            <a href="{% url 'panel_cupones' %}" class="btn-panel">Ir a cupones</a>
-          </div>
+                    <div class="promo-card panel-card">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" alt="Cupones">
+                        <h4>Cupones</h4>
+                        <p>Crear y asignar descuentos para clientes.</p>
+                        <a href="{% url 'panel_cupones' %}" class="btn-panel">Ir a cupones</a>
+                    </div>
 
+                </div>
+            </section>
 
-        </div>
-      </section>
-
-    </main>
-  </div>
+        </main>
+    </div>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const colores = ['#ff99c8', '#a0c4ff', '#bdb2ff', '#ffc6ff', '#fdffb6', '#caffbf'];
+    // ===============================================
+    // 🌸 FUNCIONALIDAD DE FRASE INSPIRADORA 🌸
+    // ===============================================
+    const frasesInspiradorasTMM = [
+      "Crear con tus manos es sanar desde el alma 🌸",
+      "Vuelve a creer en ti misma, eres capaz de todo 💕",
+      "La creatividad es un camino de conexión contigo misma ✨",
+      "Cada proyecto es una oportunidad para reconectarte 🌸",
+      "Pausa, respira y crea. Tu bienestar es lo primero 💕",
+      "Las manos que crean, sanan el corazón ✨",
+      "Eres arte en movimiento 🌸",
+      "Tu creatividad merece brillar 💕",
+      "Reconectando con lo que nos hace felices ✨",
+      "Hoy es un buen día para crear algo hermoso 🌸",
+      "La magia está en tus manos 💕",
+      "Crea, conecta y florece ✨",
+    ];
 
-  // 🔹 Datos desde Django (reales o demo)
-  const labels_categorias = JSON.parse('{{ labels_categorias|escapejs }}');
-  const data_categorias = JSON.parse('{{ data_categorias|escapejs }}');
-  const labels_tipo = JSON.parse('{{ labels_tipo|escapejs }}');
-  const data_tipo = JSON.parse('{{ data_tipo|escapejs }}');
-  const labels_meses = JSON.parse('{{ labels_meses|escapejs }}');
-  const data_meses = JSON.parse('{{ data_meses|escapejs }}');
-
-  // 🔹 Gráfico 1 - Categorías
-  new Chart(document.getElementById('graficoCategorias'), {
-    type: 'bar',
-    data: {
-      labels: labels_categorias,
-      datasets: [{
-        label: 'Productos',
-        data: data_categorias,
-        backgroundColor: colores
-      }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true } }
+    function mostrarFraseAleatoria() {
+      const elementoFrase = document.getElementById('frase-inspiradora');
+      if (elementoFrase) {
+        const fraseRandom = frasesInspiradorasTMM[Math.floor(Math.random() * frasesInspiradorasTMM.length)];
+        elementoFrase.textContent = fraseRandom;
+      }
     }
-  });
+    
+    // Ejecutar la función de frase inspiradora al cargar
+    mostrarFraseAleatoria();
+    
+    // ===============================================
+    // 📊 CÓDIGO DE GRÁFICOS (CHART.JS) 📊
+    // ===============================================
+    
+    const colores = ['#ff99c8', '#a0c4ff', '#bdb2ff', '#ffc6ff', '#fdffb6', '#caffbf'];
 
-  // 🔹 Gráfico 2 - Tipo de Taller
-  new Chart(document.getElementById('graficoTipo'), {
-    type: 'doughnut',
-    data: {
-      labels: labels_tipo,
-      datasets: [{
-        data: data_tipo,
-        backgroundColor: ['#bde0fe', '#ffc8dd']
-      }]
-    },
-    options: { plugins: { legend: { position: 'bottom' } } }
-  });
+    // 🔹 Datos desde Django (reales o demo)
+    const labels_categorias = JSON.parse('{{ labels_categorias|escapejs }}');
+    const data_categorias = JSON.parse('{{ data_categorias|escapejs }}');
+    const labels_tipo = JSON.parse('{{ labels_tipo|escapejs }}');
+    const data_tipo = JSON.parse('{{ data_tipo|escapejs }}');
+    const labels_meses = JSON.parse('{{ labels_meses|escapejs }}');
+    const data_meses = JSON.parse('{{ data_meses|escapejs }}');
 
-  // 🔹 Gráfico 3 - Talleres por Mes
-  new Chart(document.getElementById('graficoMeses'), {
-    type: 'line',
-    data: {
-      labels: labels_meses,
-      datasets: [{
-        label: 'Talleres Programados',
-        data: data_meses,
-        borderColor: '#ffafcc',
-        tension: 0.3,
-        fill: true,
-        backgroundColor: 'rgba(255,175,204,0.2)'
-      }]
-    },
-    options: { plugins: { legend: { position: 'bottom' } } }
-  });
+    // Calcular métricas
+    const totalProductos = data_categorias.reduce((a, b) => a + b, 0);
+    const totalTalleres = data_tipo.reduce((a, b) => a + b, 0);
+    const talleresMes = data_meses[data_meses.length - 1] || 0;
+
+    // Mostrar métricas
+    document.getElementById('total-productos').textContent = totalProductos;
+    document.getElementById('total-talleres').textContent = totalTalleres;
+    document.getElementById('talleres-mes').textContent = talleresMes;
+
+    // 🔹 Gráfico 1 - Categorías
+    new Chart(document.getElementById('graficoCategorias'), {
+        type: 'bar',
+        data: {
+            labels: labels_categorias,
+            datasets: [{
+                label: 'Productos',
+                data: data_categorias,
+                backgroundColor: colores,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.8,
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
+                }
+            },
+            scales: { 
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: '#f0f0f0' }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // 🔹 Gráfico 2 - Tipo de Taller
+    new Chart(document.getElementById('graficoTipo'), {
+        type: 'doughnut',
+        data: {
+            labels: labels_tipo,
+            datasets: [{
+                data: data_tipo,
+                backgroundColor: ['#bde0fe', '#ffc8dd'],
+                borderWidth: 0,
+            }]
+        },
+        options: { 
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.8,
+            plugins: { 
+                legend: { 
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: { size: 12 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
+                }
+            },
+            cutout: '65%',
+        }
+    });
+
+    // 🔹 Gráfico 3 - Talleres por Mes
+    new Chart(document.getElementById('graficoMeses'), {
+        type: 'line',
+        data: {
+            labels: labels_meses,
+            datasets: [{
+                label: 'Talleres',
+                data: data_meses,
+                borderColor: '#ffafcc',
+                backgroundColor: 'rgba(255,175,204,0.15)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: '#ffafcc',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointHoverRadius: 6,
+            }]
+        },
+        options: { 
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.8,
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
+                }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: '#f0f0f0' }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
 </script>
 {% endblock %}

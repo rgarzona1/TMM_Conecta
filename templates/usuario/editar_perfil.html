@@ -4,6 +4,8 @@
 {% block title %}Editar Perfil - TMM Conecta{% endblock %}
 
 {% block content %}
+{% url 'perfil' as perfil_url %}  <!-- Resolvemos la URL aquí para evitar problemas en el onclick -->
+
 <section class="editar-perfil-container">
     <div class="editar-perfil-card">
         <h2>Editar Perfil</h2>
@@ -51,7 +53,7 @@
 
             <div class="form-buttons">
                 <button type="submit" class="btn-primary">Guardar cambios</button>
-                <a href="{% url 'perfil' %}" class="btn-secondary">Cancelar</a>
+                <button type="button" class="btn-secondary" onclick="window.location.href='{{ perfil_url }}'">Cancelar</button>
             </div>
         </form>
     </div>
