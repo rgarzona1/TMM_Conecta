@@ -1222,6 +1222,7 @@ main {
 /* Contenido principal */
 .perfil-main {
     flex: 1;
+    min-width: 0;
 }
 
 .perfil-promos h3,
@@ -2357,16 +2358,16 @@ html { scroll-behavior: smooth; }
   background-color: #f8f3f5;
   padding: 3rem 1rem; 
   max-width: 100% !important; 
-  overflow-x: auto !important;
-  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .panel-duena-container {
     display: flex;
     gap: 40px;
     align-items: flex-start;
-    width: 90%; 
+    width: 100%; 
     max-width: 100%;
+    min-width: 0;
     margin: 0 auto; 
     padding: 40px 0; 
     padding-left: 0 !important;
@@ -2420,9 +2421,9 @@ html { scroll-behavior: smooth; }
 
 .panel-right {
   flex: 1;
-  min-width: 320px;
+  min-width: 0;
   max-width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .panel-titulo {
