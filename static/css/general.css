@@ -3287,3 +3287,25 @@ form button {
     background: #e2e3e5; 
     color: #383d41; 
 }
+
+.fecha-row {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 20px !important;              
+    margin-bottom: 15px !important;    
+}
+
+.fecha-row > div {
+    margin-right: 10px !important;
+}
+
+
+.btn-remove-date {
+    margin-top: 23px !important;
+}
+
+
+.input-fecha,
+.input-hora {
+    width: 100% !important;
+}

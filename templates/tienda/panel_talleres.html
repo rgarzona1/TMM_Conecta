@@ -25,66 +25,96 @@
 
     <div class="form-grid-2">
 
-      <div class="form-block">
-        <label for="taller_base">Taller Existente: <span style="color: red;">*</span></label>
-        <select name="taller_base" id="taller_base">
-          <option value="">-- Seleccionar --</option>
-          {% for base in talleres_base %}
-          <option value="{{ base.id }}">{{ base.titulo }}</option>
-          {% endfor %}
-        </select>
+      <!-- COLUMNA IZQUIERDA -->
+      <div class="form-col">
+          <div class="form-block">
+            <label for="taller_base">Taller Existente: <span style="color: red;">*</span></label>
+            <select name="taller_base" id="taller_base">
+              <option value="">-- Seleccionar --</option>
+              {% for base in talleres_base %}
+              <option value="{{ base.id }}">{{ base.titulo }}</option>
+              {% endfor %}
+            </select>
 
-        <label>O crea uno nuevo:</label>
-        <input type="text" name="nuevo_taller_base" id="nuevo_taller_base" placeholder="Nuevo nombre de taller">
-        <small style="color: #666;">Debe seleccionar un taller existente o crear uno nuevo</small>
+            <label for="nuevo_taller_base">O crea uno nuevo:</label>
+            <input type="text" name="nuevo_taller_base" id="nuevo_taller_base" placeholder="Nuevo nombre de taller">
+            <small style="color: #666;">Debe seleccionar un taller existente o crear uno nuevo</small>
+          </div>
+
+          <div class="form-block">
+            <label for="precio">Precio: <span style="color: red;">*</span></label>
+            <input type="number" min="0" step="0.01" name="precio" id="precio" required placeholder="0">
+
+            <label for="capacidad">Capacidad: <span style="color: red;">*</span></label>
+            <input type="number" name="capacidad" id="capacidad" min="1" max="500" required>
+          </div>
+
+          <div class="form-block">
+            <label for="tipo_taller">Tipo: <span style="color: red;">*</span></label>
+            <select name="tipo_taller" id="tipo_taller" required>
+              <option value="PRESENCIAL">Presencial</option>
+              <option value="ONLINE">Online</option>
+            </select>
+
+            <label for="imagen">Imagen del Taller:</label>
+            <input type="file" name="imagen" id="imagen" accept="image/jpeg,image/png,image/jpg,image/webp">
+            <small style="color: #666;">Formatos: JPG, PNG, WEBP (Max 5MB)</small>
+          </div>
       </div>
 
-      <div class="form-block">
-        <label for="imagen">Imagen del Taller:</label>
-        <input type="file" name="imagen" id="imagen" accept="image/jpeg,image/png,image/jpg,image/webp">
-        <small style="color: #666;">Formatos: JPG, PNG, WEBP (Max 5MB)</small>
+      <!-- COLUMNA DERECHA -->
+      <div class="form-col">
+          <div class="form-block">
+            <label for="lugar">Lugar del Evento: <span style="color: red;">*</span></label>
+            <input type="text" name="lugar" id="lugar" maxlength="200" required>
 
-        <label for="precio">Precio: <span style="color: red;">*</span></label>
-        <input type="number" min="0" step="0.01" name="precio" id="precio" placeholder="0.00" required>
-      </div>
+            <label for="profesor">Profesor: <span style="color: red;">*</span></label>
+            <input type="text" name="profesor" id="profesor" maxlength="100" required>
+          </div>
+          
+          <!-- SECCIÓN DE FECHAS DINÁMICAS MEJORADA -->
+          <div class="form-block" style="background: #fffcf5; padding: 15px; border-radius: 10px; border: 1px solid #eee;">
+            <label style="color: #d68e32; font-weight: bold;"><i class="fas fa-calendar-alt"></i> Fechas y Horarios <span style="color: red;">*</span></label>
+            <small style="display:block; margin-bottom: 15px; color: #777;">Puedes agregar múltiples fechas para este mismo taller.</small>
+            
+            <div id="fechas-container">
+                <!-- Fila de fecha por defecto -->
+                <div class="fecha-row" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-end;">
+                    <div style="flex: 2;">
+                        <label style="font-size: 0.9rem; display: block; margin-bottom: 5px;">Fecha:</label>
+                        <input type="date" name="fecha_proxima" class="input-fecha" style="width: 100%; padding: 8px;" required>
+                    </div>
+                    <div style="flex: 1.5;">
+                        <label style="font-size: 0.9rem; display: block; margin-bottom: 5px;">Hora:</label>
+                        <input type="time" name="hora_inicio" class="input-hora" style="width: 100%; padding: 8px;" required>
+                    </div>
+                    <!-- Botón eliminar (oculto en la primera fila por defecto, se maneja con JS) -->
+                    <div style="flex: 0.5; display: flex; align-items: flex-end;">
+                        <button type="button" class="btn-remove-date" style="background: #ffadad; border: none; border-radius: 5px; color: white; padding: 8px 12px; cursor: pointer; height: 36px; visibility: hidden;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-      <div class="form-block">
-        <label for="fecha_proxima">Fecha Próxima: <span style="color: red;">*</span></label>
-        <input type="date" name="fecha_proxima" id="fecha_proxima" required>
-
-        <label for="hora_inicio">Hora de Inicio: <span style="color: red;">*</span></label>
-        <input type="time" name="hora_inicio" id="hora_inicio" required>
-      </div>
-
-      <div class="form-block">
-        <label for="lugar">Lugar del Evento: <span style="color: red;">*</span></label>
-        <input type="text" name="lugar" id="lugar" maxlength="200" required>
-
-        <label for="profesor">Profesor: <span style="color: red;">*</span></label>
-        <input type="text" name="profesor" id="profesor" maxlength="100" required>
-      </div>
-
-      <div class="form-block">
-        <label for="capacidad">Capacidad: <span style="color: red;">*</span></label>
-        <input type="number" name="capacidad" id="capacidad" min="1" max="500" required>
-
-        <label for="tipo_taller">Tipo: <span style="color: red;">*</span></label>
-        <select name="tipo_taller" id="tipo_taller" required>
-          <option value="PRESENCIAL">Presencial</option>
-          <option value="ONLINE">Online</option>
-        </select>
+            <button type="button" id="btn-add-date" style="background: #b8e0d2; border: none; border-radius: 5px; padding: 8px 15px; font-size: 0.9rem; cursor: pointer; color: #0f5132; font-weight: bold; margin-top: 10px;">
+                <i class="fas fa-plus-circle"></i> Agregar otra fecha
+            </button>
+          </div>
       </div>
 
     </div>
 
-    <label for="descripcion_completa" class="label-descripcion">Descripción completa: <span style="color: red;">*</span></label>
-    <textarea name="descripcion_completa" id="descripcion_completa" class="desc-area" 
-              minlength="10" maxlength="2000" required 
-              placeholder="Describe el taller (mínimo 10 caracteres)"></textarea>
-    <small style="color: #666;">Mínimo 10 caracteres, máximo 2000</small>
+    <div class="form-block-full">
+      <label for="descripcion_completa" class="label-descripcion">Descripción completa: <span style="color: red;">*</span></label>
+      <textarea name="descripcion_completa" id="descripcion_completa" class="desc-area" 
+                minlength="10" maxlength="2000" required 
+                placeholder="Describe el taller (mínimo 10 caracteres)"></textarea>
+      <small style="color: #666;">Mínimo 10 caracteres, máximo 2000</small>
+    </div>
 
     <div class="btn-right">
-      <button type="submit" class="btn-panel" id="btn-guardar">➕ Crear Taller</button>
+      <button type="submit" class="btn-panel" id="btn-guardar">➕ Crear Talleres</button>
       <button type="button" class="btn-salir" onclick="limpiarFormulario()" style="margin-left: 10px;">🔄 Limpiar</button>
     </div>
   </form>
@@ -127,7 +157,8 @@
             data-lugar="{{ taller.lugar|escapejs }}"
             data-profesor="{{ taller.profesor|escapejs }}"
             data-capacidad="{{ taller.capacidad }}"
-            data-tipo="{{ taller.tipo_taller }}">
+            data-tipo="{{ taller.tipo_taller }}"
+            data-es-edicion="true">
             ✏️ Editar
           </button>
 
@@ -144,124 +175,189 @@
   </table>
 </section>
 
+<style>
+.form-block-full {
+  margin-bottom: 20px;
+}
+
+.form-block-full label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.desc-area {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  resize: vertical;
+  font-family: inherit;
+}
+</style>
+
 <script>
-// Establecer fecha mínima como hoy
 document.addEventListener('DOMContentLoaded', function() {
-  const fechaInput = document.getElementById('fecha_proxima');
-  if(fechaInput) {
-      const hoy = new Date().toISOString().split('T')[0];
-      fechaInput.setAttribute('min', hoy);
-  }
-  
-  // Log para debug
-  console.log('Formulario de talleres cargado correctamente');
+  const hoy = new Date().toISOString().split('T')[0];
+  const fechasInputs = document.querySelectorAll('.input-fecha');
+  fechasInputs.forEach(input => input.setAttribute('min', hoy));
 });
 
-// Validar formulario antes de enviar
+// LOGICA PARA AGREGAR MÚLTIPLES FECHAS
+const container = document.getElementById('fechas-container');
+const btnAddDate = document.getElementById('btn-add-date');
+
+function agregarFilaFecha() {
+    const firstRow = container.querySelector('.fecha-row');
+    const newRow = firstRow.cloneNode(true);
+    
+    // Limpiar valores
+    newRow.querySelector('.input-fecha').value = '';
+    newRow.querySelector('.input-hora').value = '';
+    
+    // Hacer visible el botón de eliminar en la nueva fila
+    const btnRemove = newRow.querySelector('.btn-remove-date');
+    btnRemove.style.visibility = 'visible';
+    btnRemove.onclick = function() { newRow.remove(); };
+    
+    // Actualizar el atributo min para la nueva fecha
+    const hoy = new Date().toISOString().split('T')[0];
+    newRow.querySelector('.input-fecha').setAttribute('min', hoy);
+    
+    container.appendChild(newRow);
+}
+
+if(btnAddDate && container) {
+    btnAddDate.addEventListener('click', agregarFilaFecha);
+}
+
+// Validar formulario
 const formTaller = document.getElementById('form-taller');
 if(formTaller){
     formTaller.addEventListener('submit', function(e) {
-      console.log('Formulario enviado - iniciando validaciones');
-      
+      // Validaciones generales (Taller Base, Precio, Capacidad, Desc)
       const tallerBase = document.getElementById('taller_base').value;
       const nuevoTaller = document.getElementById('nuevo_taller_base').value.trim();
-      const precio = document.getElementById('precio').value;
-      const capacidad = document.getElementById('capacidad').value;
-      const descripcion = document.getElementById('descripcion_completa').value.trim();
-      
-      console.log('Datos del formulario:', {
-        tallerBase,
-        nuevoTaller,
-        precio,
-        capacidad,
-        descripcion
-      });
-      
-      // Validar que haya seleccionado un taller O creado uno nuevo
       if (!tallerBase && !nuevoTaller) {
-        e.preventDefault();
-        alert('⚠️ Debes seleccionar un taller existente o crear uno nuevo');
-        console.error('Error: No se seleccionó taller base ni se creó uno nuevo');
+        e.preventDefault(); 
+        alert('⚠️ Selecciona o crea un taller base'); 
         return false;
       }
-      
-      // Validar precio (debe existir y ser un número válido)
-      if (!precio || isNaN(parseFloat(precio))) {
-        e.preventDefault();
-        alert('⚠️ Debes ingresar un precio válido');
-        console.error('Error: Precio inválido');
-        return false;
+
+      // Validar fechas (ahora son múltiples)
+      const fechas = document.querySelectorAll('.input-fecha');
+      let fechasValidas = true;
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+
+      fechas.forEach(input => {
+          if(input.value) {
+             const [y, m, d] = input.value.split('-').map(Number);
+             const fechaSel = new Date(y, m-1, d);
+             if(fechaSel < hoy) {
+                 fechasValidas = false;
+             }
+          }
+      });
+
+      if(!fechasValidas) {
+          e.preventDefault();
+          alert('⚠️ Una o más fechas son pasadas. Revisa los datos.');
+          return false;
       }
-      
-      if (parseFloat(precio) < 0) {
-        e.preventDefault();
-        alert('⚠️ El precio no puede ser negativo');
-        console.error('Error: Precio negativo');
-        return false;
-      }
-      
-      // Validar capacidad
-      if (!capacidad || isNaN(parseInt(capacidad))) {
-        e.preventDefault();
-        alert('⚠️ Debes ingresar una capacidad válida');
-        console.error('Error: Capacidad inválida');
-        return false;
-      }
-      
-      if (parseInt(capacidad) < 1) {
-        e.preventDefault();
-        alert('⚠️ La capacidad debe ser al menos 1 persona');
-        console.error('Error: Capacidad menor a 1');
-        return false;
-      }
-      
-      // Validar descripción
-      if (descripcion.length < 10) {
-        e.preventDefault();
-        alert('⚠️ La descripción debe tener al menos 10 caracteres');
-        console.error('Error: Descripción muy corta');
-        return false;
-      }
-      
-      console.log('✓ Todas las validaciones pasaron - enviando formulario');
       return true;
     });
 }
 
 function editarTaller(btn) {
-  console.log('Editando taller:', btn.dataset.id);
-  
+  // Llenar datos base
   document.getElementById('taller_id').value = btn.dataset.id;
   document.getElementById('taller_base').value = btn.dataset.base;
   document.getElementById('descripcion_completa').value = btn.dataset.descripcion;
-  
-  // Manejo del formato de precio para input type=number
-  let precio = btn.dataset.precio.replace(',', '.');
-  document.getElementById('precio').value = precio;
-  
-  document.getElementById('fecha_proxima').value = btn.dataset.fecha;
-  document.getElementById('hora_inicio').value = btn.dataset.hora;
+  document.getElementById('precio').value = btn.dataset.precio.replace(',', '.');
   document.getElementById('lugar').value = btn.dataset.lugar;
   document.getElementById('profesor').value = btn.dataset.profesor;
   document.getElementById('capacidad').value = btn.dataset.capacidad;
   document.getElementById('tipo_taller').value = btn.dataset.tipo;
-  
-  // Limpiar el campo de nuevo taller
   document.getElementById('nuevo_taller_base').value = '';
+  document.getElementById('btn-add-date').style.display = 'inline-block';
+  // MODO EDICIÓN: Permitimos agregar más fechas
+  const container = document.getElementById('fechas-container');
+  
+  // Limpiamos el contenedor de fechas
+  container.innerHTML = '';
+  
+  // Creamos una fila con los datos del taller existente
+  const primeraFila = document.createElement('div');
+  primeraFila.className = 'fecha-row';
+  primeraFila.style.cssText = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-end;';
+  primeraFila.innerHTML = `
+    <div style="flex: 2;">
+        <label style="font-size: 0.9rem; display: block; margin-bottom: 5px;">Fecha:</label>
+        <input type="date" name="fecha_proxima" class="input-fecha" style="width: 100%; padding: 8px;" value="${btn.dataset.fecha}" required>
+    </div>
+    <div style="flex: 1.5;">
+        <label style="font-size: 0.9rem; display: block; margin-bottom: 5px;">Hora:</label>
+        <input type="time" name="hora_inicio" class="input-hora" style="width: 100%; padding: 8px;" value="${btn.dataset.hora}" required>
+    </div>
+    <div style="flex: 0.5; display: flex; align-items: flex-end;">
+        <button type="button" class="btn-remove-date" style="background: #ffadad; border: none; border-radius: 5px; color: white; padding: 8px 12px; cursor: pointer; height: 36px; visibility: visible;">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+  `;
+  
+  container.appendChild(primeraFila);
+  
+  // Configurar el botón eliminar de la primera fila
+  const btnRemove = primeraFila.querySelector('.btn-remove-date');
+  btnRemove.onclick = function() { 
+    if(container.children.length > 1) {
+      primeraFila.remove(); 
+    } else {
+      alert('⚠️ Debe haber al menos una fecha para el taller.');
+    }
+  };
+  
+  // Actualizar el atributo min para las fechas
+  const hoy = new Date().toISOString().split('T')[0];
+  primeraFila.querySelector('.input-fecha').setAttribute('min', hoy);
+  
+  // IMPORTANTE: NO ocultamos el botón de agregar fechas en modo edición
+  document.getElementById('btn-add-date').style.display = 'inline-block';
   
   document.getElementById('accion').value = 'editar';
   document.getElementById('btn-guardar').innerText = '💾 Guardar Cambios';
   
-  // Scroll al formulario
   document.getElementById('form-taller').scrollIntoView({ behavior: 'smooth' });
 }
 
 function limpiarFormulario() {
-  console.log('Limpiando formulario');
   document.getElementById('form-taller').reset();
   document.getElementById('taller_id').value = '';
   document.getElementById('accion').value = 'crear';
-  document.getElementById('btn-guardar').innerText = '➕ Crear Taller';
+  document.getElementById('btn-guardar').innerText = '➕ Crear Talleres';
+  
+  // Restaurar MODO CREACIÓN
+  document.getElementById('btn-add-date').style.display = 'inline-block';
+  
+  // Resetear filas de fecha a solo 1
+  const container = document.getElementById('fechas-container');
+  const primeraFila = container.querySelector('.fecha-row') || container.children[0];
+  
+  // Eliminar todas las filas menos la primera
+  while (container.children.length > 1) {
+      container.removeChild(container.lastChild);
+  }
+  
+  // Limpiar la primera fila
+  if(primeraFila) {
+    primeraFila.querySelector('.input-fecha').value = '';
+    primeraFila.querySelector('.input-hora').value = '';
+    // Ocultar botón eliminar en la primera fila
+    const btnRemove = primeraFila.querySelector('.btn-remove-date');
+    if(btnRemove) btnRemove.style.visibility = 'hidden';
+  }
 }
 </script>
 {% endblock %}

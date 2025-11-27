@@ -44,35 +44,68 @@ def tienda_home_vista(request):
     return render(request, 'tienda/tienda_home.html', context)
 
 
+from datetime import date
+from django.shortcuts import render, get_object_or_404
+
+# ========================================================
+#  CATEGORÍA (TIENDA GENERAL)
+# ========================================================
 def categoria_vista(request, categoria_slug):
-    """ Muestra la página de categoría """
+    """
+    Muestra productos filtrados por categoría.
+    """
     categoria_key = categoria_slug.upper().replace('-', '_')
     productos = Producto.objects.filter(categoria=categoria_key)
+
     context = {
         'productos': productos,
-        'nombre_categoria': categoria_slug.capitalize(), # Para el título
+        'nombre_categoria': categoria_slug.capitalize(),  # Título en el template
     }
     return render(request, 'tienda/tienda_categoria.html', context)
 
 
+# ========================================================
+#  CATÁLOGO DE TALLERES (SOLO EL MÁS PRÓXIMO)
+# ========================================================
 def catalogo_talleres_vista(request):
-    """Listado de talleres futuros (filtrando por fecha_proxima >= hoy)"""
-    hoy = date.today()  # fecha actual sin hora
-    # Filtramos talleres cuya fecha sea hoy o futura
-    talleres = (
-        TallerEvento.objects
-        .filter(fecha_proxima__gte=hoy)
-        .order_by('fecha_proxima')
-    )
-    context = {'talleres': talleres}
+    """
+    Muestra solo una tarjeta por taller con su fecha más próxima.
+    """
+    hoy = date.today()
+    talleres_base = Taller.objects.all()
+    talleres_para_mostrar = []
+
+    for base in talleres_base:
+        # Fecha más cercana hacia el futuro
+        proximo_evento = base.eventos.filter(fecha_proxima__gte=hoy).order_by('fecha_proxima').first()
+        if proximo_evento:
+            talleres_para_mostrar.append(proximo_evento)
+
+    context = {'talleres': talleres_para_mostrar}
     return render(request, 'tienda/catalogo_talleres.html', context)
 
 
+# ========================================================
+#  DETALLE DEL TALLER (CON OTRAS FECHAS DISPONIBLES)
+# ========================================================
 def detalle_taller_vista(request, taller_id):
-    """Vista con todos los detalles de un taller específico"""
-    taller = get_object_or_404(TallerEvento, pk=taller_id)
-    return render(request, 'tienda/detalle_taller.html', {'taller': taller})
+    """
+    Muestra el detalle de una fecha específica y otras fechas
+    futuras del mismo taller.
+    """
+    hoy = date.today()
+    taller_seleccionado = get_object_or_404(TallerEvento, pk=taller_id)
 
+    otras_fechas = TallerEvento.objects.filter(
+        taller_base=taller_seleccionado.taller_base,
+        fecha_proxima__gte=hoy
+    ).exclude(id=taller_seleccionado.id).order_by('fecha_proxima')
+
+    context = {
+        'taller': taller_seleccionado,
+        'otras_fechas': otras_fechas,
+    }
+    return render(request, 'tienda/detalle_taller.html', context)
 
 # ========================================================
 #  VISTA DE CARRITO (VISUALIZACIÓN)
@@ -788,7 +821,8 @@ def panel_duena_inicio(request):
 @user_passes_test(es_duena)
 def panel_talleres(request):
     """Vista única para listar, crear, editar y eliminar TallerEvento"""
-    from Web.models import Taller  
+    from tienda.models import TallerEvento
+    from Web.models import Taller
 
     talleres = TallerEvento.objects.all().order_by('-fecha_proxima')
     talleres_base = Taller.objects.all()
@@ -812,33 +846,38 @@ def panel_talleres(request):
             nuevo_taller_base = request.POST.get('nuevo_taller_base', '').strip()
             descripcion_completa = request.POST.get('descripcion_completa', '').strip()
             precio = request.POST.get('precio')
-            fecha_proxima = request.POST.get('fecha_proxima')
-            hora_inicio = request.POST.get('hora_inicio')
+            fechas_proximas = request.POST.getlist('fecha_proxima')
+            horas_inicio = request.POST.getlist('hora_inicio')
             lugar = request.POST.get('lugar', '').strip()
             profesor = request.POST.get('profesor', '').strip()
             capacidad = request.POST.get('capacidad')
             tipo_taller = request.POST.get('tipo_taller')
             imagen = request.FILES.get('imagen')
 
-            # VALIDACIÓN 1: Taller base o nuevo
+            # VALIDACIONES BÁSICAS
             if not taller_base_id and not nuevo_taller_base:
                 messages.error(request, '⚠️ Debes seleccionar un taller existente o crear uno nuevo.')
                 return redirect('panel_talleres')
             
-            # VALIDACIÓN 2: Campos requeridos
             if not descripcion_completa or len(descripcion_completa) < 10:
                 messages.error(request, '⚠️ La descripción debe tener al menos 10 caracteres.')
                 return redirect('panel_talleres')
-            
-            if not lugar:
-                messages.error(request, '⚠️ El campo Lugar es requerido.')
+
+            # Determinar el taller base
+            if nuevo_taller_base:
+                taller_base, created = Taller.objects.get_or_create(
+                    titulo=nuevo_taller_base,
+                    defaults={'descripcion': descripcion_completa[:100]}
+                )
+                if created:
+                    messages.info(request, f'📝 Nuevo taller base "{nuevo_taller_base}" creado.')
+            elif taller_base_id:
+                taller_base = get_object_or_404(Taller, id=taller_base_id)
+            else:
+                messages.error(request, "⚠️ Error al determinar el taller base.")
                 return redirect('panel_talleres')
-            
-            if not profesor:
-                messages.error(request, '⚠️ El campo Profesor es requerido.')
-                return redirect('panel_talleres')
-            
-            # VALIDACIÓN 3: Precio
+
+            # VALIDACIÓN: Precio y capacidad
             try:
                 precio_decimal = float(precio)
                 if precio_decimal < 0:
@@ -848,7 +887,6 @@ def panel_talleres(request):
                 messages.error(request, '⚠️ Precio inválido.')
                 return redirect('panel_talleres')
             
-            # VALIDACIÓN 4: Capacidad
             try:
                 capacidad_int = int(capacidad)
                 if capacidad_int < 1:
@@ -857,149 +895,122 @@ def panel_talleres(request):
             except (ValueError, TypeError):
                 messages.error(request, '⚠️ Capacidad inválida.')
                 return redirect('panel_talleres')
-            
-            # VALIDACIÓN 5: Fecha no en el pasado (solo al crear)
+
+            # CREAR NUEVOS TALLERES (MÚLTIPLES FECHAS)
             if accion == 'crear':
-                fecha_obj = datetime.strptime(fecha_proxima, '%Y-%m-%d').date()
-                if fecha_obj < date.today():
-                    messages.error(request, '⚠️ No puedes crear un taller con fecha pasada.')
+                talleres_creados = 0
+                
+                if not fechas_proximas or not any(fechas_proximas):
+                    messages.error(request, '⚠️ Debe agregar al menos una fecha para el taller.')
                     return redirect('panel_talleres')
+                
+                for i, (fecha_str, hora_str) in enumerate(zip(fechas_proximas, horas_inicio)):
+                    if fecha_str and hora_str:
+                        try:
+                            fecha_obj = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                            if fecha_obj < date.today():
+                                messages.warning(request, f'⚠️ Se omitió la fecha {fecha_str} porque es pasada.')
+                                continue
+                            
+                            taller_evento = TallerEvento.objects.create(
+                                taller_base=taller_base,
+                                descripcion_completa=descripcion_completa,
+                                precio=precio_decimal,
+                                fecha_proxima=fecha_obj,
+                                hora_inicio=hora_str,
+                                lugar=lugar,
+                                profesor=profesor,
+                                capacidad=capacidad_int,
+                                tipo_taller=tipo_taller
+                            )
+                            
+                            if imagen and i == 0:
+                                taller_evento.imagen = imagen
+                                taller_evento.save()
+                            
+                            talleres_creados += 1
+                            
+                        except Exception as e:
+                            error_msg = f'❌ Error al crear taller para fecha {fecha_str}: {str(e)}'
+                            messages.error(request, error_msg)
+                
+                if talleres_creados > 0:
+                    messages.success(request, f"✅ {talleres_creados} taller(es) creado(s) con éxito.")
+                else:
+                    messages.error(request, "❌ No se pudo crear ningún taller.")
 
-            # Determinar el taller base (crear uno nuevo si es necesario)
-            if nuevo_taller_base:
-                taller_base, created = Taller.objects.get_or_create(titulo=nuevo_taller_base)
-                if created:
-                    messages.info(request, f'📝 Nuevo taller base "{nuevo_taller_base}" creado.')
-            elif taller_base_id:
-                taller_base = get_object_or_404(Taller, id=taller_base_id)
-            else:
-                messages.error(request, "⚠️ Error al determinar el taller base.")
-                return redirect('panel_talleres')
-
-            # CREAR NUEVO TALLER
-            if accion == 'crear':
-                TallerEvento.objects.create(
-                    taller_base=taller_base,
-                    descripcion_completa=descripcion_completa,
-                    precio=precio_decimal,
-                    fecha_proxima=fecha_proxima,
-                    hora_inicio=hora_inicio,
-                    lugar=lugar,
-                    profesor=profesor,
-                    capacidad=capacidad_int,
-                    tipo_taller=tipo_taller,
-                    imagen=imagen if imagen else None
-                )
-                messages.success(request, "✅ Taller creado con éxito.")
-
-            # EDITAR TALLER EXISTENTE
+            # EDITAR TALLER EXISTENTE - CORREGIDO: Ahora también puede agregar nuevas fechas
             elif accion == 'editar' and id_taller:
-                taller = get_object_or_404(TallerEvento, id=id_taller)
-                taller.taller_base = taller_base
-                taller.descripcion_completa = descripcion_completa
-                taller.precio = precio_decimal
-                taller.fecha_proxima = fecha_proxima
-                taller.hora_inicio = hora_inicio
-                taller.lugar = lugar
-                taller.profesor = profesor
-                taller.capacidad = capacidad_int
-                taller.tipo_taller = tipo_taller
+                # 1. Primero actualizamos el taller existente
+                taller_original = get_object_or_404(TallerEvento, id=id_taller)
+                taller_original.taller_base = taller_base
+                taller_original.descripcion_completa = descripcion_completa
+                taller_original.precio = precio_decimal
+                taller_original.lugar = lugar
+                taller_original.profesor = profesor
+                taller_original.capacidad = capacidad_int
+                taller_original.tipo_taller = tipo_taller
+                
+                # Actualizar fecha y hora del taller original (solo la primera)
+                if fechas_proximas and fechas_proximas[0]:
+                    fecha_obj = datetime.strptime(fechas_proximas[0], '%Y-%m-%d').date()
+                    taller_original.fecha_proxima = fecha_obj
+                
+                if horas_inicio and horas_inicio[0]:
+                    taller_original.hora_inicio = horas_inicio[0]
                 
                 if imagen:  
-                    taller.imagen = imagen
+                    taller_original.imagen = imagen
                 
-                taller.save()
-                messages.success(request, "📝 Taller actualizado correctamente.")
+                taller_original.save()
+                
+                # 2. Crear NUEVOS talleres para las fechas adicionales (si las hay)
+                talleres_nuevos_creados = 0
+                if len(fechas_proximas) > 1:
+                    for i in range(1, len(fechas_proximas)):
+                        fecha_str = fechas_proximas[i]
+                        hora_str = horas_inicio[i] if i < len(horas_inicio) else horas_inicio[0]
+                        
+                        if fecha_str and hora_str:
+                            try:
+                                fecha_obj = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                                if fecha_obj < date.today():
+                                    continue
+                                
+                                # Crear nuevo TallerEvento con los mismos datos
+                                nuevo_taller = TallerEvento.objects.create(
+                                    taller_base=taller_base,
+                                    descripcion_completa=descripcion_completa,
+                                    precio=precio_decimal,
+                                    fecha_proxima=fecha_obj,
+                                    hora_inicio=hora_str,
+                                    lugar=lugar,
+                                    profesor=profesor,
+                                    capacidad=capacidad_int,
+                                    tipo_taller=tipo_taller,
+                                    imagen=taller_original.imagen  # Usar la misma imagen
+                                )
+                                talleres_nuevos_creados += 1
+                                
+                            except Exception as e:
+                                messages.error(request, f'❌ Error al crear fecha adicional {fecha_str}: {str(e)}')
+                
+                if talleres_nuevos_creados > 0:
+                    messages.success(request, f"📝 Taller actualizado y {talleres_nuevos_creados} fecha(s) adicional(es) creada(s).")
+                else:
+                    messages.success(request, "📝 Taller actualizado correctamente.")
 
             return redirect('panel_talleres')
             
         except Exception as e:
             messages.error(request, f'❌ Error al guardar el taller: {str(e)}')
-            print(f"Error detallado: {str(e)}")
-            traceback.print_exc()
             return redirect('panel_talleres')
-
-    
-    """Vista única para listar, crear, editar y eliminar TallerEvento"""
-    from Web.models import Taller  
-
-    talleres = TallerEvento.objects.all().order_by('-fecha_proxima')
-    talleres_base = Taller.objects.all()
-
-    if request.method == 'POST':
-        accion = request.POST.get('accion')
-        id_taller = request.POST.get('id')
-        imagen = request.FILES.get('imagen')
-
-
-        # Datos del formulario
-        taller_base_id = request.POST.get('taller_base')
-        nuevo_taller_base = request.POST.get('nuevo_taller_base', '').strip()
-        descripcion_completa = request.POST.get('descripcion_completa')
-        precio = request.POST.get('precio')
-        fecha_proxima = request.POST.get('fecha_proxima')
-        hora_inicio = request.POST.get('hora_inicio')
-        lugar = request.POST.get('lugar')
-        profesor = request.POST.get('profesor')
-        capacidad = request.POST.get('capacidad')
-        tipo_taller = request.POST.get('tipo_taller')
-
-        # Validación del taller base (crear uno nuevo si no existe)
-        if nuevo_taller_base:
-            taller_base = Taller.objects.create(titulo=nuevo_taller_base)
-        elif taller_base_id:
-            taller_base = get_object_or_404(Taller, id=taller_base_id)
-        else:
-            messages.error(request, "⚠️ Debes seleccionar o ingresar un Taller Base.")
-            return redirect('panel_talleres')
-
-        # CREAR TALLER
-        if accion == 'crear':
-            TallerEvento.objects.create(
-                taller_base=taller_base,
-                descripcion_completa=descripcion_completa,
-                precio=precio,
-                fecha_proxima=fecha_proxima,
-                hora_inicio=hora_inicio,
-                lugar=lugar,
-                profesor=profesor,
-                capacidad=capacidad,
-                tipo_taller=tipo_taller,
-                imagen=imagen
-            )
-            messages.success(request, "✅ Taller creado con éxito.")
-
-        # EDITAR TALLER
-        elif accion == 'editar' and id_taller:
-            taller = get_object_or_404(TallerEvento, id=id_taller)
-            taller.taller_base = taller_base
-            taller.descripcion_completa = descripcion_completa
-            taller.precio = precio
-            taller.fecha_proxima = fecha_proxima
-            taller.hora_inicio = hora_inicio
-            taller.lugar = lugar
-            taller.profesor = profesor
-            taller.capacidad = capacidad
-            taller.tipo_taller = tipo_taller
-            if imagen:  
-                taller.imagen = imagen
-            taller.save()
-            messages.success(request, "📝 Taller actualizado correctamente.")
-
-        return redirect('panel_talleres')
-
-    # ELIMINAR TALLER
-    if request.method == 'GET' and 'eliminar' in request.GET:
-        id_taller = request.GET.get('eliminar')
-        taller = get_object_or_404(TallerEvento, id=id_taller)
-        taller.delete()
-        messages.success(request, "🗑️ Taller eliminado correctamente.")
-        return redirect('panel_talleres')
-
-    return render(request, 'tienda/panel_talleres.html', {
+        
+    context = {
         'talleres': talleres,
-        'talleres_base': talleres_base
-    })
+        'talleres_base': talleres_base,
+    }
+    return render(request, 'tienda/panel_talleres.html', context)
 
 @login_required
 @user_passes_test(es_duena)
