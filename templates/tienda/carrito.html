@@ -1,5 +1,6 @@
 {% extends 'general.html' %}
 {% load static %}
+
 {% block content %}
 <main class="tienda-main-content carrito-page">
     <h2 class="carrito-title">TU CARRITO DE COMPRAS</h2>
@@ -10,6 +11,8 @@
         <div class="carrito-items-area">
             {% for item in carrito.items.all %}
             <div class="cart-item-card">
+                
+                <!-- CASO 1: PRODUCTO FÍSICO -->
                 {% if item.producto %}
                     <img src="{% if item.producto.imagen %}{{ item.producto.imagen.url }}{% else %}{% static 'tienda/default_prod.png' %}{% endif %}" 
                          alt="{{ item.producto.nombre }}" class="cart-product-img">
@@ -26,6 +29,8 @@
                         
                         <span class="cart-product-total">Total: ${{ item.get_total }}</span>
                     </div>
+
+                <!-- CASO 2: TALLER / EVENTO -->
                 {% elif item.taller_evento %}
                     <img src="{% if item.taller_evento.taller_base.imagen %}{{ item.taller_evento.taller_base.imagen.url }}{% else %}{% static 'img/placeholder-taller.jpg' %}{% endif %}" 
                          alt="{{ item.taller_evento.taller_base.titulo }}" class="cart-product-img">
@@ -35,11 +40,25 @@
                         <span class="cart-product-price">Precio: ${{ item.taller_evento.precio }}</span>
                         <span class="cart-product-date">Fecha: {{ item.taller_evento.fecha_proxima }}</span>
                         
+                        <!-- ========================================== -->
+                        <!-- NUEVO: VISUALIZACIÓN DE DATOS DE REGALO -->
+                        <!-- ========================================== -->
+                        {% if item.es_regalo %}
+                            <div style="margin: 8px 0; padding: 8px; background-color: #fff0f6; border-radius: 6px; border: 1px solid #fcc2d7; font-size: 0.9em;">
+                                <span style="font-weight: bold; color: #d63384;">🎁 ES UN REGALO</span><br>
+                                <span style="color: #555;">Para: <strong>{{ item.nombre_beneficiario }}</strong></span><br>
+                                <span style="color: #777; font-size: 0.85em;">Invitación a: {{ item.email_beneficiario }}</span>
+                            </div>
+                        {% endif %}
+                        <!-- ========================================== -->
+
                         <div class="quantity-control">
                             <span>Cantidad: {{ item.cantidad }}</span>
-                            <a href="{%url 'update_cart' item.id 'delete' %}" id= btn-eliminar class="btn-eliminar">Eliminar</a>
+                            <!-- Botón Eliminar corregido para talleres -->
+                            <a href="{% url 'update_cart' item.id 'delete' %}" class="btn-eliminar" style="margin-left: 10px; color: #dc3545; text-decoration: none; font-size: 0.9em;">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </a>
                         </div>
-                        
                         
                         <span class="cart-product-total">Total: ${{ item.get_total }}</span>
                     </div>
@@ -53,11 +72,9 @@
         <!-- AREA DE RESUMEN Y PAGO -->
         <div class="carrito-summary-area">
             
-            <!-- TARJETA DE DIRECCIÓN CORREGIDA -->
+            <!-- TARJETA DE DIRECCIÓN -->
             {% if not solo_talleres %}
-
             <div class="address-box">
-
                 <!-- Si NO se está editando la dirección -->
                 {% if not request.GET.editar %}
                     {% if direccion.calle %}
@@ -73,10 +90,9 @@
                     <a href="?editar=1" class="btn-modificar">Modificar</a>
 
                 {% else %}
-                <!-- FORMULARIO cuando se hace clic en “Modificar” -->
+                <!-- FORMULARIO EDITAR DIRECCIÓN -->
                 <form method="post" action="{% url 'guardar_direccion' %}">
                     {% csrf_token %}
-
                     <label>Calle:</label>
                     <input type="text" name="calle" value="{{ direccion.calle }}">
 
@@ -93,74 +109,53 @@
                     <a href="{% url 'carrito' %}" class="btn-modificar">Cancelar</a>
                 </form>
                 {% endif %}
-
             </div>
-
             {% endif %}
 
+            <!-- TARJETA DE CUPONES -->
+            <div class="discount-box">
+                <form method="post" action="{% url 'carrito' %}">
+                    {% csrf_token %}
+                    <input type="text" name="codigo" placeholder="Ingresa código de descuento" value="{% if cupon %}{{ cupon.codigo }}{% endif %}">
+                    <button type="submit" name="accion" value="aplicar" class="btn-aplicar">Aplicar</button>
 
-            
-        <div class="discount-box">
+                    {% if cupon %}
+                    <div class="cupon-info">
+                        <small>Cupón aplicado: <strong>{{ cupon.codigo }}</strong> — {{ cupon.porcentaje_descuento }}%</small>
+                        <button type="submit" name="accion" value="quitar" class="btn-eliminar-cupon">Quitar</button>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
 
-            <form method="post" action="{% url 'carrito' %}">
-                {% csrf_token %}
-
-                <!-- INPUT DEL CUPÓN -->
-                <input type="text"
-                    name="codigo"
-                    placeholder="Ingresa código de descuento"
-                    value="{% if cupon %}{{ cupon.codigo }}{% endif %}">
-
-                <!-- BOTÓN APLICAR -->
-                <button type="submit" name="accion" value="aplicar" class="btn-aplicar">
-                    Aplicar
-                </button>
-
-                <!-- SI HAY CUPÓN, MUESTRA BOTÓN QUITAR -->
-                {% if cupon %}
-                <div class="cupon-info">
-                    <small>
-                        Cupón aplicado: <strong>{{ cupon.codigo }}</strong> — {{ cupon.porcentaje_descuento }}%
-                    </small>
-
-                    <button type="submit" name="accion" value="quitar" class="btn-eliminar-cupon">
-                        Quitar
-                    </button>
-                </div>
-                {% endif %}
-
-            </form>
-
-        </div>
-
-
-
+            <!-- TOTALES -->
             <div class="total-container">
-                
                 <div class="total-row">
                     <span>Subtotal:</span>
                     <span class="subtotal-amount">${{ subtotal }}</span>
                 </div>
-                
                 <div class="total-row">
                     <span>Descuento:</span>
                     <span class="discount-amount discount">-${{ descuento }}</span>
                 </div>
-                
                 <div class="total-row final">
                     <span>Total a pagar:</span>
                     <span class="total-amount amount">${{ total_final }}</span>
                 </div>
             </div>
             
+            <!-- BOTONES DE PAGO -->
             <div class="payment-box">
                 {% if carrito.items.all %}
-                <form id="checkout-form" method="post" action="{% url 'mp_crear_preferencia' %}">
+                <!-- Formulario real para Mercado Pago -->
+                <!-- Nota: Asegúrate de que la URL 'mp_crear_preferencia' esté en urls.py apuntando a crear_preferencia -->
+                <form id="checkout-form" method="post"> <!-- JS maneja el submit si usas fetch, o action directo -->
                     {% csrf_token %}
-                    <button type="submit" class="btn-pagar">IR A PAGAR</button>
-                    <button class="btn-pagar" id="btn-simular-compra">Simular Compra</button>
+                    <!-- Botón para flujo real (comentado si solo usas simulación por ahora) -->
+                    <!-- <button type="button" id="btn-pagar-mp" class="btn-pagar">IR A PAGAR (MP)</button> -->
+                    
+                    <button type="button" class="btn-pagar" id="btn-simular-compra" style="background-color: #28a745;">Simular Compra (Test)</button>
                 </form>
-
                 {% else %}
                     <p>Tu carrito está vacío.</p>
                 {% endif %}
@@ -169,55 +164,56 @@
         </div>
     </section>
 </main>
+
 <script>
-
 //===SCRIPT PARA SIMULAR COMPRA===
-document.getElementById("btn-simular-compra")?.addEventListener("click", function() {
-    fetch("{% url 'simular_compra' %}", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-        },
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-        if (data.redirect) {
-            window.location.href = data.redirect;
-        }
-    })
-    .catch(err => alert("Error al simular la compra."));
-});
+const btnSimular = document.getElementById("btn-simular-compra");
+if (btnSimular) {
+    btnSimular.addEventListener("click", function() {
+        if(!confirm("¿Confirmar simulación de compra? Se enviarán los correos de invitación.")) return;
 
-//===SCRIPT PARA MERCADO PAGO CHECKOUT===
-/*
-document.getElementById("checkout-form")?.addEventListener("submit", async function(e) {
-    e.preventDefault();
-
-    try {
-        const response = await fetch("{% url 'mp_crear_preferencia' %}", {
+        fetch("{% url 'simular_compra' %}", {
             method: "POST",
             headers: {
-                "X-CSRFToken": "{{ csrf_token }}"
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            if (data.redirect) {
+                window.location.href = data.redirect;
             }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error al simular la compra.");
         });
+    });
+}
 
-        const data = await response.json();
-
-        if (data.init_point) {
-            // Redirige automáticamente al checkout de Mercado Pago
-            window.location.href = data.init_point;
-        } else {
-            alert("No se pudo generar la preferencia de pago.");
+//===SCRIPT OPCIONAL PARA MERCADO PAGO (Si decides activarlo)===
+/*
+const btnMP = document.getElementById("btn-pagar-mp");
+if(btnMP){
+    btnMP.addEventListener("click", async function() {
+        try {
+            const response = await fetch("{% url 'mp_crear_preferencia' %}", { // Asegúrate que esta URL exista en urls.py
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" }
+            });
+            const data = await response.json();
+            if (data.init_point) {
+                window.location.href = data.init_point;
+            } else {
+                alert("Error al iniciar pago: " + (data.error || "Desconocido"));
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error de conexión con el servidor.");
         }
-    } catch (error) {
-        console.error("❌ Error en la solicitud:", error);
-        alert("Error al comunicarse con el servidor.");
-    }
-});
+    });
+}
 */
-
-
 </script>
-
 {% endblock content %}

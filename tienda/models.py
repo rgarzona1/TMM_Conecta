@@ -1,7 +1,9 @@
 from django.db import models
-from usuarios.models import UsuarioPersonalizado # Importamos tu modelo
-from Web.models import Taller  # Importa el modelo base que usas en home
+from usuarios.models import UsuarioPersonalizado 
+from Web.models import Taller 
 from django.conf import settings
+from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Producto(models.Model):
     CATEGORIA_CHOICES = [
@@ -41,6 +43,13 @@ class CarritoItem(models.Model):
     taller_evento = models.ForeignKey('TallerEvento', on_delete=models.CASCADE, null=True, blank=True)
 
     cantidad = models.IntegerField(default=1)
+
+    # ========================================================
+    #  compras de regalo
+    # ========================================================
+    es_regalo = models.BooleanField(default=False)
+    nombre_beneficiario = models.CharField(max_length=150, blank=True, null=True)
+    email_beneficiario = models.EmailField(blank=True, null=True)
     
     def get_total(self):
         # Calcula el precio total del ítem (precio unitario * cantidad)
@@ -51,10 +60,11 @@ class CarritoItem(models.Model):
         return 0
         
     def __str__(self):
+        tipo = "REGALO" if self.es_regalo else "PERSONAL"
         if self.producto:
-            return f"{self.cantidad} x {self.producto.nombre}"
+            return f"{self.cantidad} x {self.producto.nombre} ({tipo})"
         elif self.taller_evento:
-            return f"{self.cantidad} x Taller: {self.taller_evento.taller_base.titulo}"
+            return f"{self.cantidad} x Taller: {self.taller_evento.taller_base.titulo} ({tipo})"
         return "Ítem sin referencia"
     
 #TALLERES ESPECIFICOS PROXIMOS PARA RESERVAS
@@ -120,9 +130,13 @@ class OrdenItem(models.Model):
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario= models.DecimalField(max_digits=12, decimal_places=2)
 
+    # ========================================================
+    #  NUEVOS CAMPOS: Para persistir info de regalo en la orden
+    # ========================================================
+    es_regalo = models.BooleanField(default=False)
+    nombre_beneficiario = models.CharField(max_length=150, blank=True, null=True)
+    email_beneficiario = models.EmailField(blank=True, null=True)
 
-from django.utils import timezone
-from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Cupon(models.Model):
     APLICA_CHOICES = [
@@ -189,4 +203,3 @@ class CuponAsignado(models.Model):
 
     def __str__(self):
         return f"{self.cupon.codigo} -> {self.usuario.username}"
-
