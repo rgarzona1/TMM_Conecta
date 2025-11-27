@@ -3,7 +3,6 @@
 
 {% block title %}Talleres y Eventos | TMM{% endblock %}
 
-
 {% block content %}
 <section class="catalogo-container"> 
     
@@ -16,42 +15,45 @@
     <div class="catalogo-grid"> 
         {% for taller in talleres %}
         
-        <div class="taller-card" data-delay="{{ forloop.counter0|add:'0.1' }}s"> 
-            
-            <a href="{% url 'detalle_taller' taller_id=taller.id %}">
+        <div class="taller-card" 
+             data-delay="{{ forloop.counter0|add:'0.1' }}s" 
+             data-url="{% url 'detalle_taller' taller_id=taller.id %}" 
+             style="cursor: pointer;"
+             onclick="window.location.href=this.dataset.url">
+
+            <div class="niche__top">
                 {% if taller.imagen %}
                     <img src="{{ taller.imagen.url }}" alt="{{ taller.taller_base.titulo }}">
                 {% else %}
                     <img src="{% static 'img/placeholder_taller.jpg' %}" alt="Taller">
                 {% endif %}
-            </a>
+            </div>
 
             <div class="taller-nombre">
                 {{ taller.taller_base.titulo }}
             </div>
             
             <div class="taller-info">
-                
-                <p>{{ taller.descripcion_completa|truncatewords:20 }}</p>
+                <p style="display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                    {{ taller.descripcion_completa }}
+                </p>
                 
                 {% if taller.fecha_proxima %}
-                <div style="margin-bottom: 15px; padding: 12px; background: linear-
-                gradient(135deg, #fff3f8 0%, #ffe6f0 100%); border-radius: 10px; text-align: center; border: 1px solid #ffddea;">
+                <div style="margin-bottom: 15px; padding: 12px; background: linear-gradient(135deg, #fff3f8 0%, #ffe6f0 100%); border-radius: 10px; text-align: center; border: 1px solid #ffddea;">
                     <div style="font-size: 1.8rem; margin-bottom: 5px;">📅</div>
                     <div style="color: #ce80b0; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px;">Próxima fecha</div>
                     <div style="color: #333; font-size: 1rem; font-weight: 700;">{{ taller.fecha_proxima|date:"d/m/Y" }}</div>
                 </div>
                 {% endif %}
                 
-                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                    
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: auto;">
                     <span style="font-size: 1.5rem; font-weight: bold; color: #ce80b0;">
                         ${{ taller.precio|floatformat:0 }} CLP
                     </span>
                     
-                    <a href="{% url 'detalle_taller' taller_id=taller.id %}" class="btn-ver-detalles">
+                    <span class="btn-ver-detalles">
                         Ver Detalles
-                    </a>
+                    </span>
                 </div>
             </div>
         </div>
@@ -63,4 +65,4 @@
         {% endfor %}
     </div> 
 </section>
-{% endblock content %}
+{% endblock %}
