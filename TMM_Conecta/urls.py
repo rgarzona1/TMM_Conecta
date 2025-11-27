@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('Web.urls')),
     path('usuarios/', include('usuarios.urls')),  
     path('tienda/', include('tienda.urls')),
+    
     #path('accounts/', include('django.contrib.auth.urls')),  # para login/logout por defecto
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

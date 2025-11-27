@@ -113,6 +113,101 @@
       </table>
     </div>
 
+    <hr style="margin: 3rem 0; border-top: 1px solid #eee;">
+
+  <h2 style="margin-bottom: 10px;"><i class="fa fa-star"></i> Reseñas de Usuarios</h2>
+  <p>Gestiona las reseñas enviadas por los usuarios.</p>
+
+  <!-- FILTRO DE RESEÑAS -->
+  <div style="margin-bottom: 20px; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+    <form method="GET" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <label style="font-weight: 600; color: #333;">Filtrar reseñas:</label>
+
+      <!-- Mantener los filtros de consultas -->
+      <input type="hidden" name="asunto" value="{{ asunto_filtro }}">
+
+      <select name="resenas" onchange="this.form.submit()" 
+              style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 0.95rem;">
+        <option value="TODAS" {% if filtro_resenas == 'TODAS' %}selected{% endif %}>Todas</option>
+        <option value="APROBADAS" {% if filtro_resenas == 'APROBADAS' %}selected{% endif %}>Aprobadas</option>
+        <option value="PENDIENTES" {% if filtro_resenas == 'PENDIENTES' %}selected{% endif %}>Pendientes</option>
+      </select>
+    </form>
+  </div>
+
+
+  <!-- TABLA DE RESEÑAS -->
+  <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.05); margin-bottom: 40px;">
+    <table class="tabla-panel">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Usuario</th>
+          <th>Comentario</th>
+          <th>Calificación</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for r in resenas %}
+        <tr>
+          <td style="white-space: nowrap;">{{ r.fecha_creacion|date:"d/m/Y H:i" }}</td>
+          <td><strong>{{ r.usuario.username }}</strong></td>
+
+          <td style="max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            {{ r.comentario }}
+          </td>
+
+          <td style="text-align:center;">
+            ⭐ {{ r.calificacion }}/5
+          </td>
+
+          <td style="text-align:center;">
+            {% if r.aprobada %}
+              <span style="color: green; font-weight: bold;">Aprobada</span>
+            {% else %}
+              <span style="color: #cc0000; font-weight: bold;">Pendiente</span>
+            {% endif %}
+          </td>
+          <td style="white-space: nowrap;">
+
+            {% if not r.aprobada %}
+                <a href="{% url 'aprobar_resena' r.id %}" 
+                  class="btn-panel" 
+                  style="padding:6px 10px; font-size:0.8rem; margin-right:5px;">
+                  ✔️ Aprobar
+                </a>
+            {% endif %}
+
+            <a href="{% url 'eliminar_resena' r.id %}"
+              class="btn-panel"
+              style="padding:6px 10px; font-size:0.8rem; background:#ff6b6b;"
+              onclick="return confirm('¿Eliminar esta reseña?');">
+              🗑️ Eliminar
+            </a>
+
+        </td>
+
+
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="text-align: center; padding: 2rem; color: #999;">
+            No hay reseñas registradas.
+          </td>
+        </tr>
+        <td style="white-space: nowrap;">
+
+
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+
     <div style="margin-top: 20px; text-align: center;">
       <a href="{% url 'panel_duena_inicio' %}" class="btn-panel">← Volver al Panel Principal</a>
     </div>

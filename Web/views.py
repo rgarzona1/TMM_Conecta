@@ -85,6 +85,20 @@ def panel_consultas(request):
     problemas = MensajeContacto.objects.filter(asunto='problemas').count()
     otros = MensajeContacto.objects.filter(asunto='otros').count()
     
+    #Reseñas
+    
+    filtro_resenas = request.GET.get('resenas', 'TODAS')
+
+    if filtro_resenas == 'APROBADAS':
+        resenas = Resena.objects.filter(aprobada=True)
+    elif filtro_resenas == 'PENDIENTES':
+        resenas = Resena.objects.filter(aprobada=False)
+    else:
+        resenas = Resena.objects.all()   # TODAS
+
+    resenas = resenas.order_by('-fecha_creacion')
+    
+    
     context = {
         'consultas': consultas,
         'asunto_filtro': asunto_filtro,
@@ -93,6 +107,11 @@ def panel_consultas(request):
         'dudas': dudas,
         'problemas': problemas,
         'otros': otros,
+        
+        # RESEÑAS
+        'resenas': resenas,
+        'filtro_resenas': filtro_resenas,
+        
     }
     
     return render(request, 'tienda/panel_mensajes.html', context)
@@ -118,3 +137,20 @@ def eliminar_consulta(request, pk):
     
     return render(request, 'Web/confirmar_eliminar_consulta.html', {'consulta': consulta})
 
+@login_required
+def aprobar_resena(request, id):
+    """Aprueba una reseña pendiente."""
+    resena = get_object_or_404(Resena, id=id)
+    resena.aprobada = True
+    resena.save()
+    messages.success(request, "La reseña fue aprobada correctamente.")
+    return redirect("panel_consultas")
+
+
+@login_required
+def eliminar_resena(request, id):
+    """Elimina una reseña."""
+    resena = get_object_or_404(Resena, id=id)
+    resena.delete()
+    messages.success(request, "La reseña fue eliminada correctamente.")
+    return redirect("panel_consultas")

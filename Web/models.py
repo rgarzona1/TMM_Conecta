@@ -75,7 +75,7 @@ class Resena(models.Model):
         comentario = models.TextField(max_length=500)
         calificacion = models.PositiveIntegerField(default=5)
         fecha_creacion = models.DateTimeField(auto_now_add=True)
-        aprobada = models.BooleanField(default=False)  # ✅ Moderación
+        aprobada = models.BooleanField(default=False)  
         
         class Meta:
             ordering = ['-fecha_creacion']
