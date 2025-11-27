@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from datetime import date
 
 # Obtener el modelo de usuario personalizado
 UserModel = get_user_model()
@@ -51,6 +53,36 @@ class FormularioRegistroPersonalizado(UserCreationForm):
         self.fields['password1'].help_text = None
         self.fields['password2'].help_text = None
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        
+        # Validar si el usuario ingresó solo dígitos
+        if username and username.isdigit():
+            raise ValidationError("El nombre de usuario no puede estar compuesto solo por números.")
+            
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        # Validar que el email sea único en el registro
+        if UserModel.objects.filter(email=email).exists():
+            raise ValidationError("Este correo electrónico ya está registrado.")
+        return email
+
+    def clean_fecha_cumpleanos(self):
+        fecha = self.cleaned_data.get('fecha_cumpleanos')
+        if fecha:
+            hoy = date.today()
+            # 1. Validar que no sea una fecha futura
+            if fecha > hoy:
+                raise ValidationError("La fecha de nacimiento no puede estar en el futuro.")
+            
+            # 2. Validar mayoría de edad (Opcional: ajusta el 18 según necesites)
+            edad = hoy.year - fecha.year - ((hoy.month, hoy.day) < (fecha.month, fecha.day))
+            if edad < 18:
+                raise ValidationError("Debes ser mayor de 18 años para registrarte.")
+        return fecha
+
     class Meta(UserCreationForm.Meta):
         model = UserModel
         fields = ('username', 'email', 'fecha_cumpleanos')
@@ -80,9 +112,17 @@ class UsuarioEdicionForm(forms.ModelForm):
         required=False,
         label="Subir nueva imagen de perfil"
     )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        # Validar unicidad EXCLUYENDO al usuario actual (para que pueda guardar su propio email)
+        if self.instance.pk:
+            if UserModel.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+                raise ValidationError("Este correo electrónico ya está en uso por otro usuario.")
+        return email
+
     class Meta:
         model = UserModel
-        # 🚨 SOLUCIÓN DEFINITIVA: Listar explícitamente SÓLO los campos que queremos renderizar
         fields = ('username', 'email', 'fecha_cumpleanos', 'avatar')
         
         # Opcional: Si el error persiste, listamos todos los campos que NO queremos.
