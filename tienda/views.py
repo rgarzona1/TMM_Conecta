@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime, date
 from email.mime import base
 import traceback
 from django.db import transaction
@@ -787,6 +787,139 @@ def panel_duena_inicio(request):
 @login_required
 @user_passes_test(es_duena)
 def panel_talleres(request):
+    """Vista única para listar, crear, editar y eliminar TallerEvento"""
+    from Web.models import Taller  
+
+    talleres = TallerEvento.objects.all().order_by('-fecha_proxima')
+    talleres_base = Taller.objects.all()
+
+    # ELIMINAR TALLER (GET)
+    if request.method == 'GET' and 'eliminar' in request.GET:
+        id_taller = request.GET.get('eliminar')
+        taller = get_object_or_404(TallerEvento, id=id_taller)
+        taller.delete()
+        messages.success(request, "🗑️ Taller eliminado correctamente.")
+        return redirect('panel_talleres')
+
+    # CREAR O EDITAR TALLER (POST)
+    if request.method == 'POST':
+        try:
+            accion = request.POST.get('accion')
+            id_taller = request.POST.get('id')
+            
+            # Obtener datos del formulario
+            taller_base_id = request.POST.get('taller_base')
+            nuevo_taller_base = request.POST.get('nuevo_taller_base', '').strip()
+            descripcion_completa = request.POST.get('descripcion_completa', '').strip()
+            precio = request.POST.get('precio')
+            fecha_proxima = request.POST.get('fecha_proxima')
+            hora_inicio = request.POST.get('hora_inicio')
+            lugar = request.POST.get('lugar', '').strip()
+            profesor = request.POST.get('profesor', '').strip()
+            capacidad = request.POST.get('capacidad')
+            tipo_taller = request.POST.get('tipo_taller')
+            imagen = request.FILES.get('imagen')
+
+            # VALIDACIÓN 1: Taller base o nuevo
+            if not taller_base_id and not nuevo_taller_base:
+                messages.error(request, '⚠️ Debes seleccionar un taller existente o crear uno nuevo.')
+                return redirect('panel_talleres')
+            
+            # VALIDACIÓN 2: Campos requeridos
+            if not descripcion_completa or len(descripcion_completa) < 10:
+                messages.error(request, '⚠️ La descripción debe tener al menos 10 caracteres.')
+                return redirect('panel_talleres')
+            
+            if not lugar:
+                messages.error(request, '⚠️ El campo Lugar es requerido.')
+                return redirect('panel_talleres')
+            
+            if not profesor:
+                messages.error(request, '⚠️ El campo Profesor es requerido.')
+                return redirect('panel_talleres')
+            
+            # VALIDACIÓN 3: Precio
+            try:
+                precio_decimal = float(precio)
+                if precio_decimal < 0:
+                    messages.error(request, '⚠️ El precio no puede ser negativo.')
+                    return redirect('panel_talleres')
+            except (ValueError, TypeError):
+                messages.error(request, '⚠️ Precio inválido.')
+                return redirect('panel_talleres')
+            
+            # VALIDACIÓN 4: Capacidad
+            try:
+                capacidad_int = int(capacidad)
+                if capacidad_int < 1:
+                    messages.error(request, '⚠️ La capacidad debe ser al menos 1 persona.')
+                    return redirect('panel_talleres')
+            except (ValueError, TypeError):
+                messages.error(request, '⚠️ Capacidad inválida.')
+                return redirect('panel_talleres')
+            
+            # VALIDACIÓN 5: Fecha no en el pasado (solo al crear)
+            if accion == 'crear':
+                fecha_obj = datetime.strptime(fecha_proxima, '%Y-%m-%d').date()
+                if fecha_obj < date.today():
+                    messages.error(request, '⚠️ No puedes crear un taller con fecha pasada.')
+                    return redirect('panel_talleres')
+
+            # Determinar el taller base (crear uno nuevo si es necesario)
+            if nuevo_taller_base:
+                taller_base, created = Taller.objects.get_or_create(titulo=nuevo_taller_base)
+                if created:
+                    messages.info(request, f'📝 Nuevo taller base "{nuevo_taller_base}" creado.')
+            elif taller_base_id:
+                taller_base = get_object_or_404(Taller, id=taller_base_id)
+            else:
+                messages.error(request, "⚠️ Error al determinar el taller base.")
+                return redirect('panel_talleres')
+
+            # CREAR NUEVO TALLER
+            if accion == 'crear':
+                TallerEvento.objects.create(
+                    taller_base=taller_base,
+                    descripcion_completa=descripcion_completa,
+                    precio=precio_decimal,
+                    fecha_proxima=fecha_proxima,
+                    hora_inicio=hora_inicio,
+                    lugar=lugar,
+                    profesor=profesor,
+                    capacidad=capacidad_int,
+                    tipo_taller=tipo_taller,
+                    imagen=imagen if imagen else None
+                )
+                messages.success(request, "✅ Taller creado con éxito.")
+
+            # EDITAR TALLER EXISTENTE
+            elif accion == 'editar' and id_taller:
+                taller = get_object_or_404(TallerEvento, id=id_taller)
+                taller.taller_base = taller_base
+                taller.descripcion_completa = descripcion_completa
+                taller.precio = precio_decimal
+                taller.fecha_proxima = fecha_proxima
+                taller.hora_inicio = hora_inicio
+                taller.lugar = lugar
+                taller.profesor = profesor
+                taller.capacidad = capacidad_int
+                taller.tipo_taller = tipo_taller
+                
+                if imagen:  
+                    taller.imagen = imagen
+                
+                taller.save()
+                messages.success(request, "📝 Taller actualizado correctamente.")
+
+            return redirect('panel_talleres')
+            
+        except Exception as e:
+            messages.error(request, f'❌ Error al guardar el taller: {str(e)}')
+            print(f"Error detallado: {str(e)}")
+            traceback.print_exc()
+            return redirect('panel_talleres')
+
+    
     """Vista única para listar, crear, editar y eliminar TallerEvento"""
     from Web.models import Taller  
 

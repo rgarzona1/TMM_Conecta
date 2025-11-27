@@ -6,8 +6,19 @@
   <h2><i class="fa fa-paint-brush"></i> Gestión de Talleres</h2>
   <p>Desde aquí puedes crear, editar o eliminar talleres programados.</p>
 
-  <!-- FORMULARIO ORDENADO -->
-  <form method="POST" enctype="multipart/form-data" class="form-talleres">
+  <!-- MENSAJES DE ERROR/ÉXITO -->
+  {% if messages %}
+    <div class="message-container">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- FORMULARIO ORDENADO CON VALIDACIONES -->
+  <form method="POST" enctype="multipart/form-data" class="form-talleres" id="form-taller">
     {% csrf_token %}
     <input type="hidden" name="id" id="taller_id">
     <input type="hidden" name="accion" id="accion" value="crear">
@@ -15,7 +26,7 @@
     <div class="form-grid-2">
 
       <div class="form-block">
-        <label for="taller_base">Taller Existente:</label>
+        <label for="taller_base">Taller Existente: <span style="color: red;">*</span></label>
         <select name="taller_base" id="taller_base">
           <option value="">-- Seleccionar --</option>
           {% for base in talleres_base %}
@@ -23,40 +34,42 @@
           {% endfor %}
         </select>
 
-        <label>Crea uno nuevo (si no existe):</label>
-        <input type="text" name="nuevo_taller_base" placeholder="Nuevo nombre de taller">
+        <label>O crea uno nuevo:</label>
+        <input type="text" name="nuevo_taller_base" id="nuevo_taller_base" placeholder="Nuevo nombre de taller">
+        <small style="color: #666;">Debe seleccionar un taller existente o crear uno nuevo</small>
       </div>
 
       <div class="form-block">
         <label for="imagen">Imagen del Taller:</label>
-        <input type="file" name="imagen" accept="image/*">
+        <input type="file" name="imagen" id="imagen" accept="image/jpeg,image/png,image/jpg,image/webp">
+        <small style="color: #666;">Formatos: JPG, PNG, WEBP (Max 5MB)</small>
 
-        <label for="precio">Precio:</label>
-        <input type="number" min="0" name="precio" id="precio">
+        <label for="precio">Precio: <span style="color: red;">*</span></label>
+        <input type="number" min="0" step="0.01" name="precio" id="precio" placeholder="0.00" required>
       </div>
 
       <div class="form-block">
-        <label for="fecha_proxima">Fecha Próxima:</label>
-        <input type="date" name="fecha_proxima" id="fecha_proxima">
+        <label for="fecha_proxima">Fecha Próxima: <span style="color: red;">*</span></label>
+        <input type="date" name="fecha_proxima" id="fecha_proxima" required>
 
-        <label for="hora_inicio">Hora de Inicio:</label>
-        <input type="time" name="hora_inicio" id="hora_inicio">
+        <label for="hora_inicio">Hora de Inicio: <span style="color: red;">*</span></label>
+        <input type="time" name="hora_inicio" id="hora_inicio" required>
       </div>
 
       <div class="form-block">
-        <label for="lugar">Lugar del Evento:</label>
-        <input type="text" name="lugar" id="lugar">
+        <label for="lugar">Lugar del Evento: <span style="color: red;">*</span></label>
+        <input type="text" name="lugar" id="lugar" maxlength="200" required>
 
-        <label for="profesor">Profesor:</label>
-        <input type="text" name="profesor" id="profesor">
+        <label for="profesor">Profesor: <span style="color: red;">*</span></label>
+        <input type="text" name="profesor" id="profesor" maxlength="100" required>
       </div>
 
       <div class="form-block">
-        <label for="capacidad">Capacidad:</label>
-        <input type="number" name="capacidad" id="capacidad" min="1">
+        <label for="capacidad">Capacidad: <span style="color: red;">*</span></label>
+        <input type="number" name="capacidad" id="capacidad" min="1" max="500" required>
 
-        <label for="tipo_taller">Tipo:</label>
-        <select name="tipo_taller" id="tipo_taller">
+        <label for="tipo_taller">Tipo: <span style="color: red;">*</span></label>
+        <select name="tipo_taller" id="tipo_taller" required>
           <option value="PRESENCIAL">Presencial</option>
           <option value="ONLINE">Online</option>
         </select>
@@ -64,11 +77,15 @@
 
     </div>
 
-    <label for="descripcion_completa" class="label-descripcion">Descripción completa:</label>
-    <textarea name="descripcion_completa" id="descripcion_completa" class="desc-area"></textarea>
+    <label for="descripcion_completa" class="label-descripcion">Descripción completa: <span style="color: red;">*</span></label>
+    <textarea name="descripcion_completa" id="descripcion_completa" class="desc-area" 
+              minlength="10" maxlength="2000" required 
+              placeholder="Describe el taller (mínimo 10 caracteres)"></textarea>
+    <small style="color: #666;">Mínimo 10 caracteres, máximo 2000</small>
 
     <div class="btn-right">
       <button type="submit" class="btn-panel" id="btn-guardar">➕ Crear Taller</button>
+      <button type="button" class="btn-salir" onclick="limpiarFormulario()" style="margin-left: 10px;">🔄 Limpiar</button>
     </div>
   </form>
 
@@ -91,8 +108,8 @@
       {% for taller in talleres %}
       <tr>
         <td>{{ taller.taller_base.titulo }}</td>
-        <td>{{ taller.fecha_proxima }}</td>
-        <td>{{ taller.hora_inicio }}</td>
+        <td>{{ taller.fecha_proxima|date:"d/m/Y" }}</td>
+        <td>{{ taller.hora_inicio|time:"H:i" }}</td>
         <td>{{ taller.lugar }}</td>
         <td>{{ taller.profesor }}</td>
         <td>{{ taller.capacidad }}</td>
@@ -104,7 +121,7 @@
             data-id="{{ taller.id }}"
             data-base="{{ taller.taller_base.id }}"
             data-descripcion="{{ taller.descripcion_completa|escapejs }}"
-            data-precio="{{ taller.precio }}"
+            data-precio="{{ taller.precio|stringformat:'f' }}" 
             data-fecha="{{ taller.fecha_proxima|date:'Y-m-d' }}"
             data-hora="{{ taller.hora_inicio|time:'H:i' }}"
             data-lugar="{{ taller.lugar|escapejs }}"
@@ -114,32 +131,137 @@
             ✏️ Editar
           </button>
 
-          <a href="?eliminar={{ taller.id }}" class="btn-salir" onclick="return confirm('¿Eliminar este taller?');">
+          <a href="?eliminar={{ taller.id }}" class="btn-salir" 
+             onclick="return confirm('⚠️ ¿Estás seguro de eliminar este taller?\n\nEsta acción no se puede deshacer.');">
             🗑️ Eliminar
           </a>
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="7">No hay talleres programados.</td></tr>
+      <tr><td colspan="7" class="tabla-vacia">No hay talleres programados.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </section>
 
 <script>
+// Establecer fecha mínima como hoy
+document.addEventListener('DOMContentLoaded', function() {
+  const fechaInput = document.getElementById('fecha_proxima');
+  if(fechaInput) {
+      const hoy = new Date().toISOString().split('T')[0];
+      fechaInput.setAttribute('min', hoy);
+  }
+  
+  // Log para debug
+  console.log('Formulario de talleres cargado correctamente');
+});
+
+// Validar formulario antes de enviar
+const formTaller = document.getElementById('form-taller');
+if(formTaller){
+    formTaller.addEventListener('submit', function(e) {
+      console.log('Formulario enviado - iniciando validaciones');
+      
+      const tallerBase = document.getElementById('taller_base').value;
+      const nuevoTaller = document.getElementById('nuevo_taller_base').value.trim();
+      const precio = document.getElementById('precio').value;
+      const capacidad = document.getElementById('capacidad').value;
+      const descripcion = document.getElementById('descripcion_completa').value.trim();
+      
+      console.log('Datos del formulario:', {
+        tallerBase,
+        nuevoTaller,
+        precio,
+        capacidad,
+        descripcion
+      });
+      
+      // Validar que haya seleccionado un taller O creado uno nuevo
+      if (!tallerBase && !nuevoTaller) {
+        e.preventDefault();
+        alert('⚠️ Debes seleccionar un taller existente o crear uno nuevo');
+        console.error('Error: No se seleccionó taller base ni se creó uno nuevo');
+        return false;
+      }
+      
+      // Validar precio (debe existir y ser un número válido)
+      if (!precio || isNaN(parseFloat(precio))) {
+        e.preventDefault();
+        alert('⚠️ Debes ingresar un precio válido');
+        console.error('Error: Precio inválido');
+        return false;
+      }
+      
+      if (parseFloat(precio) < 0) {
+        e.preventDefault();
+        alert('⚠️ El precio no puede ser negativo');
+        console.error('Error: Precio negativo');
+        return false;
+      }
+      
+      // Validar capacidad
+      if (!capacidad || isNaN(parseInt(capacidad))) {
+        e.preventDefault();
+        alert('⚠️ Debes ingresar una capacidad válida');
+        console.error('Error: Capacidad inválida');
+        return false;
+      }
+      
+      if (parseInt(capacidad) < 1) {
+        e.preventDefault();
+        alert('⚠️ La capacidad debe ser al menos 1 persona');
+        console.error('Error: Capacidad menor a 1');
+        return false;
+      }
+      
+      // Validar descripción
+      if (descripcion.length < 10) {
+        e.preventDefault();
+        alert('⚠️ La descripción debe tener al menos 10 caracteres');
+        console.error('Error: Descripción muy corta');
+        return false;
+      }
+      
+      console.log('✓ Todas las validaciones pasaron - enviando formulario');
+      return true;
+    });
+}
+
 function editarTaller(btn) {
+  console.log('Editando taller:', btn.dataset.id);
+  
   document.getElementById('taller_id').value = btn.dataset.id;
   document.getElementById('taller_base').value = btn.dataset.base;
   document.getElementById('descripcion_completa').value = btn.dataset.descripcion;
-  document.getElementById('precio').value = btn.dataset.precio;
+  
+  // Manejo del formato de precio para input type=number
+  let precio = btn.dataset.precio.replace(',', '.');
+  document.getElementById('precio').value = precio;
+  
   document.getElementById('fecha_proxima').value = btn.dataset.fecha;
   document.getElementById('hora_inicio').value = btn.dataset.hora;
   document.getElementById('lugar').value = btn.dataset.lugar;
   document.getElementById('profesor').value = btn.dataset.profesor;
   document.getElementById('capacidad').value = btn.dataset.capacidad;
   document.getElementById('tipo_taller').value = btn.dataset.tipo;
+  
+  // Limpiar el campo de nuevo taller
+  document.getElementById('nuevo_taller_base').value = '';
+  
   document.getElementById('accion').value = 'editar';
   document.getElementById('btn-guardar').innerText = '💾 Guardar Cambios';
+  
+  // Scroll al formulario
+  document.getElementById('form-taller').scrollIntoView({ behavior: 'smooth' });
+}
+
+function limpiarFormulario() {
+  console.log('Limpiando formulario');
+  document.getElementById('form-taller').reset();
+  document.getElementById('taller_id').value = '';
+  document.getElementById('accion').value = 'crear';
+  document.getElementById('btn-guardar').innerText = '➕ Crear Taller';
 }
 </script>
 {% endblock %}
