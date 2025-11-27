@@ -2013,9 +2013,12 @@ html { scroll-behavior: smooth; }
 /* === GRID DE TARJETAS === */
 .catalogo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2.5rem;
-  justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: .5rem;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem; 
 }
 
 /* === TARJETAS DE TALLER === */
@@ -2026,7 +2029,6 @@ html { scroll-behavior: smooth; }
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
   transition: all 0.35s ease;
   width: 100%;
-  max-width: 350px;
   display: flex;
   flex-direction: column;
   cursor: pointer;
