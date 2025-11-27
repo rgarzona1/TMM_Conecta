@@ -40,9 +40,7 @@
                         <span class="cart-product-price">Precio: ${{ item.taller_evento.precio }}</span>
                         <span class="cart-product-date">Fecha: {{ item.taller_evento.fecha_proxima }}</span>
                         
-                        <!-- ========================================== -->
-                        <!-- NUEVO: VISUALIZACIÓN DE DATOS DE REGALO -->
-                        <!-- ========================================== -->
+                        <!-- Datos de Regalo -->
                         {% if item.es_regalo %}
                             <div style="margin: 8px 0; padding: 8px; background-color: #fff0f6; border-radius: 6px; border: 1px solid #fcc2d7; font-size: 0.9em;">
                                 <span style="font-weight: bold; color: #d63384;">🎁 ES UN REGALO</span><br>
@@ -50,11 +48,9 @@
                                 <span style="color: #777; font-size: 0.85em;">Invitación a: {{ item.email_beneficiario }}</span>
                             </div>
                         {% endif %}
-                        <!-- ========================================== -->
 
                         <div class="quantity-control">
                             <span>Cantidad: {{ item.cantidad }}</span>
-                            <!-- Botón Eliminar corregido para talleres -->
                             <a href="{% url 'update_cart' item.id 'delete' %}" class="btn-eliminar" style="margin-left: 10px; color: #dc3545; text-decoration: none; font-size: 0.9em;">
                                 <i class="fas fa-trash"></i> Eliminar
                             </a>
@@ -75,7 +71,6 @@
             <!-- TARJETA DE DIRECCIÓN -->
             {% if not solo_talleres %}
             <div class="address-box">
-                <!-- Si NO se está editando la dirección -->
                 {% if not request.GET.editar %}
                     {% if direccion.calle %}
                         <div class="direccion-texto">
@@ -86,25 +81,18 @@
                     {% else %}
                         <p>No has ingresado una dirección de entrega.</p>
                     {% endif %}
-
                     <a href="?editar=1" class="btn-modificar">Modificar</a>
-
                 {% else %}
-                <!-- FORMULARIO EDITAR DIRECCIÓN -->
                 <form method="post" action="{% url 'guardar_direccion' %}">
                     {% csrf_token %}
                     <label>Calle:</label>
                     <input type="text" name="calle" value="{{ direccion.calle }}">
-
                     <label>Número / Depto:</label>
                     <input type="text" name="numero" value="{{ direccion.numero }}">
-
                     <label>Ciudad:</label>
                     <input type="text" name="ciudad" value="{{ direccion.ciudad }}">
-
                     <label>Código Postal:</label>
                     <input type="text" name="zip" value="{{ direccion.zip }}">
-
                     <button type="submit" class="btn-pagar">Guardar</button>
                     <a href="{% url 'carrito' %}" class="btn-modificar">Cancelar</a>
                 </form>
@@ -147,15 +135,17 @@
             <!-- BOTONES DE PAGO -->
             <div class="payment-box">
                 {% if carrito.items.all %}
-                <!-- Formulario real para Mercado Pago -->
-                <!-- Nota: Asegúrate de que la URL 'mp_crear_preferencia' esté en urls.py apuntando a crear_preferencia -->
-                <form id="checkout-form" method="post"> <!-- JS maneja el submit si usas fetch, o action directo -->
-                    {% csrf_token %}
-                    <!-- Botón para flujo real (comentado si solo usas simulación por ahora) -->
-                    <!-- <button type="button" id="btn-pagar-mp" class="btn-pagar">IR A PAGAR (MP)</button> -->
-                    
-                    <button type="button" class="btn-pagar" id="btn-simular-compra" style="background-color: #28a745;">Simular Compra (Test)</button>
-                </form>
+                
+                    <!-- Botón Mercado Pago (Ahora Visible) -->
+                    <button id="btn-pagar-mp" class="btn-mercado-pago">
+                        Pagar con Mercado Pago
+                    </button>
+
+                    <!-- Botón Simular Compra (Para pruebas rápidas) -->
+                    <button type="button" class="btn-pagar" id="btn-simular-compra" style="background-color: #28a745; color: white; border: none; margin-top: 10px;">
+                        Simular Compra (Test)
+                    </button>
+
                 {% else %}
                     <p>Tu carrito está vacío.</p>
                 {% endif %}
@@ -166,7 +156,45 @@
 </main>
 
 <script>
-//===SCRIPT PARA SIMULAR COMPRA===
+// === SCRIPT PARA MERCADO PAGO (Activado) ===
+const btnMP = document.getElementById("btn-pagar-mp");
+if(btnMP){
+    btnMP.addEventListener("click", async function() {
+        // Feedback visual al usuario
+        const originalText = btnMP.innerText;
+        btnMP.innerText = "Procesando...";
+        btnMP.disabled = true;
+
+        try {
+            // Hacemos la petición a tu vista 'crear_preferencia'
+            const response = await fetch("{% url 'mp_crear_preferencia' %}", { 
+                method: "POST",
+                headers: { 
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.init_point) {
+                // Si todo sale bien, redirigimos a Mercado Pago
+                window.location.href = data.init_point;
+            } else {
+                alert("Error al iniciar pago: " + (data.error || "Desconocido"));
+                btnMP.innerText = originalText;
+                btnMP.disabled = false;
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error de conexión con el servidor.");
+            btnMP.innerText = originalText;
+            btnMP.disabled = false;
+        }
+    });
+}
+
+// === SCRIPT PARA SIMULAR COMPRA (Solo Pruebas) ===
 const btnSimular = document.getElementById("btn-simular-compra");
 if (btnSimular) {
     btnSimular.addEventListener("click", function() {
@@ -191,29 +219,5 @@ if (btnSimular) {
         });
     });
 }
-
-//===SCRIPT OPCIONAL PARA MERCADO PAGO (Si decides activarlo)===
-/*
-const btnMP = document.getElementById("btn-pagar-mp");
-if(btnMP){
-    btnMP.addEventListener("click", async function() {
-        try {
-            const response = await fetch("{% url 'mp_crear_preferencia' %}", { // Asegúrate que esta URL exista en urls.py
-                method: "POST",
-                headers: { "X-CSRFToken": "{{ csrf_token }}" }
-            });
-            const data = await response.json();
-            if (data.init_point) {
-                window.location.href = data.init_point;
-            } else {
-                alert("Error al iniciar pago: " + (data.error || "Desconocido"));
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Error de conexión con el servidor.");
-        }
-    });
-}
-*/
 </script>
 {% endblock content %}
