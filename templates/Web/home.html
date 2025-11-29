@@ -19,32 +19,43 @@
         </div>
     </section>
 
-   <!-- ======= EXPERIENCIA TMM ======= -->
+    <!-- ======= EXPERIENCIA TMM ======= -->
     <section id="experiencia" class="experience-section">
-    <div class="wrap">
-        <h2 class="carousel-title">Vive la Experiencia TMM</h2>
+        <div class="wrap">
+            <h2 class="carousel-title">Vive la Experiencia TMM</h2>
 
-        <div class="carousel-container">
-        <div class="carousel">
-            <div class="carousel-item active">
-            <img src="{% static 'img/carousel/carusel1.jpg' %}" alt="Experiencia TMM">
+            <div class="carousel-container">
+                <div class="carousel">
+                    <div class="carousel-item">
+                        <img src="{% static 'img/carousel/carusel1.jpg' %}" alt="Experiencia TMM 1">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'img/carousel/carusel2.jpg' %}" alt="Experiencia TMM 2">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'img/carousel/carusel3.jpg' %}" alt="Experiencia TMM 3">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static 'img/carousel/carusel4.jpg' %}" alt="Experiencia TMM 4">
+                    </div>
+                </div>
+                
+                <button class="carousel-btn prev" aria-label="Anterior">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn next" aria-label="Siguiente">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
-            <div class="carousel-item">
-            <img src="{% static 'img/carousel/carusel2.jpg' %}" alt="Experiencia TMM">
-            </div>
-            <div class="carousel-item">
-            <img src="{% static 'img/carousel/carusel3.jpg' %}" alt="Experiencia TMM">
-            </div>
-            <div class="carousel-item">
-            <img src="{% static 'img/carousel/carusel4.jpg' %}" alt="Experiencia TMM">
+
+            <div class="carousel-dots">
+                <button class="carousel-dot active" data-index="0"></button>
+                <button class="carousel-dot" data-index="1"></button>
+                <button class="carousel-dot" data-index="2"></button>
+                <button class="carousel-dot" data-index="3"></button>
             </div>
         </div>
-        <button class="carousel-btn prev">&#10094;</button>
-        <button class="carousel-btn next">&#10095;</button>
-        </div>
-    </div>
     </section>
-
 
     <!-- ======= NOSOTROS ======= -->
     <section id="nosotros" class="about">
@@ -186,8 +197,6 @@
                     <a href="{% url 'login' %}" class="btn-vamos">Inicia sesión para dejar una reseña</a>
                     {% endif %}
                 </div>
-                
-
         </div>
     </section>
 
@@ -206,27 +215,117 @@
     </section>
 
     <script>
-        const carousel = document.querySelector(".carousel");
-        const items = document.querySelectorAll(".carousel-item");
-        let index = 0;
+    class Carousel {
+        constructor(container) {
+            this.container = container;
+            this.items = container.querySelectorAll('.carousel-item');
+            this.prevBtn = container.querySelector('.carousel-btn.prev');
+            this.nextBtn = container.querySelector('.carousel-btn.next');
+            this.dots = container.querySelectorAll('.carousel-dot');
+            
+            this.currentIndex = 0;
+            this.totalItems = this.items.length;
+            this.isAnimating = false;
+            
+            this.init();
+        }
+        
+        init() {
+            this.updatePositions();
+            
+            this.prevBtn.addEventListener('click', () => this.prev());
+            this.nextBtn.addEventListener('click', () => this.next());
+            
+            this.dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => this.goTo(index));
+            });
+            
+            this.startAutoplay();
+            
+            this.container.addEventListener('mouseenter', () => this.stopAutoplay());
+            this.container.addEventListener('mouseleave', () => this.startAutoplay());
+        }
+        
+        updatePositions() {
+            this.items.forEach((item, index) => {
+                item.classList.remove('active', 'prev', 'next');
+                
+                if (index === this.currentIndex) {
+                    item.classList.add('active');
+                } else if (index === this.getPrevIndex()) {
+                    item.classList.add('prev');
+                } else if (index === this.getNextIndex()) {
+                    item.classList.add('next');
+                }
+            });
+            
+            this.dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === this.currentIndex);
+            });
+        }
+        
+        getPrevIndex() {
+            return (this.currentIndex - 1 + this.totalItems) % this.totalItems;
+        }
+        
+        getNextIndex() {
+            return (this.currentIndex + 1) % this.totalItems;
+        }
+        
+        next() {
+            if (this.isAnimating) return;
+            
+            this.isAnimating = true;
+            this.currentIndex = this.getNextIndex();
+            this.updatePositions();
+            
+            setTimeout(() => {
+                this.isAnimating = false;
+            }, 500);
+        }
+        
+        prev() {
+            if (this.isAnimating) return;
+            
+            this.isAnimating = true;
+            this.currentIndex = this.getPrevIndex();
+            this.updatePositions();
+            
+            setTimeout(() => {
+                this.isAnimating = false;
+            }, 500);
+        }
+        
+        goTo(index) {
+            if (this.isAnimating || index === this.currentIndex) return;
+            
+            this.isAnimating = true;
+            this.currentIndex = index;
+            this.updatePositions();
+            
+            setTimeout(() => {
+                this.isAnimating = false;
+            }, 500);
+        }
+        
+        startAutoplay() {
+            this.stopAutoplay();
+            this.autoplayInterval = setInterval(() => this.next(), 5000);
+        }
+        
+        stopAutoplay() {
+            if (this.autoplayInterval) {
+                clearInterval(this.autoplayInterval);
+            }
+        }
+    }
 
-        document.querySelector(".next").addEventListener("click", () => {
-        index = (index + 1) % items.length;
-        carousel.style.transform = `translateX(${-index * 100}%)`;
-        });
-
-        document.querySelector(".prev").addEventListener("click", () => {
-        index = (index - 1 + items.length) % items.length;
-        carousel.style.transform = `translateX(${-index * 100}%)`;
-        });
-
-        // Rotación automática cada 5s
-        setInterval(() => {
-        index = (index + 1) % items.length;
-        carousel.style.transform = `translateX(${-index * 100}%)`;
-        }, 5000);
+    // Inicializar carrusel
+    document.addEventListener('DOMContentLoaded', function() {
+        const carouselContainer = document.querySelector('.carousel-container');
+        new Carousel(carouselContainer);
+    });
     </script>
 
 </main>
 {% endblock %}
-
