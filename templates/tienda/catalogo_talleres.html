@@ -34,7 +34,7 @@
             </div>
             
             <div class="taller-info">
-                <p style="display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                <p class="taller-descripcion">
                     {{ taller.descripcion_completa }}
                 </p>
                 
@@ -46,14 +46,9 @@
                 </div>
                 {% endif %}
                 
-                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: auto;">
-                    <span style="font-size: 1.5rem; font-weight: bold; color: #ce80b0;">
-                        ${{ taller.precio|floatformat:0 }} CLP
-                    </span>
-                    
-                    <span class="btn-ver-detalles">
-                        Ver Detalles
-                    </span>
+                <div class="taller-precio-container">
+                    <p class="taller-precio">${{ taller.precio|floatformat:0 }} CLP</p>
+                    <span class="btn-ver-detalles">Ver Detalles</span>
                 </div>
             </div>
         </div>

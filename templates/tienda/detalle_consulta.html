@@ -1,53 +1,73 @@
 {% extends 'general.html' %}
-{% block title %}Detalle de Consulta{% endblock %}
+{% block title %}Conectemos{% endblock %}
 
 {% block content %}
-<section class="panel-right" style="max-width: 800px; margin: 2rem auto;">
-  <h2>📩 Detalle de Consulta</h2>
+<section class="seccion-conectar">
+    <div class="conectar-ventana">
+        <!-- Encabezado del formulario -->
+        <div class="conectar-header">
+            <h1>Conectemos</h1>
+            <span class="subtitulo">¿Dudas?</span>
+            <p class="descripcion">
+                ¿Tienes preguntas sobre nuestros talleres de manualidades, quieres contar con un taller de bienestar para tu empresa o necesitas una asesoría personalizada? Escríbenos. ¡Estamos aquí para ayudarte a reconectar con tu creatividad!
+            </p>
+        </div>
 
-  <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
-    
-    <div style="border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; margin-bottom: 20px;">
-      <h3 style="color: #ff69b4; margin-bottom: 15px;">Información de Contacto</h3>
-      <p><strong>Nombre:</strong> {{ consulta.nombre_completo }}</p>
-      <p><strong>Email:</strong> <a href="mailto:{{ consulta.correo_electronico }}" style="color: #0080ff;">{{ consulta.correo_electronico }}</a></p>
-      <p><strong>Fecha:</strong> {{ consulta.fecha_envio|date:"d/m/Y H:i" }}</p>
-      <p><strong>Asunto:</strong> 
-        {% with asunto=consulta.asunto %}
-        <span class="tag-asunto
-          {% if asunto == 'cotizacion' %}tag-cotizacion
-          {% elif asunto == 'dudas' %}tag-dudas
-          {% elif asunto == 'problemas' %}tag-problemas
-          {% else %}tag-otro{% endif %}">
-          {{ consulta.get_asunto_display }}
-        </span>
-        {% endwith %}
-      </p>
-      <p><strong>Suscrito al newsletter:</strong> 
-        {% if consulta.suscripcion %}
-          <span style="color: #28a745; font-weight: 600;">✓ Sí</span>
-        {% else %}
-          <span style="color: #999;">○ No</span>
-        {% endif %}
-      </p>
+        <hr class="separador">
+
+        <form action="{% url 'enviar_consulta' %}" method="POST" class="formulario-contacto">
+            {% csrf_token %}
+
+            <div class="form-field">
+                <label class="field-label">Nombre</label>
+                <div class="input-field">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="nombre" placeholder="Tu nombre completo" required>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label class="field-label">Email</label>
+                <div class="input-field">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="correo@ejemplo.com" required>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label class="field-label">Tipo de consulta</label>
+                <div class="input-field">
+                    <i class="fas fa-tag"></i>
+                    <select name="tipo" required>
+                        <option value="">Selecciona un tipo de consulta</option>
+                        <option value="talleres">Información sobre talleres</option>
+                        <option value="empresa">Talleres para empresa</option>
+                        <option value="asesoria">Asesoría personalizada</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-field">
+                <label class="field-label">Mensaje</label>
+                <div class="input-field">
+                    <i class="fas fa-comment"></i>
+                    <textarea name="mensaje" rows="5" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                </div>
+            </div>
+
+            <div class="form-checkbox-container">
+                <input type="checkbox" id="newsletter" name="newsletter" class="form-checkbox">
+                <label for="newsletter">Quiero recibir actualizaciones sobre nuevos talleres...</label>
+            </div>
+
+            <button type="submit" class="btn-enviar">Enviar Mensaje</button>
+        </form>
+
+        <div class="contacto-info">
+            <p>📧 info@tudominio.com</p>
+            <p>📞 +56 9 1234 5678</p>
+        </div>
     </div>
-
-    <div style="margin-bottom: 25px;">
-      <h3 style="color: #ff69b4; margin-bottom: 15px;">Mensaje</h3>
-      <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid #ff69b4; line-height: 1.7;">
-        {{ consulta.mensaje|linebreaks }}
-      </div>
-    </div>
-
-    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px;">
-      <a href="{% url 'panel_consultas' %}" class="btn-panel" style="background: #6c757d;">
-        ← Volver a Consultas
-      </a>
-      <a href="mailto:{{ consulta.correo_electronico }}?subject=Re: {{ consulta.get_asunto_display }}" class="btn-panel">
-        ✉️ Responder por Email
-      </a>
-    </div>
-
-  </div>
 </section>
 {% endblock %}

@@ -6,6 +6,11 @@
     --color-crema: #F1DEE2;;
     --color-verde-oscuro: #7ef899;
     --color-texto: #333;
+
+    --color-1: #000000;
+    --color-3: #f0fff0;
+    --color-3: #fffacd;
+
         /* ESCALA TIPOGRÁFICA*/
     --text-xs: 0.85rem;    /* Textos secundarios, metadata */
     --text-sm: 0.95rem;    /* Navegación, botones, forms */
@@ -208,40 +213,6 @@ body {
 
 /*  GENERAL STYLES  */
 
-/* Sección principal */
-.seccion-conectar {
-    text-align: center;
-    padding-bottom: 4rem;
-    background-color: #fff;
-}
-
-/* Imagen de contacto en CTA */
-.cta__img {
-    width: 120px;
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-}
-
-/* Banner superior */
-.banner-conectar {
-    background: linear-gradient(135deg, var(--color-rosa), var(--color-lavanda));
-    padding: 3rem 1rem 2rem;
-    position: relative;
-}
-
-.banner-conectar h1{
-    font-size: var(--text-hero);
-    font-weight: lighter;
-    color: rgb(0, 0, 0);
-    margin: 0;
-    letter-spacing: 2px;
-    font-family: 'Lobster', sans-serif;
-}
-
 /* === EXPERIENCIA TMM (Carrusel Home) === */
 .experience-section {
   background-color: var(--color-rosa);
@@ -390,7 +361,7 @@ body {
 /* SECCIÓN FUNDADORA */
 .fundadora {
     padding: 5rem 0;
-    background-color: #fff;
+    background: linear-gradient(135deg, #fff5f8 0%, #fff9e6 100%);
 }
 
 .fundadora .title {
@@ -502,7 +473,7 @@ body {
 /* SECCIÓN RESEÑAS */
 .testimonials {
     padding: 5rem 0;
-    background-color: #fff;
+    background: linear-gradient(135deg, #fff5f8 0%, #fff9e6 100%);
 }
 
 .testimonials__grid {
@@ -703,88 +674,200 @@ body {
     line-height: 1.6;
 }
 
-/* Contenedor formulario */
+/* ==============================================
+   FORMULARIO DE CONTACTO 
+   
+   ============================================== */
+
+/* Contenedor principal del formulario de contacto */
 .form-container {
-    max-width: 700px;
-    background-color: #fabdf591;
-    margin: 2rem auto;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    text-align: left;
-    border: 1px solid var(--color-lavanda);
-}
-
-/* Etiquetas y campos */
-.formulario-contacto label {
-    font-weight: 500;
-    color: var(--color-texto);
-    margin-bottom: 0.5rem;
-    display: block;
-}
-
-.form-input,
-.form-select,
-.form-textarea {
-    width: 100%;
-    border: none;
+    max-width: 600px;
+    background: #fff;
     border-radius: var(--radius);
-    background-color: rgba(243, 197, 219, 0.9);
-    padding: 0.8rem;
-    margin-bottom: 1rem;
-    font-size: var(--text-base);
-    transition: all 0.3s ease;
-    color: var(--color-texto);
+    padding: 30px 40px;
+    margin: 2rem auto;
+    box-shadow: var(--sombra);
 }
 
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-    outline: none;
-    border-color: var(--color-durazno);
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+.form-container h2 {
+    text-align: center;
+    color: #000;
+    margin-bottom: 25px;
+    font-size: var(--text-lg);
 }
 
-/* Checkbox */
-.form-checkbox {
-    accent-color: var(--color-verde-oscuro);
-    margin-right: 0.5rem;
+/* Campos del formulario */
+.form-field {
+    margin-bottom: 18px;
 }
 
-/* Botón */
-.btn-enviar {
+.formulario-contacto label {
     display: block;
-    background-color: rgb(255, 229, 85);
-    color: rgb(19, 17, 17);
-    border: none;
-    padding: 0.8rem 2rem;
-    border-radius: 8px;
     font-weight: 600;
+    color: var(--color-texto);
+    margin-bottom: 8px;
+    font-size: var(--text-base);
+}
+
+/* Inputs con iconos - igual que editar perfil */
+.input-icon {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--color-gris);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    background: var(--color-crema);
+    transition: all 0.3s ease;
+}
+
+.input-icon i {
+    color: #595555;
+    margin-right: 8px;
+    font-size: 1rem;
+}
+
+.input-icon input,
+.input-icon textarea,
+.input-icon select {
+    border: none;
+    outline: none;
+    width: 100%;
+    background: transparent;
+    font-size: var(--text-base);
+    color: var(--color-texto);
+    font-family: 'Quicksand', sans-serif;
+    resize: vertical;
+}
+
+.input-icon textarea {
+    min-height: 100px;
+}
+
+.input-icon:focus-within {
+    border-color: var(--color-durazno);
+    box-shadow: 0 0 0 2px rgba(245, 200, 167, 0.3);
+}
+
+/* Checkbox estilo moderno */
+.form-checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(255, 182, 193, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 182, 193, 0.3);
+}
+
+.form-checkbox {
+    width: 20px;
+    height: 20px;
     cursor: pointer;
-    transition: background 0.3s ease;
-    margin-top: 1rem;
+    accent-color: var(--color-durazno);
+    flex-shrink: 0;
+}
+
+.form-checkbox-container label {
+    margin: 0;
+    font-weight: 500;
+    font-size: var(--text-sm);
+    cursor: pointer;
+    color: var(--color-texto);
+    flex-grow: 1;
+}
+
+/* Botones del formulario */
+.form-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    width: 100%;
+    align-items: stretch;
+}
+
+.btn-enviar {
+    flex: 1;
+    height: 46px;
+    padding: 14px 24px;
+    border-radius: 25px;
+    text-align: center;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: var(--text-base);
+    white-space: nowrap;
+    background: linear-gradient(135deg, #b8e0d2, #d6eadf);
+    color: #000;
 }
 
 .btn-enviar:hover {
-    background-color: var(--color-durazno);
-    color: var(--color-texto);
+    background: linear-gradient(135deg, #b8e0d2, #d6eadf);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 200, 167, 0.4);
 }
 
-/* Mensajes */
+.btn-secondary {
+    background: #eac4d5;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #c9b8d4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(217, 204, 224, 0.4);
+}
+
+/* Mensajes de alerta */
 .alertas p {
-    padding: 0.8rem;
+    padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 1rem;
     text-align: center;
+    font-weight: 500;
 }
 
 .alertas .success {
     background-color: var(--color-menta);
+    color: #155724;
+    border: 1px solid #c3e6cb;
 }
 
 .alertas .error {
-    background-color: var(--color-durazno);
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 20px;
+        margin: 20px;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-enviar,
+    .btn-secondary {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-enviar, 
+    .btn-secondary { 
+        font-size: var(--text-sm);
+        padding: 10px 16px;
+    }
+    
+    .input-icon i { 
+        display: none; 
+    }
 }
 
 /* Estilos del Carrito */
@@ -1182,31 +1265,67 @@ body {
     margin-bottom: 6px;
 }
 
-/* Botones */
-.perfil-buttons {
-    margin-top: 20px;
+/* Botones del perfil de usuario - Mismo estilo que admin */
+.perfil-sidebar .perfil-buttons {
+    margin-top: 25px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
-.btn-edit, .btn-logout {
+.perfil-sidebar .btn-edit,
+.perfil-sidebar .btn-logout {
     display: block;
     text-align: center;
-    padding: 10px;
-    border-radius: var(--radius);
-    font-weight: 600;
+    padding: 12px 16px;
+    border-radius: 25px;
+    font-weight: 700;
     text-decoration: none;
+    font-size: var(--text-base);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
-.btn-edit {
-    background: var(--color-lavanda);
+/* Botón Editar Perfil - Mismo estilo que admin */
+.perfil-sidebar .btn-edit {
+    background: linear-gradient(135deg, #b8e0d2, #d6eadf);
     color: #333;
+    box-shadow: 0 4px 12px rgba(184, 224, 210, 0.4);
 }
 
-.btn-logout {
-    background: var(--color-lavanda);
-    color: #333;
+.perfil-sidebar .btn-edit:hover {
+    background: linear-gradient(135deg, #d6eadf, #b8e0d2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(184, 224, 210, 0.5);
+}
+
+/* Botón Cerrar Sesión - Mismo estilo que admin */
+.perfil-sidebar .btn-logout {
+    background: linear-gradient(135deg, #eac4d5, #95b8d1);
+    color: white;
+    box-shadow: 0 4px 12px rgba(234, 196, 213, 0.4);
+}
+
+.perfil-sidebar .btn-logout:hover {
+    background: linear-gradient(135deg, #95b8d1, #809bce);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(149, 184, 209, 0.5);
+    color: white;
+}
+
+/* Asegurar que el formulario ocupe todo el ancho */
+.perfil-sidebar .perfil-buttons form {
+    width: 100%;
+}
+
+.perfil-sidebar .perfil-buttons form .btn-logout {
+    width: 100%;
 }
 /* ============================================
    SIDEBAR DEL PANEL - ADMINISTRADOR TMM
@@ -1741,7 +1860,7 @@ body {
 =========================== */
 .about {
   padding: 6rem 0;
-  background-color: #fff;
+  background: linear-gradient(135deg, #fff5f8 0%, #fff9e6 100%);
 }
 
 .about__grid {
@@ -1785,7 +1904,7 @@ body {
 =========================== */
 .section {
   padding: 5rem 0;
-  background-color: #fff;
+  background: linear-gradient(135deg, #fff5f8 0%, #fff9e6 100%);
 }
 
 .section__title {
@@ -1972,69 +2091,10 @@ html { scroll-behavior: smooth; }
 }
 
 
-.tienda-main-content { 
-  max-width: 1200px;
-  margin: 30px auto; 
-  padding: 0 20px; 
+.btn-comprar:hover {
+    background: linear-gradient(135deg, #95b8d1, #809bce);
+    transform: translateY(-2px);
 }
-  
-
-.carrito-title { 
-  color: var(--color-principal-rosa); 
-  font-size: var(--text-lg); 
-  border-bottom: 2px solid var(--color-principal-rosa); 
-  padding-bottom: 10px; 
-  margin-bottom: 30px; 
-}
-
-/* ----------------------------------------------------- */
-/* GRID Y TARJETAS PARA TODAS LAS SECCIONES */
-/* ----------------------------------------------------- */
-.productos-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px; 
-            margin-top: 30px; 
-}
-
-.producto-card { 
-            background-color: white; 
-            border-radius: 10px; 
-            padding: 15px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-            text-align: center; 
-            display: flex;
-            flex-direction: column;
-}
-
-.producto-card img, .producto-img { 
-            max-width: 100%; 
-            height: 180px; 
-            object-fit: contain; 
-            margin-bottom: 10px; 
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-}
-
-.producto-precio { 
-            font-size: var(--text-lg); 
-            font-weight: bold; 
-            color: var(--color-resaltado); 
-            margin-top: auto; 
-            margin-bottom: 10px; 
-}
-
-.btn-comprar { 
-            background-color: var(--color-secundario-verde); 
-            color: #333; 
-            border: none; 
-            padding: 8px 20px; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            width: 100%; 
-}
-
 /* ----------------------------------------------------- */
 /* SECCIÓN CARRITO */
 /* ----------------------------------------------------- */
@@ -2252,8 +2312,8 @@ html { scroll-behavior: smooth; }
 /* CATALOGO DE TALLERES Y DETALLES */
 
 .catalogo-container {
-  padding: 5rem 0;
-  background-color: #fff;
+  padding: 2rem 0;
+  background: linear-gradient(135deg, #fff5f8 0%, #fff9e6 100%);
 }
 
 .catalogo-container h1 {
@@ -2265,7 +2325,7 @@ html { scroll-behavior: smooth; }
   letter-spacing: 1px;
   font-family: 'Lobster', sans-serif;
   font-weight: lighter;
-  color: var(--color-durazno);
+  color: #ce80b0;
 }
 
 .catalogo-container p {
@@ -2290,7 +2350,7 @@ html { scroll-behavior: smooth; }
 
 /* === TARJETAS DE TALLER === */
 .taller-card {
-  background-color: var(--color-4);
+  background-color:white;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
@@ -2304,7 +2364,7 @@ html { scroll-behavior: smooth; }
 .taller-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-  background-color: var(--color-3);
+  background-color: #fffacd;
 }
 
 .taller-card img {
@@ -2339,37 +2399,49 @@ html { scroll-behavior: smooth; }
 
 .taller-info p {
   font-size: var(--text-sm);
-  color: var(--color-texto);
+  color: #333;
   margin-bottom: 1rem;
   line-height: 1.5;
+    line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-/* === BOTONES === */
+/* === BOTONES ACTUALIZADOS === */
 .btn-ver-detalles,
 .cta-button-detail {
-  display: inline-block;
-  background-color: #FFB3C1;
-  color: #fff;
-  padding: 0.6rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eac4d5, #95b8d1);
+  color: white;
+  padding: 12px 16px;
   border-radius: 25px;
-  font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  text-align: center;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  font-size: var(--text-base);
+  border: none;
+  cursor: pointer;
   transition: all 0.3s ease;
+  min-height: 44px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .btn-ver-detalles:hover,
 .cta-button-detail:hover {
-  background-color: #fd88c8;
+  background: linear-gradient(135deg, #95b8d1, #809bce);
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(149, 184, 209, 0.5);
+  color: white;
 }
 
 /* === VISTA DE DETALLE DEL TALLER === */
 .detail-section {
-  background-color: #fff;
+  background-color: #faf7e4;
   padding: 5rem 0;
 }
 
@@ -3530,4 +3602,300 @@ form button {
 .input-fecha,
 .input-hora {
     width: 100% !important;
+}
+/* ==============================================
+   ESTILOS PARA SECCIÓN TIENDA 
+   ============================================== */
+
+.tienda-main-content { 
+  padding: 2rem 0;
+  background: linear-gradient(135deg, #fff5f8 0%, #fff9e6 100%);
+}
+
+
+.tienda-titulo,
+.tienda-main-content > h1 { 
+  text-align: center;
+  font-size: var(--text-xl) !important;
+  font-weight: 600 !important;
+  color: #ce80b0 !important;
+  margin-bottom: 1rem !important;
+  letter-spacing: 1px !important;
+  font-family: 'Lobster', sans-serif !important;
+  font-weight: lighter !important;
+}
+
+.tienda-descripcion,
+.tienda-main-content > p {
+  text-align: center;
+  color: var(--color-texto);
+  max-width: 700px;
+  margin: 0 auto 2.5rem;
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+.tienda-busqueda {
+  max-width: 500px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+}
+
+.busqueda-input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 1px solid #ddd;
+  border-radius: 25px;
+  font-size: var(--text-base);
+  font-family: 'Quicksand', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.busqueda-input:focus {
+  outline: none;
+  border-color: var(--color-durazno);
+  box-shadow: 0 0 0 3px rgba(245, 200, 167, 0.2);
+}
+
+.productos-grid { 
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2.5rem;
+  justify-content: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+
+.producto-card { 
+  background-color: white !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08) !important;
+  transition: all 0.35s ease;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.producto-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+  background-color: #fffacd !important;
+}
+
+
+.producto-imagen { 
+  width: 100% !important;
+  height: 220px !important;
+  object-fit: cover !important;
+  transition: transform 0.4s ease;
+}
+
+.producto-card:hover .producto-imagen {
+  transform: scale(1.05);
+}
+
+
+.producto-nombre {
+  font-size: var(--text-lg) !important;
+  font-weight: 600 !important;
+  color: #000000 !important;
+  text-align: center !important;
+  margin-top: 1rem !important;
+  text-transform: capitalize !important;
+  margin-bottom: 0 !important;
+}
+
+
+.producto-info {
+  padding: 1rem 1.5rem 2rem !important;
+  flex-grow: 1;
+  color: var(--color-texto);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+.producto-descripcion {
+  font-size: var(--text-sm) !important;
+  color: #333 !important;
+  margin-bottom: 1rem !important;
+  line-height: 1.5 !important;
+  text-align: center;
+   display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.producto-precio { 
+  font-size: var(--text-lg) !important;
+  font-weight: 700 !important;
+  color: #ce80b0 !important;
+  text-align: center;
+  margin: 1rem 0 1.5rem 0;
+  white-space: nowrap;
+  display: block;
+  width: 100%;
+}
+
+.btn-comprar { 
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eac4d5, #95b8d1) !important;
+  color: white !important;
+  padding: 12px 16px !important;
+  border-radius: 25px !important;
+  font-weight: 700 !important;
+  text-decoration: none;
+  font-size: var(--text-base) !important;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 44px;
+  width: 100% !important;
+  box-sizing: border-box;
+  text-align: center;
+  font-family: 'Quicksand', sans-serif;
+  margin-top: auto;
+}
+
+.btn-comprar:hover {
+  background: linear-gradient(135deg, #95b8d1, #809bce) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(149, 184, 209, 0.5);
+  color: white !important;
+}
+
+/* Formulario del producto */
+.producto-form {
+  width: 100%;
+  margin-top: auto;
+}
+
+/* Mensaje cuando no hay productos */
+.producto-vacio {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  background-color: #f5f5f5;
+  border-radius: 10px;
+}
+
+.producto-vacio p {
+  color: #666;
+  font-size: var(--text-base);
+}
+
+
+@media (max-width: 768px) {
+  .productos-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .producto-card {
+    max-width: 100%;
+  }
+  
+  .tienda-main-content {
+    padding: 1.5rem 0;
+  }
+  
+  .tienda-busqueda {
+    padding: 0 1rem;
+  }
+}
+/* =======================================================
+   contactemos tarjeta
+   ======================================================= */
+
+.banner-conectar, 
+.intro-conectar, 
+.form-container {
+    max-width: 700px !important;     
+    width: 95% !important;          
+    box-sizing: border-box !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    background-color: #ffffff !important;
+    border: none !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* 2. PARTE DE ARRIBA (TÍTULO) */
+.banner-conectar {
+    border-radius: 20px 20px 0 0 !important;
+    padding-top: 50px !important;   
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.05) !important;
+    text-align: center !important;   
+}
+
+/* 3. PARTE DEL MEDIO (TEXTO) */
+.intro-conectar {
+    border-radius: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding: 10px 60px !important;  
+    box-shadow: none !important;
+    text-align: center !important;   
+}
+
+/* 4. PARTE DE ABAJO (FORMULARIO) */
+.form-container {
+    border-radius: 0 0 20px 20px !important;
+    margin-top: 0 !important;
+    padding-top: 20px !important;
+    padding-bottom: 50px !important;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2) !important; 
+}
+
+/* 5. FONDO GENERAL */
+.seccion-conectar {
+    background-image: url('https://images.pexels.com/photos/33197/tealight-candles-tea-lights-wax.jpg?_gl=1*int7xg*_ga*MTg5NzMxMDgyNS4xNzYwNjU3Nzcy*_ga_8JE65Q40S6*czE3NjA2ODIwNzYkbzIkZzEkdDE3NjA2ODIwODYkajUwJGwwJGgw') !important;
+    background-size: cover !important;
+    background-attachment: fixed !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 40px 20px !important;
+    min-height: 100vh !important;
+}
+
+/* 6. ESTÉTICA DE TEXTO: CENTRADO OBLIGATORIO */
+.banner-conectar h1 {
+    font-family: 'Lobster', cursive !important;
+    font-size: var(--text-xl) !important;   
+    font-weight: lighter;
+    color: #ce80b0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    text-align: center !important; 
+    width: 100% !important;
+}
+
+.intro-conectar h3 {
+    font-family: 'Quicksand', sans-serif !important;
+    color: #333 !important;
+    font-weight: 700 !important;
+    margin-bottom: 15px !important;
+    text-align: center !important;  
+    width: 100% !important;
+}
+
+.intro-conectar p {
+    color: #666 !important;
+    font-size: 1rem !important;   
+    line-height: 1.6 !important;
+    text-align: center !important;  
+    margin: 0 auto !important;
 }

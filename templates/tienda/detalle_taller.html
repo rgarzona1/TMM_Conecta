@@ -50,7 +50,7 @@
             <ul class="info-list">
                 <li><strong>Fecha seleccionada:</strong> <span style="background:#d0f9bf; padding: 2px 8px; border-radius: 4px; font-weight: bold; color: #1e5c22;">{{ taller.fecha_proxima|date:"l d \d\e F, Y" }}</span></li>
                 <li><strong>Hora:</strong> {{ taller.hora_inicio }} hrs.</li>
-                <li><strong>Precio:</strong> ${{ taller.precio|floatformat:0 }} CLP</li>
+                <li><strong>Precio:</strong> <span style="font-size: 1.3rem; color: #ce80b0; font-weight: bold;">${{ taller.precio|floatformat:0 }} CLP</span></li>
                 <li><strong>Lugar:</strong> {{ taller.lugar }} ({{ taller.get_tipo_taller_display }})</li>
                 <li><strong>Cupos Disponibles:</strong> {{ taller.capacidad }}</li>
             </ul>
@@ -96,7 +96,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="cta-button-detail">
+                    <button type="submit" class="btn-ver-detalles" style="width: 100%; margin-top: 1.5rem;">
                         Inscríbete a esta fecha
                     </button>
                 </form>
